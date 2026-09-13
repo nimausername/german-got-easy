@@ -1,0 +1,21 @@
+{
+  "name": "german-got-easy",
+  "private": true,
+  "version": "0.1.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:nimausername/german-got-easy.git"
+  },
+  "scripts": {
+    "dev:backend": "pnpm --dir backend dev",
+    "dev:frontend": "pnpm --dir frontend dev",
+    "lint:backend": "pnpm --dir backend lint",
+    "lint:frontend": "pnpm --dir frontend lint",
+    "prisma:migrate": "pnpm --dir backend prisma:migrate",
+    "prisma:generate": "pnpm --dir backend prisma:generate"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,57 @@
+# German Got Easy
+
+Open-source platform to learn German: CEFR lesson path, ~4000-word flashcards with example sentences, and spaced repetition.
+
+Flashcards use spaced repetition plus German-specific prompts: recognition (DE→EN), production (EN→DE), article/gender, cloze, and plural. Learners pick a life topic (Food, Travel, Essentials…) to learn related words together, and can run a separate “review due” session across all topics so memory stays healthy. Failed cards requeue later in the same session.
+
+## Stack
+
+- **Frontend:** Next.js + TypeScript + Tailwind + shadcn/ReUI
+- **Backend:** Fastify + Prisma + Zod
+- **Database:** PostgreSQL
+- **Auth:** Keycloak (Option 1 — in-app register/login forms via the API)
+
+## Quick start
+
+1. Copy `.env.example` to `.env` and fill values (or use your existing `.env`).
+2. Install and migrate:
+
+```bash
+pnpm --dir backend install
+pnpm --dir frontend install
+pnpm --dir backend prisma:migrate
+pnpm --dir backend prisma:seed
+```
+
+3. Run API and web:
+
+```bash
+pnpm --dir backend dev
+pnpm --dir frontend dev
+```
+
+- API: `http://localhost:4000`
+- Web: `http://localhost:3000`
+
+### Working local loop
+
+1. Open `http://localhost:3000`
+2. Register or log in with Keycloak-backed forms (test user `learner1` if seeded in Keycloak)
+3. Dashboard → Continue lesson / Study flashcards / Placement
+
+
+## Keycloak notes (Option 1)
+
+- Realm client `german-backend` is confidential.
+- Direct access grants + service account with `manage-users` / `view-users` / `query-users`.
+- Backend calls Keycloak Admin API with User-Agent `GermanGotEasyBackend/1.0` (Cloudflare may block empty/default agents).
+- Never put the client secret in the frontend.
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+## License
+
+- Application code: [MIT](./LICENSE)
+- Lesson/word content under `backend/content/`: [CC BY 4.0](./LICENSE-CONTENT)

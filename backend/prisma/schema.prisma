@@ -1,0 +1,235 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LessonStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum WordProgressStatus {
+  NEW
+  LEARNING
+  REVIEW
+  KNOWN
+}
+
+enum PartOfSpeech {
+  NOUN
+  VERB
+  ADJECTIVE
+  ADVERB
+  PRONOUN
+  PREPOSITION
+  CONJUNCTION
+  PARTICLE
+  OTHER
+}
+
+enum CefrBand {
+  A1
+  A2
+  B1
+  B2
+  C1
+  C2
+}
+
+enum WordTopic {
+  ESSENTIALS
+  PEOPLE
+  TIME
+  FOOD_DRINK
+  HOME
+  SCHOOL_WORK
+  TRAVEL
+  SHOPPING
+  DESCRIPTIONS
+}
+
+model User {
+  id           String   @id @default(cuid())
+  keycloakSub  String   @unique
+  email        String?
+  username     String?
+  displayName  String?
+  targetLevel  CefrBand @default(A1)
+  nativeLanguage String @default("en")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  lessonProgress UserLessonProgress[]
+  unitProgress   UserUnitProgress[]
+  levelProgress  UserLevelProgress[]
+  wordProgress   UserWordProgress[]
+  examAttempts   ExamAttempt[]
+}
+
+model Level {
+  id        String   @id @default(cuid())
+  code      CefrBand @unique
+  title     String
+  sortOrder Int
+  units     Unit[]
+  progress  UserLevelProgress[]
+}
+
+model Unit {
+  id          String @id @default(cuid())
+  levelId     String
+  slug        String
+  title       String
+  description String?
+  sortOrder   Int
+  level       Level  @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  lessons     Lesson[]
+  progress    UserUnitProgress[]
+
+  @@unique([levelId, slug])
+  @@index([levelId, sortOrder])
+}
+
+model Lesson {
+  id          String @id @default(cuid())
+  unitId      String
+  slug        String
+  title       String
+  skillTags   String[]
+  sortOrder   Int
+  unit        Unit   @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  exercises   Exercise[]
+  progress    UserLessonProgress[]
+
+  @@unique([unitId, slug])
+  @@index([unitId, sortOrder])
+}
+
+model Exercise {
+  id         String @id @default(cuid())
+  lessonId   String
+  type       String
+  prompt     String
+  payload    Json
+  sortOrder  Int
+  wordId     String?
+  lesson     Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  word       Word?  @relation(fields: [wordId], references: [id])
+
+  @@index([lessonId, sortOrder])
+}
+
+model UserLessonProgress {
+  id          String       @id @default(cuid())
+  userId      String
+  lessonId    String
+  status      LessonStatus @default(NOT_STARTED)
+  score       Float?
+  completedAt DateTime?
+  updatedAt   DateTime     @updatedAt
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson      Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+}
+
+model UserUnitProgress {
+  id          String       @id @default(cuid())
+  userId      String
+  unitId      String
+  status      LessonStatus @default(NOT_STARTED)
+  completedAt DateTime?
+  updatedAt   DateTime     @updatedAt
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  unit        Unit         @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, unitId])
+  @@index([userId])
+}
+
+model UserLevelProgress {
+  id          String       @id @default(cuid())
+  userId      String
+  levelId     String
+  status      LessonStatus @default(NOT_STARTED)
+  completedAt DateTime?
+  updatedAt   DateTime     @updatedAt
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  level       Level        @relation(fields: [levelId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, levelId])
+  @@index([userId])
+}
+
+model Word {
+  id             String       @id @default(cuid())
+  lemma          String
+  article        String       @default("")
+  plural         String?
+  translation    String
+  partOfSpeech   PartOfSpeech @default(OTHER)
+  cefrBand       CefrBand     @default(A1)
+  topic          WordTopic    @default(ESSENTIALS)
+  exampleDe      String
+  exampleEn      String
+  usageNote      String?
+  frequencyRank  Int
+  exercises      Exercise[]
+  progress       UserWordProgress[]
+
+  @@unique([lemma, article])
+  @@index([frequencyRank])
+  @@index([cefrBand])
+  @@index([topic, frequencyRank])
+}
+
+model UserWordProgress {
+  id            String             @id @default(cuid())
+  userId        String
+  wordId        String
+  status        WordProgressStatus @default(NEW)
+  easeFactor    Float              @default(2.5)
+  intervalDays  Float              @default(0)
+  repetitions   Int                @default(0)
+  dueAt         DateTime           @default(now())
+  timesSeen     Int                @default(0)
+  timesCorrect  Int                @default(0)
+  lastReviewedAt DateTime?
+  updatedAt     DateTime           @updatedAt
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  word          Word               @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, wordId])
+  @@index([userId, dueAt])
+  @@index([userId, status])
+}
+
+model ExamPack {
+  id          String @id @default(cuid())
+  slug        String @unique
+  title       String
+  levelCode   CefrBand
+  timeLimitSec Int?
+  payload     Json
+  attempts    ExamAttempt[]
+}
+
+model ExamAttempt {
+  id          String   @id @default(cuid())
+  userId      String
+  examPackId  String
+  score       Float?
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+  answers     Json?
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  examPack    ExamPack @relation(fields: [examPackId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
