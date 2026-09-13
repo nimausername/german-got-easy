@@ -47,8 +47,12 @@ export const learnRoutes: FastifyPluginAsync = async (app) => {
 
     const next = lessons.find((lesson) => lesson.progress[0]?.status !== "COMPLETED");
     if (!next) {
+      const message =
+        lessons.length === 0
+          ? "No lessons available. Seed content first."
+          : "All current lessons completed.";
       return {
-        data: { lesson: null, message: "All current lessons completed." },
+        data: { lesson: null, message },
         meta: { requestId: request.id },
       };
     }

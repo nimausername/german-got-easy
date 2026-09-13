@@ -3,11 +3,28 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { AppShell } from "@/components/app-shell";
+import { BackLink } from "@/components/back-link";
+import { ErrorAlert } from "@/components/error-alert";
+import { Badge } from "@/components/ui/badge";
+import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Field, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { apiFetch, ApiRequestError } from "@/lib/api";
+import { cn } from "@/lib/utils";
 
 type PromptType = "recognize" | "produce" | "gender" | "cloze" | "plural";
 
-type Card = {
+type CardItem = {
   wordId: string;
   lemma: string;
   article: string | null;
@@ -65,7 +82,7 @@ const GENDER_OPTIONS = ["der", "die", "das"] as const;
 const germanForm = (article: string | null, lemma: string) =>
   article ? `${article} ${lemma}` : lemma;
 
-const insertRequeue = (cards: Card[], fromIndex: number, card: Card) => {
+const insertRequeue = (cards: CardItem[], fromIndex: number, card: CardItem) => {
   const next = [...cards];
   const target = Math.min(fromIndex + 1 + REQUEUE_OFFSET, next.length);
   next.splice(target, 0, { ...card });
@@ -83,7 +100,7 @@ export default function FlashcardsPage() {
   const [topics, setTopics] = useState<Topic[]>([]);
   const [dueTotal, setDueTotal] = useState(0);
   const [study, setStudy] = useState<StudyContext | null>(null);
-  const [cards, setCards] = useState<Card[]>([]);
+  const [cards, setCards] = useState<CardItem[]>([]);
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [typedAnswer, setTypedAnswer] = useState("");
@@ -117,6 +134,13 @@ export default function FlashcardsPage() {
     void load();
   }, [router]);
 
+  const resetCardState = () => {
+    setFlipped(false);
+    setTypedAnswer("");
+    setPhase("prompt");
+    setFeedback(null);
+  };
+
   const startSession = async (context: StudyContext) => {
     setLoadingSession(true);
     setError(null);
@@ -128,7 +152,7 @@ export default function FlashcardsPage() {
         context.mode === "due"
           ? "mode=due"
           : `mode=topic&topic=${encodeURIComponent(context.topicId ?? "")}`;
-      const response = await apiFetch<{ data: { cards: Card[] } }>(
+      const response = await apiFetch<{ data: { cards: CardItem[] } }>(
         `/v1/flashcards/session?${query}`,
       );
       setStudy(context);
@@ -142,13 +166,6 @@ export default function FlashcardsPage() {
   };
 
   const current = cards[index];
-
-  const resetCardState = () => {
-    setFlipped(false);
-    setTypedAnswer("");
-    setPhase("prompt");
-    setFeedback(null);
-  };
 
   const handleBackToTopics = () => {
     setStudy(null);
@@ -169,7 +186,7 @@ export default function FlashcardsPage() {
     })();
   };
 
-  const advance = (requeue: boolean, sourceCard: Card) => {
+  const advance = (requeue: boolean, sourceCard: CardItem) => {
     const working = requeue ? insertRequeue(cards, index, sourceCard) : cards;
     const isLast = index >= working.length - 1;
 
@@ -250,300 +267,321 @@ export default function FlashcardsPage() {
 
   if (error && !study) {
     return (
-      <main className="mx-auto flex min-h-screen max-w-xl items-center px-6">
-        <p>{error}</p>
-      </main>
+      <AppShell width="md" centered>
+        <ErrorAlert message={error} />
+        <BackLink href="/dashboard" label="Dashboard" className="mt-4" />
+      </AppShell>
     );
   }
 
   if (!study) {
     return (
-      <main className="mx-auto min-h-screen w-full max-w-2xl px-6 py-12">
-        <Link href="/dashboard" className="text-sm font-medium text-brand">
-          ← Dashboard
-        </Link>
+      <AppShell width="md">
+        <BackLink href="/dashboard" label="Dashboard" />
         <h1 className="mt-6 font-display text-4xl text-brand-ink">Flashcards</h1>
-        <p className="mt-3 max-w-xl text-stone-600">
-          Pick a life topic to learn related words together. Use review-due to keep older words
-          from fading.
+        <p className="mt-3 max-w-xl text-muted-foreground">
+          Pick a life topic to learn related words together. Use review-due to keep older words from
+          fading.
         </p>
 
-        {loadingTopics ? <p className="mt-8 text-stone-500">Loading topics…</p> : null}
+        {loadingTopics ? (
+          <div className="mt-8 grid gap-3 sm:grid-cols-2">
+            <Skeleton className="h-36 w-full" />
+            <Skeleton className="h-36 w-full" />
+            <Skeleton className="h-36 w-full" />
+            <Skeleton className="h-36 w-full" />
+          </div>
+        ) : null}
 
         {!loadingTopics && dueTotal > 0 ? (
-          <button
-            type="button"
-            disabled={loadingSession}
-            onClick={() =>
-              void startSession({ mode: "due", title: "Review due words" })
-            }
-            className="mt-8 w-full rounded-xl border border-brand/30 bg-brand px-5 py-4 text-left text-white hover:bg-brand-ink disabled:opacity-60"
-            aria-label={`Review ${dueTotal} due words`}
-          >
-            <p className="text-sm uppercase tracking-wide text-white/80">Recommended</p>
-            <p className="mt-1 text-xl font-semibold">Review due words</p>
-            <p className="mt-1 text-sm text-white/80">
-              {dueTotal} card{dueTotal === 1 ? "" : "s"} waiting across all topics
-            </p>
-          </button>
+          <Card className="mt-8 border-primary/30 bg-primary text-primary-foreground">
+            <CardHeader>
+              <CardDescription className="text-primary-foreground/80">Recommended</CardDescription>
+              <CardTitle className="text-primary-foreground">Review due words</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-primary-foreground/80">
+                {dueTotal} card{dueTotal === 1 ? "" : "s"} waiting across all topics
+              </p>
+            </CardContent>
+            <CardFooter>
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={loadingSession}
+                onClick={() => void startSession({ mode: "due", title: "Review due words" })}
+                aria-label={`Review ${dueTotal} due words`}
+              >
+                Start review
+              </Button>
+            </CardFooter>
+          </Card>
         ) : null}
 
         <div className="mt-8 grid gap-3 sm:grid-cols-2">
           {topics.map((topic) => (
-            <button
-              key={topic.id}
-              type="button"
-              disabled={loadingSession || (topic.dueCount === 0 && topic.newCount === 0)}
-              onClick={() =>
-                void startSession({
-                  mode: "topic",
-                  topicId: topic.id,
-                  title: topic.title,
-                })
-              }
-              className="rounded-xl border border-stone-200 bg-white/90 p-5 text-left shadow-sm transition hover:border-brand/40 disabled:cursor-not-allowed disabled:opacity-50"
-              aria-label={`Study topic ${topic.title}`}
-            >
-              <p className="text-lg font-semibold text-brand-ink">{topic.title}</p>
-              <p className="mt-1 text-sm text-stone-600">{topic.description}</p>
-              <p className="mt-4 text-sm text-stone-500">
-                {topic.dueCount > 0 ? `${topic.dueCount} due · ` : ""}
-                {topic.newCount} new · {topic.learningCount + topic.knownCount} started
-              </p>
-            </button>
+            <Card key={topic.id} size="sm" className="transition-colors hover:bg-accent/40">
+              <CardHeader>
+                <CardTitle>{topic.title}</CardTitle>
+                <CardDescription>{topic.description}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  {topic.dueCount > 0 ? `${topic.dueCount} due · ` : ""}
+                  {topic.newCount} new · {topic.learningCount + topic.knownCount} started
+                </p>
+              </CardContent>
+              <CardFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  disabled={loadingSession || (topic.dueCount === 0 && topic.newCount === 0)}
+                  onClick={() =>
+                    void startSession({
+                      mode: "topic",
+                      topicId: topic.id,
+                      title: topic.title,
+                    })
+                  }
+                  aria-label={`Study topic ${topic.title}`}
+                >
+                  Study topic
+                </Button>
+              </CardFooter>
+            </Card>
           ))}
         </div>
-      </main>
+      </AppShell>
     );
   }
 
   if (done) {
     return (
-      <main className="mx-auto flex min-h-screen max-w-xl flex-col justify-center px-6">
-        <h1 className="font-display text-3xl text-brand-ink">Session complete</h1>
-        <p className="mt-3 text-stone-600">
-          Nice work in {study.title}. Come back for due reviews so the words stick.
-        </p>
-        <div className="mt-6 flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={handleBackToTopics}
-            className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white"
-          >
-            Choose another topic
-          </button>
-          <Link
-            href="/dashboard"
-            className="rounded-md border border-stone-300 bg-white px-4 py-2 text-sm font-semibold"
-          >
-            Dashboard
-          </Link>
-        </div>
-      </main>
+      <AppShell width="md" centered>
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-display text-3xl">Session complete</CardTitle>
+            <CardDescription>
+              Nice work in {study.title}. Come back for due reviews so the words stick.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter className="gap-3">
+            <Button type="button" onClick={handleBackToTopics}>
+              Choose another topic
+            </Button>
+            <Link href="/dashboard" className={buttonVariants({ variant: "outline" })}>
+              Dashboard
+            </Link>
+          </CardFooter>
+        </Card>
+      </AppShell>
     );
   }
 
   if (loadingSession || !current) {
     return (
-      <main className="mx-auto flex min-h-screen max-w-xl items-center px-6">
-        <p>Loading flashcards…</p>
-      </main>
+      <AppShell width="md" centered>
+        <Skeleton className="h-8 w-40" />
+        <Skeleton className="mt-6 h-64 w-full" />
+      </AppShell>
     );
   }
 
-  const showSelfRate =
-    current.promptType === "recognize" ? flipped : phase === "correct";
+  const showSelfRate = current.promptType === "recognize" ? flipped : phase === "correct";
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-xl px-6 py-12">
-      <button
+    <AppShell width="md">
+      <Button
         type="button"
+        variant="ghost"
+        size="sm"
+        className="-ml-2 w-fit text-muted-foreground"
         onClick={handleBackToTopics}
-        className="text-sm font-medium text-brand"
       >
         ← Topics
-      </button>
-      <p className="mt-6 text-sm uppercase tracking-wide text-stone-500">
-        {study.title} · {current.mode === "new" ? "New word" : "Review"} ·{" "}
-        {PROMPT_LABEL[current.promptType]} · {index + 1}/{cards.length}
-      </p>
+      </Button>
+
+      <div className="mt-6 flex flex-wrap items-center gap-2">
+        <Badge variant="secondary">{study.title}</Badge>
+        <Badge variant="outline">{current.mode === "new" ? "New word" : "Review"}</Badge>
+        <Badge variant="outline">{PROMPT_LABEL[current.promptType]}</Badge>
+        <span className="text-sm text-muted-foreground">
+          {index + 1}/{cards.length}
+        </span>
+      </div>
+
       {error ? (
-        <p className="mt-3 text-sm text-red-700" role="alert">
-          {error}
-        </p>
+        <div className="mt-4">
+          <ErrorAlert message={error} />
+        </div>
       ) : null}
 
-      <section className="mt-4 w-full rounded-xl border border-stone-200 bg-white/90 p-8 shadow-sm">
-        <p className="text-sm text-stone-500">{current.prompt}</p>
-
-        {current.promptType === "recognize" ? (
-          <button
-            type="button"
-            onClick={() => setFlipped((value) => !value)}
-            className="mt-4 w-full text-left"
-            aria-label={flipped ? "Hide translation" : "Reveal translation"}
-          >
-            <p className="font-display text-4xl text-brand-ink">
-              {germanForm(current.article, current.lemma)}
-            </p>
-            {flipped ? (
-              <div className="mt-6 space-y-3">
-                <p className="text-xl font-semibold">{current.translation}</p>
-                {current.plural ? (
-                  <p className="text-sm font-medium text-stone-700">
-                    Plural: die {current.plural}
-                  </p>
-                ) : null}
-                <p className="text-stone-700">{current.exampleDe}</p>
-                <p className="text-stone-500">{current.exampleEn}</p>
-                {current.usageNote ? <p className="text-sm text-stone-500">{current.usageNote}</p> : null}
-              </div>
-            ) : (
-              <p className="mt-6 text-sm text-stone-500">Tap to reveal translation and example</p>
-            )}
-          </button>
-        ) : null}
-
-        {current.promptType === "produce" && phase === "prompt" ? (
-          <div className="mt-4 space-y-4">
-            <p className="font-display text-4xl text-brand-ink">{current.translation}</p>
-            {current.hint ? <p className="text-sm text-stone-500">{current.hint}</p> : null}
-            <label className="block">
-              <span className="sr-only">German answer</span>
-              <input
-                value={typedAnswer}
-                onChange={(event) => setTypedAnswer(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") handleCheck();
-                }}
-                className="w-full rounded-md border border-stone-300 bg-white px-3 py-3 text-base"
-                placeholder="e.g. das Haus"
-                autoComplete="off"
-                aria-label="Type the German word"
-              />
-            </label>
+      <Card className="mt-4">
+        <CardHeader>
+          <CardDescription>{current.prompt}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {current.promptType === "recognize" ? (
             <button
               type="button"
-              disabled={busy || !typedAnswer.trim()}
-              onClick={handleCheck}
-              className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+              onClick={() => setFlipped((value) => !value)}
+              className="w-full rounded-lg text-left outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+              aria-label={flipped ? "Hide translation" : "Reveal translation"}
             >
-              Check
+              <p className="font-display text-4xl text-brand-ink">
+                {germanForm(current.article, current.lemma)}
+              </p>
+              {flipped ? (
+                <div className="mt-6 space-y-3">
+                  <p className="text-xl font-semibold">{current.translation}</p>
+                  {current.plural ? (
+                    <p className="text-sm font-medium">Plural: die {current.plural}</p>
+                  ) : null}
+                  <p>{current.exampleDe}</p>
+                  <p className="text-muted-foreground">{current.exampleEn}</p>
+                  {current.usageNote ? (
+                    <p className="text-sm text-muted-foreground">{current.usageNote}</p>
+                  ) : null}
+                </div>
+              ) : (
+                <p className="mt-6 text-sm text-muted-foreground">
+                  Tap to reveal translation and example
+                </p>
+              )}
             </button>
-          </div>
-        ) : null}
+          ) : null}
 
-        {current.promptType === "gender" && phase === "prompt" ? (
-          <div className="mt-4 space-y-4">
-            <p className="font-display text-4xl text-brand-ink">{current.lemma}</p>
-            {current.hint ? <p className="text-sm text-stone-500">{current.hint}</p> : null}
-            <div className="grid grid-cols-3 gap-2">
-              {GENDER_OPTIONS.map((article) => (
-                <button
-                  key={article}
-                  type="button"
-                  disabled={busy}
-                  onClick={() => handleGender(article)}
-                  className="rounded-md border border-stone-300 bg-white px-3 py-3 text-sm font-semibold hover:bg-stone-50 disabled:opacity-50"
-                  aria-label={`Choose article ${article}`}
-                >
-                  {article}
-                </button>
-              ))}
+          {current.promptType === "produce" && phase === "prompt" ? (
+            <div className="space-y-4">
+              <p className="font-display text-4xl text-brand-ink">{current.translation}</p>
+              {current.hint ? <p className="text-sm text-muted-foreground">{current.hint}</p> : null}
+              <Field>
+                <FieldLabel htmlFor="produce-answer" className="sr-only">
+                  German answer
+                </FieldLabel>
+                <Input
+                  id="produce-answer"
+                  value={typedAnswer}
+                  onChange={(event) => setTypedAnswer(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") handleCheck();
+                  }}
+                  placeholder="e.g. das Haus"
+                  autoComplete="off"
+                  aria-label="Type the German word"
+                />
+              </Field>
+              <Button type="button" disabled={busy || !typedAnswer.trim()} onClick={handleCheck}>
+                Check
+              </Button>
             </div>
-          </div>
-        ) : null}
+          ) : null}
 
-        {current.promptType === "cloze" && phase === "prompt" ? (
-          <div className="mt-4 space-y-4">
-            <p className="font-display text-2xl text-brand-ink">{current.clozeSentence}</p>
-            {current.hint ? <p className="text-sm text-stone-500">Hint: {current.hint}</p> : null}
-            <label className="block">
-              <span className="sr-only">Missing word</span>
-              <input
-                value={typedAnswer}
-                onChange={(event) => setTypedAnswer(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") handleCheck();
-                }}
-                className="w-full rounded-md border border-stone-300 bg-white px-3 py-3 text-base"
-                placeholder="Type the missing word"
-                autoComplete="off"
-                aria-label="Type the missing German word"
-              />
-            </label>
-            <button
-              type="button"
-              disabled={busy || !typedAnswer.trim()}
-              onClick={handleCheck}
-              className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
-            >
-              Check
-            </button>
-          </div>
-        ) : null}
+          {current.promptType === "gender" && phase === "prompt" ? (
+            <div className="space-y-4">
+              <p className="font-display text-4xl text-brand-ink">{current.lemma}</p>
+              {current.hint ? <p className="text-sm text-muted-foreground">{current.hint}</p> : null}
+              <div className="grid grid-cols-3 gap-2">
+                {GENDER_OPTIONS.map((article) => (
+                  <Button
+                    key={article}
+                    type="button"
+                    variant="outline"
+                    disabled={busy}
+                    onClick={() => handleGender(article)}
+                    aria-label={`Choose article ${article}`}
+                  >
+                    {article}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          ) : null}
 
-        {current.promptType === "plural" && phase === "prompt" ? (
-          <div className="mt-4 space-y-4">
-            <p className="font-display text-4xl text-brand-ink">
-              {germanForm(current.article, current.lemma)}
-            </p>
-            {current.hint ? <p className="text-sm text-stone-500">{current.hint}</p> : null}
-            <label className="block">
-              <span className="sr-only">Plural form</span>
-              <input
-                value={typedAnswer}
-                onChange={(event) => setTypedAnswer(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") handleCheck();
-                }}
-                className="w-full rounded-md border border-stone-300 bg-white px-3 py-3 text-base"
-                placeholder="e.g. Häuser"
-                autoComplete="off"
-                aria-label="Type the plural form"
-              />
-            </label>
-            <button
-              type="button"
-              disabled={busy || !typedAnswer.trim()}
-              onClick={handleCheck}
-              className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
-            >
-              Check
-            </button>
-          </div>
-        ) : null}
+          {current.promptType === "cloze" && phase === "prompt" ? (
+            <div className="space-y-4">
+              <p className="font-display text-2xl text-brand-ink">{current.clozeSentence}</p>
+              {current.hint ? (
+                <p className="text-sm text-muted-foreground">Hint: {current.hint}</p>
+              ) : null}
+              <Field>
+                <FieldLabel htmlFor="cloze-answer" className="sr-only">
+                  Missing word
+                </FieldLabel>
+                <Input
+                  id="cloze-answer"
+                  value={typedAnswer}
+                  onChange={(event) => setTypedAnswer(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") handleCheck();
+                  }}
+                  placeholder="Type the missing word"
+                  autoComplete="off"
+                  aria-label="Type the missing German word"
+                />
+              </Field>
+              <Button type="button" disabled={busy || !typedAnswer.trim()} onClick={handleCheck}>
+                Check
+              </Button>
+            </div>
+          ) : null}
 
-        {phase === "grade" && feedback?.expected ? (
-          <div className="mt-6 space-y-3 rounded-lg bg-stone-50 p-4">
-            <p className="text-sm font-semibold text-red-700">Not quite</p>
-            <p className="text-xl font-semibold text-brand-ink">
-              {germanForm(feedback.expected.article, feedback.expected.lemma)}
-              {feedback.expected.plural ? ` · die ${feedback.expected.plural}` : ""}
-            </p>
-            <p className="text-stone-700">{feedback.expected.translation}</p>
-            <p className="text-stone-600">{feedback.expected.exampleDe}</p>
-            <button
-              type="button"
-              onClick={handleContinueAfterFail}
-              className="mt-2 rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white"
-            >
-              Continue
-            </button>
-          </div>
-        ) : null}
+          {current.promptType === "plural" && phase === "prompt" ? (
+            <div className="space-y-4">
+              <p className="font-display text-4xl text-brand-ink">
+                {germanForm(current.article, current.lemma)}
+              </p>
+              {current.hint ? <p className="text-sm text-muted-foreground">{current.hint}</p> : null}
+              <Field>
+                <FieldLabel htmlFor="plural-answer" className="sr-only">
+                  Plural form
+                </FieldLabel>
+                <Input
+                  id="plural-answer"
+                  value={typedAnswer}
+                  onChange={(event) => setTypedAnswer(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") handleCheck();
+                  }}
+                  placeholder="e.g. Häuser"
+                  autoComplete="off"
+                  aria-label="Type the plural form"
+                />
+              </Field>
+              <Button type="button" disabled={busy || !typedAnswer.trim()} onClick={handleCheck}>
+                Check
+              </Button>
+            </div>
+          ) : null}
 
-        {phase === "correct" ? (
-          <div className="mt-6 space-y-2 rounded-lg bg-emerald-50 p-4">
-            <p className="text-sm font-semibold text-emerald-800">Correct</p>
-            <p className="text-xl font-semibold text-brand-ink">
-              {germanForm(current.article, current.lemma)}
-              {current.plural ? ` · die ${current.plural}` : ""}
-            </p>
-            <p className="text-stone-600">{current.exampleDe}</p>
-          </div>
-        ) : null}
-      </section>
+          {phase === "grade" && feedback?.expected ? (
+            <div className="mt-2 space-y-3 rounded-lg bg-destructive/5 p-4 ring-1 ring-destructive/20">
+              <p className="text-sm font-semibold text-destructive">Not quite</p>
+              <p className="text-xl font-semibold text-brand-ink">
+                {germanForm(feedback.expected.article, feedback.expected.lemma)}
+                {feedback.expected.plural ? ` · die ${feedback.expected.plural}` : ""}
+              </p>
+              <p>{feedback.expected.translation}</p>
+              <p className="text-muted-foreground">{feedback.expected.exampleDe}</p>
+              <Button type="button" onClick={handleContinueAfterFail}>
+                Continue
+              </Button>
+            </div>
+          ) : null}
+
+          {phase === "correct" ? (
+            <div className="mt-2 space-y-2 rounded-lg bg-accent p-4 ring-1 ring-primary/15">
+              <p className="text-sm font-semibold text-accent-foreground">Correct</p>
+              <p className="text-xl font-semibold text-brand-ink">
+                {germanForm(current.article, current.lemma)}
+                {current.plural ? ` · die ${current.plural}` : ""}
+              </p>
+              <p className="text-muted-foreground">{current.exampleDe}</p>
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
 
       {showSelfRate ? (
         <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -557,18 +595,19 @@ export default function FlashcardsPage() {
           )
             .filter(([value]) => current.promptType === "recognize" || value !== "again")
             .map(([value, label]) => (
-              <button
+              <Button
                 key={value}
                 type="button"
+                variant="outline"
                 disabled={busy}
                 onClick={() => handleRate(value)}
-                className="rounded-md border border-stone-300 bg-white px-3 py-3 text-sm font-semibold hover:bg-stone-50 disabled:opacity-50"
+                className={cn(value === "good" && "border-primary/40")}
               >
                 {label}
-              </button>
+              </Button>
             ))}
         </div>
       ) : null}
-    </main>
+    </AppShell>
   );
 }

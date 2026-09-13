@@ -3,6 +3,23 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { AppShell } from "@/components/app-shell";
+import { BackLink } from "@/components/back-link";
+import { ErrorAlert } from "@/components/error-alert";
+import { Badge } from "@/components/ui/badge";
+import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Field, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Progress, ProgressLabel, ProgressValue } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 import { apiFetch } from "@/lib/api";
 
 type Exercise = {
@@ -28,6 +45,7 @@ type LessonResponse = {
 type NextPathResponse = {
   data: {
     lesson: { id: string; title: string } | null;
+    message?: string;
   };
 };
 
@@ -45,7 +63,7 @@ export default function LessonPlayerPage() {
       try {
         const next = await apiFetch<NextPathResponse>("/v1/path/next");
         if (!next.data.lesson) {
-          setError("No lessons available. Seed content first.");
+          setError(next.data.message ?? "All current lessons completed.");
           return;
         }
         setLessonId(next.data.lesson.id);
@@ -93,132 +111,161 @@ export default function LessonPlayerPage() {
     }
   };
 
-  if (error) {
+  const handleNextLesson = async () => {
+    setLessonId(null);
+    setLesson(null);
+    setIndex(0);
+    setAnswers({});
+    setResult(null);
+    const next = await apiFetch<NextPathResponse>("/v1/path/next");
+    if (!next.data.lesson) {
+      setError(next.data.message ?? "All current lessons completed.");
+      return;
+    }
+    setLessonId(next.data.lesson.id);
+    const full = await apiFetch<LessonResponse>(`/v1/lessons/${next.data.lesson.id}`);
+    setLesson(full.data.lesson);
+  };
+
+  if (error && !lesson) {
+    const isCompleted = error.toLowerCase().includes("completed");
     return (
-      <main className="mx-auto flex min-h-screen max-w-2xl items-center px-6">
-        <p className="text-red-700">{error}</p>
-      </main>
+      <AppShell width="md" centered>
+        <ErrorAlert
+          title={isCompleted ? "Path complete" : "Lesson unavailable"}
+          message={error}
+        />
+        <BackLink href="/dashboard" label="Dashboard" className="mt-4" />
+      </AppShell>
     );
   }
 
   if (!lesson || !current) {
     return (
-      <main className="mx-auto flex min-h-screen max-w-2xl items-center px-6">
-        <p>Loading lesson…</p>
-      </main>
+      <AppShell width="md">
+        <Skeleton className="h-8 w-32" />
+        <Skeleton className="mt-6 h-6 w-48" />
+        <Skeleton className="mt-2 h-10 w-72" />
+        <Skeleton className="mt-8 h-56 w-full" />
+      </AppShell>
     );
   }
 
+  const progressValue = ((index + (result ? 1 : 0)) / lesson.exercises.length) * 100;
+
   return (
-    <main className="mx-auto min-h-screen w-full max-w-2xl px-6 py-12">
-      <Link href="/dashboard" className="text-sm font-medium text-brand">
-        ← Dashboard
-      </Link>
-      <p className="mt-6 text-sm uppercase tracking-wide text-stone-500">
-        {lesson.levelCode} · {lesson.unitTitle}
-      </p>
-      <h1 className="mt-2 font-display text-3xl text-brand-ink">{lesson.title}</h1>
-      <p className="mt-2 text-sm text-stone-600">
-        Exercise {index + 1} of {lesson.exercises.length}
-      </p>
+    <AppShell width="md">
+      <BackLink href="/dashboard" label="Dashboard" />
+      <div className="mt-6 flex flex-wrap items-center gap-2">
+        <Badge variant="secondary">{lesson.levelCode}</Badge>
+        <Badge variant="outline">{lesson.unitTitle}</Badge>
+      </div>
+      <h1 className="mt-3 font-display text-3xl text-brand-ink">{lesson.title}</h1>
+
+      <Progress value={progressValue} className="mt-6">
+        <ProgressLabel>
+          Exercise {Math.min(index + 1, lesson.exercises.length)} of {lesson.exercises.length}
+        </ProgressLabel>
+        <ProgressValue />
+      </Progress>
+
+      {error ? (
+        <div className="mt-4">
+          <ErrorAlert message={error} />
+        </div>
+      ) : null}
 
       {result ? (
-        <div className="mt-10 rounded-lg border border-stone-200 bg-white/80 p-6">
-          <p className="text-xl font-semibold">{result}</p>
-          <div className="mt-4 flex gap-3">
-            <Link href="/dashboard" className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white">
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle>Lesson complete</CardTitle>
+            <CardDescription>{result}</CardDescription>
+          </CardHeader>
+          <CardFooter className="gap-3">
+            <Link href="/dashboard" className={buttonVariants()}>
               Back to dashboard
             </Link>
-            <button
-              type="button"
-              className="rounded-md border border-stone-300 bg-white px-4 py-2 text-sm font-semibold"
-              onClick={() => {
-                setLessonId(null);
-                setLesson(null);
-                setIndex(0);
-                setAnswers({});
-                setResult(null);
-                void (async () => {
-                  const next = await apiFetch<NextPathResponse>("/v1/path/next");
-                  if (!next.data.lesson) {
-                    setError("All lessons completed for now.");
-                    return;
-                  }
-                  setLessonId(next.data.lesson.id);
-                  const full = await apiFetch<LessonResponse>(`/v1/lessons/${next.data.lesson.id}`);
-                  setLesson(full.data.lesson);
-                })();
-              }}
-            >
+            <Button type="button" variant="outline" onClick={() => void handleNextLesson()}>
               Next lesson
-            </button>
-          </div>
-        </div>
+            </Button>
+          </CardFooter>
+        </Card>
       ) : (
-        <section className="mt-8 rounded-lg border border-stone-200 bg-white/80 p-6">
-          <p className="text-lg font-medium">{current.prompt}</p>
-          <div className="mt-6 space-y-3">
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle className="text-lg leading-relaxed">{current.prompt}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
             {current.type === "mcq" &&
               Array.isArray(current.payload.options) &&
               (current.payload.options as string[]).map((option) => (
-                <button
+                <Button
                   key={option}
                   type="button"
+                  variant={answers[current.id] === option ? "default" : "outline"}
+                  className="h-auto w-full justify-start px-4 py-3 whitespace-normal"
                   onClick={() => handleAnswer(option)}
-                  className={`block w-full rounded-md border px-4 py-3 text-left text-sm ${
-                    answers[current.id] === option
-                      ? "border-brand bg-brand/10"
-                      : "border-stone-300 bg-white hover:bg-stone-50"
-                  }`}
                 >
                   {option}
-                </button>
+                </Button>
               ))}
 
             {(current.type === "cloze" || current.type === "short_write") && (
-              <input
-                className="w-full rounded-md border border-stone-300 px-3 py-2"
-                value={String(answers[current.id] ?? "")}
-                onChange={(e) => handleAnswer(e.target.value)}
-                aria-label="Your answer"
-              />
+              <Field>
+                <FieldLabel htmlFor="lesson-answer" className="sr-only">
+                  Your answer
+                </FieldLabel>
+                <Input
+                  id="lesson-answer"
+                  value={String(answers[current.id] ?? "")}
+                  onChange={(e) => handleAnswer(e.target.value)}
+                  aria-label="Your answer"
+                />
+              </Field>
             )}
 
             {current.type === "reorder" && Array.isArray(current.payload.tokens) && (
-              <input
-                className="w-full rounded-md border border-stone-300 px-3 py-2"
-                placeholder={(current.payload.tokens as string[]).join(" / ")}
-                value={String(answers[current.id] ?? "")}
-                onChange={(e) => handleAnswer(e.target.value.split(/\s+/).filter(Boolean))}
-                aria-label="Reorder words separated by spaces"
-              />
+              <Field>
+                <FieldLabel htmlFor="reorder-answer" className="sr-only">
+                  Reorder words
+                </FieldLabel>
+                <Input
+                  id="reorder-answer"
+                  placeholder={(current.payload.tokens as string[]).join(" / ")}
+                  value={String(answers[current.id] ?? "")}
+                  onChange={(e) => handleAnswer(e.target.value.split(/\s+/).filter(Boolean))}
+                  aria-label="Reorder words separated by spaces"
+                />
+              </Field>
             )}
 
             {current.type === "match" && (
-              <p className="text-sm text-stone-600">
-                Mark as reviewed for now (full match UI comes next).
-                <button
+              <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                <span>Mark as reviewed for now (full match UI comes next).</span>
+                <Button
                   type="button"
-                  className="ml-2 underline"
+                  variant="link"
+                  className="h-auto px-0"
                   onClick={() => handleAnswer(true)}
                 >
                   Mark done
-                </button>
-              </p>
+                </Button>
+              </div>
             )}
-          </div>
-
-          <button
-            type="button"
-            disabled={answers[current.id] === undefined}
-            onClick={() => void handleNext()}
-            className="mt-8 inline-flex min-h-11 items-center rounded-md bg-brand px-5 text-sm font-semibold text-white disabled:opacity-50"
-          >
-            {index < lesson.exercises.length - 1 ? "Next" : "Submit lesson"}
-          </button>
-          {lessonId ? null : null}
-        </section>
+          </CardContent>
+          <CardFooter>
+            <Button
+              type="button"
+              size="lg"
+              disabled={answers[current.id] === undefined}
+              onClick={() => void handleNext()}
+            >
+              {index < lesson.exercises.length - 1 ? "Next" : "Submit lesson"}
+            </Button>
+            {lessonId ? null : null}
+          </CardFooter>
+        </Card>
       )}
-    </main>
+    </AppShell>
   );
 }

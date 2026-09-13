@@ -3,7 +3,23 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { BookOpen, Layers } from "lucide-react";
+import { AppHeader } from "@/components/app-header";
+import { AppShell } from "@/components/app-shell";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { apiFetch } from "@/lib/api";
+import { cn } from "@/lib/utils";
 
 type MeResponse = {
   data: {
@@ -42,75 +58,85 @@ export default function DashboardPage() {
     void load();
   }, [router]);
 
-  const handleLogout = async () => {
-    const { setAccessToken } = await import("@/lib/api");
-    await apiFetch("/v1/auth/logout", { method: "POST" });
-    setAccessToken(null);
-    router.push("/");
-  };
-
   if (!me) {
     return (
-      <main className="mx-auto flex min-h-screen max-w-3xl items-center px-6">
-        <p className="text-stone-600">{error ?? "Loading your dashboard…"}</p>
-      </main>
+      <>
+        <AppHeader loading />
+        <AppShell width="xl" showThemeToggle={false}>
+          <div className="w-full space-y-4">
+            <Skeleton className="h-10 w-72" />
+            <Skeleton className="h-5 w-56" />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Skeleton className="h-44 w-full" />
+              <Skeleton className="h-44 w-full" />
+            </div>
+            {error ? <p className="text-sm text-muted-foreground">{error}</p> : null}
+          </div>
+        </AppShell>
+      </>
     );
   }
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-3xl px-6 py-12">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <Link href="/" className="font-display text-2xl text-brand-ink">
-            German Got Easy
-          </Link>
-          <h1 className="mt-6 text-3xl font-semibold tracking-tight">
-            Welcome{me.user.displayName ? `, ${me.user.displayName}` : ""}
-          </h1>
-          <p className="mt-2 text-stone-600">Your personal learning dashboard.</p>
-        </div>
-        <button
-          type="button"
-          onClick={() => void handleLogout()}
-          className="rounded-md border border-stone-300 bg-white px-3 py-2 text-sm font-medium hover:bg-stone-50"
-        >
-          Log out
-        </button>
-      </div>
+    <>
+      <AppHeader user={me.user} />
+      <AppShell width="xl" className="pt-8" showThemeToggle={false}>
+        <h1 className="text-3xl font-semibold tracking-tight">
+          Welcome{me.user.displayName ? `, ${me.user.displayName}` : ""}
+        </h1>
+        <p className="mt-2 text-muted-foreground">Your personal learning dashboard.</p>
 
-      <section className="mt-10 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-lg border border-stone-200 bg-white/80 p-5">
-          <p className="text-sm text-stone-500">Continue learning</p>
-          <p className="mt-2 text-xl font-semibold">Lessons completed</p>
-          <p className="mt-1 text-3xl font-display text-brand">{me.progress.lessonsCompleted}</p>
-          <Link
-            href="/learn"
-            className="mt-4 inline-flex rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-ink"
-          >
-            Continue lesson
-          </Link>
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <Badge variant="secondary">Target {me.user.targetLevel}</Badge>
+          <Badge variant="outline">{me.progress.streakDays}-day streak</Badge>
         </div>
-        <div className="rounded-lg border border-stone-200 bg-white/80 p-5">
-          <p className="text-sm text-stone-500">Flashcards due</p>
-          <p className="mt-2 text-xl font-semibold">Words to review</p>
-          <p className="mt-1 text-3xl font-display text-brand">{me.progress.wordsDueToday}</p>
-          <p className="mt-3 text-sm text-stone-500">
-            Learning {me.progress.wordsLearning} · Known {me.progress.wordsKnown}
-          </p>
-          <Link
-            href="/flashcards"
-            className="mt-4 inline-flex rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-ink"
-          >
-            Study flashcards
-          </Link>
-        </div>
-      </section>
 
-      <div className="mt-6 flex flex-wrap gap-3">
-        <Link href="/placement" className="text-sm font-semibold text-brand underline-offset-2 hover:underline">
+        <section className="mt-8 grid items-stretch gap-4 sm:grid-cols-2">
+          <Card className="h-full">
+            <CardHeader>
+              <CardDescription>Continue learning</CardDescription>
+              <CardTitle>Lessons completed</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-1 flex-col">
+              <p className="font-display text-4xl text-primary">{me.progress.lessonsCompleted}</p>
+              <p className="mt-3 text-sm text-muted-foreground">
+                Target level {me.user.targetLevel}
+              </p>
+            </CardContent>
+            <CardFooter>
+              <Link href="/learn" className={cn(buttonVariants(), "w-full sm:w-auto")}>
+                <BookOpen data-icon="inline-start" />
+                Continue lesson
+              </Link>
+            </CardFooter>
+          </Card>
+
+          <Card className="h-full">
+            <CardHeader>
+              <CardDescription>Flashcards due</CardDescription>
+              <CardTitle>Words to review</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-1 flex-col">
+              <p className="font-display text-4xl text-primary">{me.progress.wordsDueToday}</p>
+              <p className="mt-3 text-sm text-muted-foreground">
+                Learning {me.progress.wordsLearning} · Known {me.progress.wordsKnown}
+              </p>
+            </CardContent>
+            <CardFooter>
+              <Link href="/flashcards" className={cn(buttonVariants(), "w-full sm:w-auto")}>
+                <Layers data-icon="inline-start" />
+                Study flashcards
+              </Link>
+            </CardFooter>
+          </Card>
+        </section>
+
+        <Separator className="my-8" />
+
+        <Link href="/placement" className={cn(buttonVariants({ variant: "link" }), "h-auto px-0")}>
           Take placement check
         </Link>
-      </div>
-    </main>
+      </AppShell>
+    </>
   );
 }

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { DM_Sans, Fraunces } from "next/font/google";
+import { Fraunces, Geist } from "next/font/google";
+import { ThemeProvider } from "@/components/theme-provider";
+import { cn } from "@/lib/utils";
 import "./globals.css";
 
 const display = Fraunces({
@@ -7,9 +9,9 @@ const display = Fraunces({
   subsets: ["latin"],
 });
 
-const sans = DM_Sans({
-  variable: "--font-sans",
+const geist = Geist({
   subsets: ["latin"],
+  variable: "--font-sans",
 });
 
 export const metadata: Metadata = {
@@ -17,15 +19,22 @@ export const metadata: Metadata = {
   description: "Learn German with a clear path, flashcards, and real progress.",
 };
 
+/**
+ * Root document shell with brand fonts, theme provider, and semantic tokens.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${display.variable} ${sans.variable} h-full`}>
-      <body className="min-h-full font-sans antialiased text-stone-900 bg-[#f3efe6]">
-        {children}
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={cn("h-full", display.variable, geist.variable)}
+    >
+      <body className="min-h-full font-sans antialiased">
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );
