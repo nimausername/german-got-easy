@@ -9,7 +9,7 @@ Flashcards use spaced repetition plus German-specific prompts: recognition (DE�
 - **Frontend:** Next.js + TypeScript + Tailwind + shadcn/ReUI
 - **Backend:** Fastify + Prisma + Zod
 - **Database:** PostgreSQL
-- **Auth:** Keycloak (Option 1 — in-app register/login forms via the API)
+- **Auth:** Keycloak you host yourself (in-app register/login forms via the API)
 
 ## Quick start
 
@@ -44,12 +44,11 @@ Production deploy uses Docker Compose. See [Deploy on Coolify](./docs/coolify.md
 3. Dashboard → Continue lesson / Study flashcards / Placement
 
 
-## Keycloak notes (Option 1)
+## Keycloak
 
-- Realm client `german-backend` is confidential.
-- Direct access grants + service account with `manage-users` / `view-users` / `query-users`.
-- Backend calls Keycloak Admin API with User-Agent `GermanGotEasyBackend/1.0` (Cloudflare may block empty/default agents).
-- Never put the client secret in the frontend.
+This app does not start or bundle Keycloak. You host a realm and point the API at it.
+
+See [Keycloak](./docs/keycloak.md) for the required `german-backend` client (confidential, direct access grants, service account with `manage-users` / `view-users` / `query-users`). Never put the client secret in the frontend.
 
 ## Contributing
 
@@ -58,6 +57,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md).
 ## Docs
 
 - [Docs index](./docs/README.md)
+- [Keycloak](./docs/keycloak.md) — external IdP setup (this app does not run Keycloak)
 - [Future plans](./docs/future-plans.md) — categorized backlog of features to add next
 - [Vocabulary book](./docs/vocabulary-book.md) — what Vocabulary Book v1 shipped
 - [Image attribution](./docs/image-attribution.md) — free Commons images for concrete nouns

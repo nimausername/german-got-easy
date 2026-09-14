@@ -4,7 +4,7 @@ Thanks for helping improve this open-source German learning platform.
 
 ## Development setup
 
-1. Copy `.env.example` to `.env` and fill in PostgreSQL + Keycloak values.
+1. Copy `.env.example` to `.env` and fill in PostgreSQL plus your **external** Keycloak values. This app does not run Keycloak.
 2. Copy `frontend/.env.example` to `frontend/.env.local` if you only need public frontend vars.
 3. Install and migrate:
 

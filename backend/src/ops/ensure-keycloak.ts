@@ -1,5 +1,6 @@
 /**
- * Idempotent Keycloak realm/client bootstrap for first Coolify deploy.
+ * Optional helper: create realm `german` and client `german-backend` on an
+ * already running Keycloak. This never starts Keycloak.
  * Skips unless KEYCLOAK_BOOTSTRAP=true.
  */
 const KC_UA = "GermanGotEasyBackend/1.0";
