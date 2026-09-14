@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+import { getApiUrl } from "@/lib/public-env";
 
 export type ApiError = {
   error: {
@@ -30,7 +30,7 @@ const isAuthPath = (path: string) => path.startsWith("/v1/auth/");
 const tryRefreshSession = async (): Promise<boolean> => {
   if (!refreshInFlight) {
     refreshInFlight = (async () => {
-      const response = await fetch(`${API_URL}/v1/auth/refresh`, {
+      const response = await fetch(`${getApiUrl()}/v1/auth/refresh`, {
         method: "POST",
         credentials: "include",
       });
@@ -55,7 +55,7 @@ export const apiFetch = async <T>(
   }
 
   const doFetch = () =>
-    fetch(`${API_URL}${path}`, {
+    fetch(`${getApiUrl()}${path}`, {
       ...init,
       credentials: "include",
       headers,

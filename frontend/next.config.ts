@@ -1,6 +1,12 @@
 import type { NextConfig } from "next";
+import path from "node:path";
 
+/**
+ * Next.js production config. `standalone` output is required by the Coolify Dockerfile.
+ */
 const nextConfig: NextConfig = {
+  output: "standalone",
+  outputFileTracingRoot: path.join(process.cwd()),
   images: {
     remotePatterns: [
       {

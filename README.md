@@ -33,6 +33,10 @@ pnpm --dir frontend dev
 - API: `http://localhost:4000`
 - Web: `http://localhost:3000`
 
+### Coolify
+
+Production deploy uses Docker Compose. See [Deploy on Coolify](./docs/coolify.md).
+
 ### Working local loop
 
 1. Open `http://localhost:3000`

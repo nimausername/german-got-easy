@@ -1,0 +1,133 @@
+services:
+  postgres:
+    build:
+      context: ./deploy/postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${SERVICE_USER_POSTGRES}
+      POSTGRES_PASSWORD: ${SERVICE_PASSWORD_64_POSTGRES}
+      POSTGRES_DB: german
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d german"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.3
+    restart: unless-stopped
+    command: ["start"]
+    environment:
+      SERVICE_URL_KEYCLOAK_8080: /
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${SERVICE_USER_KEYCLOAK}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${SERVICE_PASSWORD_64_KEYCLOAK}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: ${SERVICE_USER_POSTGRES}
+      KC_DB_PASSWORD: ${SERVICE_PASSWORD_64_POSTGRES}
+      KC_HOSTNAME: ${SERVICE_FQDN_KEYCLOAK_8080}
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
+      KC_HEALTH_ENABLED: "true"
+      KC_HTTP_MANAGEMENT_HEALTH_ENABLED: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "bash -c 'exec 3<>/dev/tcp/127.0.0.1/9000; echo -e \"GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n\" >&3; cat <&3 | grep -q UP'",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 120s
+    expose:
+      - "8080"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    stop_grace_period: 30s
+    environment:
+      SERVICE_URL_BACKEND_4000: /
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: "4000"
+      PRODUCT_NAME: ${PRODUCT_NAME:-German Got Easy}
+      DATABASE_URL: postgres://${SERVICE_USER_POSTGRES}:${SERVICE_PASSWORD_64_POSTGRES}@postgres:5432/german
+      KEYCLOAK_URL: ${SERVICE_URL_KEYCLOAK_8080}
+      KEYCLOAK_INTERNAL_URL: http://keycloak:8080
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM:-german}
+      KEYCLOAK_BACKEND_CLIENT_ID: ${KEYCLOAK_BACKEND_CLIENT_ID:-german-backend}
+      KEYCLOAK_BACKEND_CLIENT_SECRET: ${SERVICE_PASSWORD_64_KC_CLIENT}
+      KEYCLOAK_BOOTSTRAP: "true"
+      KEYCLOAK_ADMIN_USERNAME: ${SERVICE_USER_KEYCLOAK}
+      KEYCLOAK_ADMIN_PASSWORD: ${SERVICE_PASSWORD_64_KEYCLOAK}
+      CORS_ORIGIN: ${SERVICE_URL_FRONTEND_3000}
+      COOKIE_SECURE: "true"
+      COOKIE_SAME_SITE: ${COOKIE_SAME_SITE:-lax}
+      RUN_SEED: ${RUN_SEED:-true}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4000/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 8
+      start_period: 120s
+    expose:
+      - "4000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_PRODUCT_NAME: ${PRODUCT_NAME:-German Got Easy}
+    restart: unless-stopped
+    environment:
+      SERVICE_URL_FRONTEND_3000: /
+      NODE_ENV: production
+      HOSTNAME: 0.0.0.0
+      PORT: "3000"
+      API_URL: ${SERVICE_URL_BACKEND_4000}
+      NEXT_PUBLIC_API_URL: ${SERVICE_URL_BACKEND_4000}
+      NEXT_PUBLIC_PRODUCT_NAME: ${PRODUCT_NAME:-German Got Easy}
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    expose:
+      - "3000"
+
+volumes:
+  postgres-data:

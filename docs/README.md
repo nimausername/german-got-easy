@@ -5,6 +5,7 @@ Internal product and engineering documentation for **German Got Easy**.
 | Doc | Purpose |
 | --- | --- |
 | [Future plans](./future-plans.md) | Categorized backlog of features to add later, with scope and acceptance notes |
+| [Deploy on Coolify](./coolify.md) | Docker Compose stack, domains, generated secrets, and first-boot notes |
 | [Vocabulary book](./vocabulary-book.md) | What shipped in Vocabulary Book v1 and how it connects to flashcards |
 | [Image attribution](./image-attribution.md) | Free Wikimedia Commons images for concrete nouns — licenses and how to add more |
 

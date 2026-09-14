@@ -8,6 +8,10 @@ config();
 const envSchema = z.object({
   DATABASE_URL: z.string().min(1),
   KEYCLOAK_URL: z.string().url(),
+  KEYCLOAK_INTERNAL_URL: z.preprocess(
+    (value) => (typeof value === "string" && value.trim() === "" ? undefined : value),
+    z.string().url().optional(),
+  ),
   KEYCLOAK_REALM: z.string().min(1),
   KEYCLOAK_BACKEND_CLIENT_ID: z.string().min(1),
   KEYCLOAK_BACKEND_CLIENT_SECRET: z.string().min(1),
@@ -30,4 +34,16 @@ if (parsed.COOKIE_SAME_SITE === "none" && !parsed.COOKIE_SECURE) {
 
 export const env = parsed;
 
-export const keycloakIssuer = `${env.KEYCLOAK_URL.replace(/\/$/, "")}/realms/${env.KEYCLOAK_REALM}`;
+const trimSlash = (url: string) => url.replace(/\/$/, "");
+
+/** Public Keycloak origin used as the JWT `iss` value (browser / proxy hostname). */
+export const keycloakPublicBaseUrl = trimSlash(env.KEYCLOAK_URL);
+
+/**
+ * Server-to-server Keycloak origin.
+ * Prefer an in-network URL in Coolify so token and admin calls skip public hairpin NAT.
+ */
+export const keycloakApiBaseUrl = trimSlash(env.KEYCLOAK_INTERNAL_URL ?? env.KEYCLOAK_URL);
+
+/** JWT issuer that access tokens must carry. */
+export const keycloakIssuer = `${keycloakPublicBaseUrl}/realms/${env.KEYCLOAK_REALM}`;

@@ -41,6 +41,7 @@ Thumbs.db
 
 # Vercel / deploy
 .vercel
+docker-compose.override.yml
 
 # Prisma / tooling backups
 *.bak

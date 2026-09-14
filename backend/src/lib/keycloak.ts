@@ -1,11 +1,10 @@
 import { createRemoteJWKSet, jwtVerify, type JWTPayload } from "jose";
-import { env, keycloakIssuer } from "./env.js";
+import { env, keycloakApiBaseUrl, keycloakIssuer } from "./env.js";
 
 const KC_UA = "GermanGotEasyBackend/1.0";
-const baseUrl = env.KEYCLOAK_URL.replace(/\/$/, "");
-const realmBase = `${baseUrl}/realms/${env.KEYCLOAK_REALM}`;
+const realmBase = `${keycloakApiBaseUrl}/realms/${env.KEYCLOAK_REALM}`;
 const tokenUrl = `${realmBase}/protocol/openid-connect/token`;
-const adminUsersUrl = `${baseUrl}/admin/realms/${env.KEYCLOAK_REALM}/users`;
+const adminUsersUrl = `${keycloakApiBaseUrl}/admin/realms/${env.KEYCLOAK_REALM}/users`;
 
 const jwks = createRemoteJWKSet(new URL(`${realmBase}/protocol/openid-connect/certs`));
 
