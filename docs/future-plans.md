@@ -225,9 +225,10 @@ Features that deepen the vocabulary book without replacing flashcards.
 
 | Field | Detail |
 | --- | --- |
-| Status | `planned` |
+| Status | `next` (legal pages + footer links shipped; deeper in-product attribution still open) |
 | Goal | In-app footer/docs link for CC BY word/lesson content and third-party audio/image credits. |
 | Done when | Vocabulary and lesson surfaces link to `LICENSE-CONTENT` and media attributions where required. |
+| Notes | Hosted `/privacy`, `/terms`, `/impressum` and footer legal links exist. See [legal.md](./legal.md). Remaining: richer in-lesson / vocab attribution UI for Commons images and audio. |
 
 ---
 
@@ -240,6 +241,12 @@ Record completed roadmap items here so the backlog stays honest.
 | 2026-09-14 | Vocabulary Book v1 | Searchable curated book, detail page, progress badges, nav/dashboard links, flashcard ↔ vocab links. See [vocabulary-book.md](./vocabulary-book.md). |
 | 2026-09-14 | Vocabulary images pilot | Wikimedia Commons CC0/PD/CC BY(+SA) images for 18 concrete A1 nouns; detail attribution. See [image-attribution.md](./image-attribution.md). |
 | 2026-09-14 | Plural usage examples | Nullable `examplePluralDe`/`examplePluralEn`; selective A1 seed; detail “Plural in context” block. See [vocabulary-book.md](./vocabulary-book.md). |
+| 2026-09-14 | Daily word drip | `Word.releasedAt` gate; `WORD_DAILY_RELEASE_LIMIT` (default 20/UTC day); API catch-up + `word:release`. See [vocabulary-book.md](./vocabulary-book.md). |
+| 2026-09-14 | A1 Learn path + teach blocks | 16 A1 units; `Lesson.teachBlocks` teach phase before practice. See [curriculum.md](./curriculum.md), [lesson-authoring.md](./lesson-authoring.md). |
+| 2026-09-14 | Lesson audio (Edge TTS → R2) | Pre-generated `de-DE-KatjaNeural` MP3s via `audio:generate` / `audio:upload-r2`; `AUDIO_PUBLIC_BASE_URL`; browser Speech Synthesis fallback. See [lesson-authoring.md](./lesson-authoring.md). |
+| 2026-09-14 | Auth cookies + Keycloak registration | httpOnly `gge_access` / `gge_refresh`; register collects first/last name; realm required-actions notes. See [auth-cookies.md](./auth-cookies.md), [keycloak.md](./keycloak.md). |
+| 2026-09-14 | Placement check | Authenticated `/placement` quiz → suggested CEFR level. See [placement.md](./placement.md). |
+| 2026-09-14 | Hosted legal pages | `/privacy`, `/terms`, `/impressum` with cookie inventory table. See [legal.md](./legal.md). |
 
 ---
 

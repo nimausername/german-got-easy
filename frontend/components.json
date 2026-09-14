@@ -27,6 +27,7 @@
       "headers": {
         "Authorization": "Bearer ${REUI_LICENSE_KEY}"
       }
-    }
+    },
+    "@react-bits": "https://reactbits.dev/r/{name}.json"
   }
 }

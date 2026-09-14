@@ -90,7 +90,7 @@ export const LegalSection = ({ id, title, children }: LegalSectionProps) => (
     <h2 id={`${id}-heading`} className="text-lg font-semibold tracking-tight sm:text-xl">
       {title}
     </h2>
-    <div className="mt-3 space-y-3 text-muted-foreground [&_a]:text-foreground [&_a]:underline [&_a]:underline-offset-4 [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5">
+    <div className="mt-3 space-y-3 text-muted-foreground [&_a]:text-foreground [&_a]:underline [&_a]:underline-offset-4 [&_code]:rounded [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-xs [&_code]:text-foreground [&_strong]:font-medium [&_strong]:text-foreground [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5">
       {children}
     </div>
   </section>

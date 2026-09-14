@@ -79,4 +79,4 @@ Set `KEYCLOAK_BOOTSTRAP=true` plus Keycloak master-realm admin credentials (`KEY
 2. Enable **Connect To Predefined Network** on both resources if the API must reach Keycloak by container name.
 3. Set `KEYCLOAK_URL` to the public Keycloak URL and `KEYCLOAK_INTERNAL_URL` to `http://<keycloak-container>:8080`.
 
-Production compose and domain notes are in [Self-host (Coolify / Docker Compose)](./coolify.md).
+Production compose and domain notes are in [Self-host (Coolify / Docker Compose)](./coolify.md). Session cookies are documented in [Auth cookies and sessions](./auth-cookies.md).

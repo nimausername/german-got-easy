@@ -4,7 +4,7 @@ import { LegalSection, LegalShell } from "@/components/legal-shell";
 import { LEGAL } from "@/lib/legal";
 
 export const metadata: Metadata = {
-  title: `Impressum · ${LEGAL.productName}`,
+  title: "Impressum",
   description: `Legal disclosure (Impressum) for ${LEGAL.productName}.`,
 };
 
@@ -61,8 +61,9 @@ export default function ImpressumPage() {
       <LegalSection id="hosting" title="Hosting">
         <p>
           The application is hosted on a private server in Germany provided by{" "}
-          {LEGAL.hostingProvider}, managed with Coolify. Database and identity (Keycloak) run in the
-          same environment.
+          {LEGAL.hostingProvider}, managed with Coolify. Database and identity (Keycloak on{" "}
+          {LEGAL.identityHost}) are operated under the same operator control. Lesson audio may be
+          served from {LEGAL.audioCdnHost} (Cloudflare R2 / CDN).
         </p>
       </LegalSection>
 
@@ -101,8 +102,14 @@ export default function ImpressumPage() {
       <LegalSection id="copyright" title="Copyright">
         <p>
           Content created by the operator on these pages is subject to German copyright law unless
-          otherwise stated (including open-source licensing for the project code). Reproduction or
-          distribution outside statutory exceptions requires permission from the rights holder.
+          otherwise stated. Application code is offered under the project&apos;s open-source license;
+          curated lesson and wordbank content is typically under CC BY 4.0 as stated in the
+          repository. Third-party media (images, fonts, or audio tooling) remain subject to their
+          respective licenses and attribution notices.
+        </p>
+        <p>
+          Reproduction or distribution of protected material outside statutory exceptions requires
+          permission from the rights holder.
         </p>
       </LegalSection>
 

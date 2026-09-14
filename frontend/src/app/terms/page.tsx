@@ -4,7 +4,7 @@ import { LegalSection, LegalShell } from "@/components/legal-shell";
 import { LEGAL } from "@/lib/legal";
 
 export const metadata: Metadata = {
-  title: `Terms of Use · ${LEGAL.productName}`,
+  title: "Terms of Use",
   description: `Terms for using the hosted ${LEGAL.productName} learning service.`,
 };
 
@@ -34,13 +34,28 @@ export default function TermsPage() {
 
       <LegalSection id="service" title="2. The service">
         <p>
-          {LEGAL.productName} is a free learning platform for German (lessons, vocabulary,
-          flashcards, and related progress features). It is provided from the operator&apos;s own
-          resources. Features may change, pause, or stop at any time.
+          {LEGAL.productName} is a free learning platform for German. On the hosted service you may
+          use, among other things:
+        </p>
+        <ul>
+          <li>a CEFR Learn path with teach blocks and practice exercises (currently A1-focused);</li>
+          <li>lesson audio (pre-generated speech files and/or browser speech synthesis fallback);</li>
+          <li>a curated vocabulary book with gradual daily unlocks of new words;</li>
+          <li>topic and due flashcards with spaced repetition;</li>
+          <li>a short placement check to suggest a starting level;</li>
+          <li>dashboard and progress views tied to your account.</li>
+        </ul>
+        <p>
+          The service is provided from the operator&apos;s own resources. Features may change, pause,
+          or stop at any time.
         </p>
         <p>
-          The project may also be published as open-source software. Running your own copy is
-          separate from this hosted service and is not covered by these Terms.
+          The project is also published as open-source software (
+          <a href={LEGAL.githubUrl} rel="noopener noreferrer" target="_blank">
+            GitHub
+          </a>
+          ). Running your own copy is separate from this hosted service and is not covered by these
+          Terms.
         </p>
       </LegalSection>
 
@@ -86,8 +101,14 @@ export default function TermsPage() {
       <LegalSection id="content" title="6. Learning content and progress">
         <p>
           Lesson and vocabulary content is provided for personal learning. It is not a substitute for
-          official exams, accredited courses, or professional advice. Progress and scores are
-          informational.
+          official exams, accredited courses, or professional advice. Progress, placement
+          suggestions, and scores are informational.
+        </p>
+        <p>
+          Lesson and wordbank materials under the project&apos;s content directories are typically
+          offered under Creative Commons Attribution (see the repository&apos;s content license).
+          Some media (for example Wikimedia Commons images or CDN-hosted audio) remain subject to
+          their own licenses and attribution requirements shown in the product or docs.
         </p>
         <p>
           You retain rights to content you submit (if any). You grant the operator a limited license

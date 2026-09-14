@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BrandLink } from "@/components/brand-link";
 import { GuestGate } from "@/components/guest-gate";
+import { HomeGrainientBackground } from "@/components/home-grainient-background";
 import { LegalFooterLinks } from "@/components/legal-footer-links";
 import { ThemeToggleCorner } from "@/components/theme-toggle-corner";
 import { buttonVariants } from "@/components/ui/button";
@@ -12,14 +13,15 @@ const productName = process.env.NEXT_PUBLIC_PRODUCT_NAME ?? "German Got Easy";
 export default function HomePage() {
   return (
     <GuestGate>
-      <main className="relative flex min-h-dvh items-center overflow-hidden px-4 py-16 sm:px-6 sm:py-20">
+      <main className="relative isolate flex min-h-dvh items-center overflow-hidden bg-transparent px-4 py-16 sm:px-6 sm:py-20">
+        <HomeGrainientBackground />
         <ThemeToggleCorner />
-        <div className="relative mx-auto flex w-full max-w-5xl flex-col">
+        <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col">
           <BrandLink className="max-w-full text-4xl leading-none break-words sm:text-6xl md:text-7xl" />
-          <h1 className="mt-5 max-w-2xl text-xl leading-snug text-muted-foreground sm:mt-6 sm:text-2xl md:text-3xl">
+          <h1 className="mt-5 max-w-2xl text-xl leading-snug text-brand-ink/90 sm:mt-6 sm:text-2xl md:text-3xl">
             Learn German with a clear path, daily flashcards, and progress that stays with you.
           </h1>
-          <p className="mt-3 max-w-xl text-sm text-muted-foreground sm:mt-4 sm:text-base">
+          <p className="mt-3 max-w-xl text-sm text-brand-ink/80 sm:mt-4 sm:text-base">
             CEFR lessons, 4000 everyday words with example sentences, and spaced review — built for
             real exam readiness.
           </p>
@@ -46,13 +48,13 @@ export default function HomePage() {
             </Link>
           </div>
           <section className="mt-6 max-w-md sm:mt-8" aria-label="Open source">
-            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
+            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-brand-ink/80">
               <span>Open-source project by {LEGAL.controllerName}.</span>
               <a
                 href={LEGAL.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-foreground underline-offset-4 hover:underline"
+                className="inline-flex items-center gap-1.5 text-brand-ink underline-offset-4 hover:underline"
                 aria-label={`${productName} on GitHub`}
               >
                 <svg
@@ -66,7 +68,7 @@ export default function HomePage() {
               </a>
             </p>
           </section>
-          <LegalFooterLinks className="mt-8 justify-start sm:mt-10" />
+          <LegalFooterLinks className="mt-8 items-start text-left text-brand-ink/75 sm:mt-10" />
         </div>
       </main>
     </GuestGate>

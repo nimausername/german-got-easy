@@ -27,11 +27,14 @@ Guides live in [`docs/`](./docs/README.md). Start there if you are self-hosting 
 | [Docs index](./docs/README.md) | Map of every guide in this repository |
 | [Self-host (Coolify / Docker Compose)](./docs/coolify.md) | Production deploy, env vars, domains, and first-boot |
 | [Keycloak](./docs/keycloak.md) | Realm and confidential client this app expects |
+| [Auth cookies and sessions](./docs/auth-cookies.md) | httpOnly session cookies and refresh flow |
+| [Hosted legal pages](./docs/legal.md) | Privacy, Terms, Impressum for the hosted site |
 | [Contributing](./CONTRIBUTING.md) | Local setup, PR guidelines, licenses |
 | [Future plans](./docs/future-plans.md) | Backlog of features to add next |
 | [Curriculum](./docs/curriculum.md) | Learn path pedagogy and A1 unit map |
 | [Lesson authoring](./docs/lesson-authoring.md) | How to add teach → practice lesson JSON |
 | [Vocabulary book](./docs/vocabulary-book.md) | What Vocabulary Book v1 shipped |
+| [Placement](./docs/placement.md) | Short placement check |
 | [Image attribution](./docs/image-attribution.md) | Free Commons images for concrete nouns |
 
 Word drip env (optional): `WORD_DAILY_RELEASE_LIMIT` (default 20), `WORD_RELEASE_CRON_ENABLED` (default true). Manual unlock: `pnpm --dir backend word:release`.

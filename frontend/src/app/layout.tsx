@@ -3,6 +3,7 @@ import { Fraunces, Geist } from "next/font/google";
 import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 import { ThemeProvider } from "@/components/theme-provider";
 import { QueryProvider } from "@/components/query-provider";
+import { BRANDING } from "@/lib/branding";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
@@ -17,8 +18,63 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "German Got Easy",
-  description: "Learn German with a clear path, flashcards, and real progress.",
+  metadataBase: new URL(BRANDING.siteUrl),
+  title: {
+    default: BRANDING.productName,
+    template: `%s · ${BRANDING.productName}`,
+  },
+  description: BRANDING.description,
+  applicationName: BRANDING.productName,
+  authors: [{ name: "Nima Khabbazi" }],
+  creator: "Nima Khabbazi",
+  keywords: [
+    "German",
+    "learn German",
+    "CEFR",
+    "flashcards",
+    "spaced repetition",
+    "A1",
+    "Deutsch",
+  ],
+  manifest: BRANDING.manifest,
+  icons: {
+    icon: [
+      { url: BRANDING.icon32, sizes: "32x32", type: "image/png" },
+      { url: BRANDING.icon192, sizes: "192x192", type: "image/png" },
+      { url: BRANDING.icon, sizes: "1000x1000", type: "image/png" },
+    ],
+    apple: [{ url: BRANDING.appleTouchIcon, sizes: "180x180", type: "image/png" }],
+    shortcut: BRANDING.icon32,
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: BRANDING.siteUrl,
+    siteName: BRANDING.productName,
+    title: BRANDING.productName,
+    description: BRANDING.description,
+    images: [
+      {
+        url: BRANDING.ogImage,
+        width: BRANDING.ogWidth,
+        height: BRANDING.ogHeight,
+        alt: `${BRANDING.productName} — learn German with a clear path`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: BRANDING.productName,
+    description: BRANDING.description,
+    images: [BRANDING.ogImage],
+  },
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export const viewport: Viewport = {

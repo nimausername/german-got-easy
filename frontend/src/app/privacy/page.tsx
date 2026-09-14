@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CookieInventoryTable } from "@/components/cookie-inventory-table";
 import { LegalSection, LegalShell } from "@/components/legal-shell";
 import { LEGAL } from "@/lib/legal";
 
 export const metadata: Metadata = {
-  title: `Privacy Policy · ${LEGAL.productName}`,
+  title: "Privacy Policy",
   description: `How ${LEGAL.productName} collects and uses personal data on the hosted service.`,
 };
 
@@ -45,7 +46,8 @@ export default function PrivacyPage() {
       <LegalSection id="scope" title="2. Scope">
         <p>
           This notice applies only to the hosted learning service at {LEGAL.siteUrl}. It covers
-          account registration, authentication, and learning features on that service.
+          account registration, authentication, and learning features on that service, including the
+          CEFR Learn path, vocabulary book, flashcards, placement check, and related progress tools.
         </p>
       </LegalSection>
 
@@ -53,25 +55,35 @@ export default function PrivacyPage() {
         <p>Depending on how you use the service, we may process:</p>
         <ul>
           <li>
-            <strong>Account data:</strong> email address, username (optional), display name, and
-            authentication identifiers linked to Keycloak.
+            <strong>Account data:</strong> email address, username (optional), display name, first
+            and last name collected at registration, and authentication identifiers linked to
+            Keycloak.
           </li>
           <li>
-            <strong>Credentials:</strong> passwords are handled by Keycloak on the same private
-            server. The learning app does not store plaintext passwords.
+            <strong>Credentials:</strong> passwords are handled by Keycloak on{" "}
+            <strong>{LEGAL.identityHost}</strong>. The learning app does not store plaintext
+            passwords.
           </li>
           <li>
-            <strong>Learning data:</strong> lesson, unit, and level progress; flashcard / spaced
-            repetition state; exam or placement attempts and related scores or answers needed to
-            operate the product.
+            <strong>Learning data:</strong> lesson, unit, and level progress; teach/practice
+            completions; flashcard / spaced-repetition state; vocabulary lookup and study progress;
+            placement or sample exam attempts and related scores or answers needed to operate the
+            product.
           </li>
           <li>
             <strong>Preferences:</strong> such as target CEFR level and native language defaults used
             by the product.
           </li>
           <li>
+            <strong>Device preference (local only):</strong> light/dark/system theme is stored in
+            your browser&apos;s <strong>localStorage</strong> (key <code>theme</code>). It is not a
+            cookie and is not sent to our servers as part of authentication.
+          </li>
+          <li>
             <strong>Technical data:</strong> necessary session cookies and ordinary server logs that
             may include IP address, timestamps, and request metadata for security and reliability.
+            When you play lesson audio from the CDN, standard web-server or CDN access logs may
+            record the request (for example IP, user agent, and URL) on that infrastructure.
           </li>
         </ul>
         <p>We do not intentionally collect special categories of data (for example health data).</p>
@@ -81,7 +93,12 @@ export default function PrivacyPage() {
         <p>We process personal data only to:</p>
         <ul>
           <li>create and secure your account;</li>
-          <li>provide the learning product (progress, flashcards, lessons, related features);</li>
+          <li>
+            provide the learning product — CEFR lessons (teach → practice), vocabulary book with
+            daily unlocks, flashcards / spaced repetition, placement suggestions, and dashboard
+            progress;
+          </li>
+          <li>serve lesson audio and curated vocabulary media required by those features;</li>
           <li>maintain, troubleshoot, and protect the service;</li>
           <li>
             improve product functions over time (including future habit- or study-pattern features
@@ -114,40 +131,58 @@ export default function PrivacyPage() {
       </LegalSection>
 
       <LegalSection id="cookies" title="6. Cookies">
-        <p>The hosted service currently sets only authentication cookies:</p>
-        <ul>
-          <li>
-            <strong>gge_access</strong> — httpOnly session cookie for API access;
-          </li>
-          <li>
-            <strong>gge_refresh</strong> — httpOnly refresh cookie limited to authentication routes.
-          </li>
-        </ul>
         <p>
-          These cookies are strictly necessary to keep you signed in. There is no advertising or
-          analytics cookie layer in the application today. If that changes, this notice will be
-          updated.
+          The hosted learning site currently sets only the authentication cookies below. They are
+          strictly necessary to keep you signed in. Because they are necessary for the service to
+          work, we do not show a cookie-consent popup. There is no advertising or analytics cookie
+          layer in the application today. If that changes, this notice will be updated and optional
+          cookies will only run after consent.
+        </p>
+        <div className="not-prose rounded-lg border border-border/70 bg-background text-foreground">
+          <CookieInventoryTable />
+        </div>
+        <p>
+          All listed cookies are set by the learning API on this site. There are no advertising or
+          analytics cookies.
+        </p>
+        <p>
+          Cookies are set by the API and forwarded through the same-origin <code>/v1</code> proxy.
+          Access tokens are never exposed to JavaScript. Theme preference uses{" "}
+          <strong>localStorage</strong>, not cookies.
+        </p>
+        <p>
+          Identity software (Keycloak) runs on a separate host (
+          <strong>{LEGAL.identityHost}</strong>). In-app register and login talk to Keycloak from the
+          server; learners do not receive Keycloak login cookies on {LEGAL.siteHost}.
         </p>
       </LegalSection>
 
       <LegalSection id="processors" title="7. Hosting and processors">
         <p>
-          Infrastructure runs in <strong>Germany</strong> on a private server at{" "}
-          {LEGAL.hostingProvider}, orchestrated with {LEGAL.orchestration}. PostgreSQL and Keycloak
-          run in that same environment under the operator&apos;s control.
+          Infrastructure for the learning app and database runs in <strong>Germany</strong> on a
+          private server at {LEGAL.hostingProvider}, orchestrated with {LEGAL.orchestration}.
+          PostgreSQL and Keycloak (identity) run under the operator&apos;s control in that
+          environment or as separately hosted components the operator configures.
         </p>
         <p>
-          Hetzner provides server hosting. The operator configures and controls the application,
-          database, and identity software on that server. Data is not intentionally transferred to
-          advertising networks.
+          Pre-generated lesson audio (MP3) is published to an object-storage / CDN origin at{" "}
+          <strong>{LEGAL.audioCdnHost}</strong> (Cloudflare R2 with a custom domain). The browser may
+          request those files directly when you use Listen / Play audio in lessons. Image URLs for a
+          small set of concrete vocabulary nouns may point to Wikimedia Commons or similar public
+          media hosts; those hosts process ordinary download requests under their own terms.
+        </p>
+        <p>
+          Hetzner provides server hosting. Cloudflare provides the audio CDN. The operator configures
+          and controls the application, database, and identity software. Data is not intentionally
+          transferred to advertising networks.
         </p>
       </LegalSection>
 
       <LegalSection id="sharing" title="8. Sharing">
         <p>
           We do not sell your data. We share data only when needed to run the service (for example
-          with the hosting provider as infrastructure), when required by law, or when needed to
-          protect the service or users against abuse or security threats.
+          with the hosting or CDN provider as infrastructure), when required by law, or when needed
+          to protect the service or users against abuse or security threats.
         </p>
       </LegalSection>
 
@@ -174,12 +209,15 @@ export default function PrivacyPage() {
           <li>erase data (subject to legal limits);</li>
           <li>restrict or object to certain processing;</li>
           <li>data portability for data you provided;</li>
-          <li>lodge a complaint with a supervisory authority (in Germany, typically a Landesdatenschutzbehörde).</li>
+          <li>
+            lodge a complaint with a supervisory authority (in Germany, typically a
+            Landesdatenschutzbehörde).
+          </li>
         </ul>
         <p>
           Contact <a href={`mailto:${LEGAL.contactEmail}`}>{LEGAL.contactEmail}</a> to exercise these
-          rights. See also the{" "}
-          <Link href="/impressum">Impressum</Link> and <Link href="/terms">Terms of Use</Link>.
+          rights. See also the <Link href="/impressum">Impressum</Link> and{" "}
+          <Link href="/terms">Terms of Use</Link>.
         </p>
       </LegalSection>
 

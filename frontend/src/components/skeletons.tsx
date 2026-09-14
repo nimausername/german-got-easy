@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { FLASHCARD_FACE_HEIGHT } from "@/components/flashcard-flip";
+import { PageFrame } from "@/components/page-frame";
 import {
   Card,
   CardContent,
@@ -148,54 +149,75 @@ export const DashboardPageSkeleton = () => (
 );
 
 /**
- * Learn hub: path header, continue card, unit grid.
+ * Learn hub: mirrors live PageFrame header + continue card + unit grid.
  */
 export const LearnHubPageSkeleton = () => (
-  <div className="flex h-full min-h-0 flex-1 flex-col" aria-busy="true" aria-label="Loading learn path">
-    <div className="shrink-0 space-y-2.5 sm:space-y-4">
-      <BackLinkSkeleton className="hidden sm:flex" />
-      <div className="flex flex-wrap items-center gap-2">
-        <Skeleton className="h-7 w-36 sm:h-9 sm:w-56" />
-        <Skeleton className="h-5 w-10 rounded-full" />
+  <PageFrame
+    aria-busy="true"
+    aria-label="Loading learn path"
+    header={
+      <div className="space-y-2.5 sm:space-y-4">
+        <BackLinkSkeleton className="hidden sm:block" />
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+          <Skeleton className="h-7 w-36 sm:h-9 sm:w-56" />
+          <Skeleton className="h-5 w-8 rounded-full" />
+          <Skeleton className="hidden h-5 w-24 rounded-full sm:block" />
+        </div>
+        <Skeleton className="hidden h-4 w-full max-w-xl sm:block sm:h-5" />
+        <ProgressBarSkeleton />
       </div>
-      <ProgressBarSkeleton />
-    </div>
-    <div className="mt-2.5 min-h-0 flex-1 space-y-4 sm:mt-5 sm:space-y-5">
-      <CardSkeleton
-        descriptionWidth="w-20"
-        titleWidth="w-48"
-        body={<Skeleton className="h-3.5 w-56 max-w-full" />}
-        footer={<Skeleton className="h-11 w-full rounded-md sm:w-40" />}
-      />
+    }
+    contentClassName="pb-2"
+  >
+    <div className="space-y-4 sm:space-y-5">
+      <Card size="sm" aria-hidden>
+        <CardHeader className="gap-0.5">
+          <Skeleton className="h-3.5 w-16" />
+          <Skeleton className="h-4 w-40 max-w-full sm:w-48" />
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-3.5 w-44 max-w-full sm:w-56" />
+        </CardContent>
+        <CardFooter>
+          <Skeleton className="h-11 w-full rounded-md sm:w-40" />
+        </CardFooter>
+      </Card>
+
       <section>
         <Skeleton className="h-5 w-28 sm:h-7 sm:w-40" />
-        <Skeleton className="mt-1 h-3.5 w-52 max-w-full sm:h-4 sm:w-64" />
+        <Skeleton className="mt-0.5 h-3.5 w-52 max-w-full sm:mt-1 sm:h-4 sm:w-64" />
         <div className="mt-3 grid gap-2.5 sm:mt-4 sm:gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 3 }, (_, index) => (
-            <CardSkeleton
+          {Array.from({ length: 6 }, (_, index) => (
+            <Card
               key={index}
-              descriptionWidth="w-20"
-              titleWidth="w-36"
-              body={
-                <>
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-48 max-w-full" />
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between">
-                      <Skeleton className="h-3 w-24" />
-                      <Skeleton className="h-3 w-8" />
-                    </div>
-                    <Skeleton className="h-1.5 w-full rounded-full" />
+              size="sm"
+              className={cn("h-full", index >= 3 && "hidden sm:flex")}
+              aria-hidden
+            >
+              <CardHeader className="gap-0.5">
+                <Skeleton className="h-3.5 w-24" />
+                <Skeleton className="h-4 w-32 max-w-full" />
+              </CardHeader>
+              <CardContent className="flex flex-1 flex-col gap-2.5 sm:gap-3">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-48 max-w-full" />
+                <div className="space-y-1.5">
+                  <div className="flex justify-between gap-3">
+                    <Skeleton className="h-3 w-24" />
+                    <Skeleton className="h-3 w-8" />
                   </div>
-                </>
-              }
-              footer={<Skeleton className="h-11 w-full rounded-md" />}
-            />
+                  <Skeleton className="h-1.5 w-full rounded-full" />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Skeleton className="h-11 w-full rounded-md" />
+              </CardFooter>
+            </Card>
           ))}
         </div>
       </section>
     </div>
-  </div>
+  </PageFrame>
 );
 
 /**

@@ -1,0 +1,29 @@
+{
+  "name": "German Got Easy",
+  "short_name": "German Got Easy",
+  "description": "Learn German with a clear path, daily flashcards, and progress that stays with you.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ebf6f9",
+  "theme_color": "#0e4c4d",
+  "icons": [
+    {
+      "src": "/branding/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/branding/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/branding/icon.png",
+      "sizes": "1000x1000",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
