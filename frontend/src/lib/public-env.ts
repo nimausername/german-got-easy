@@ -1,16 +1,16 @@
 /**
- * Browser-visible API origin. Coolify writes this at container start via /env.js.
+ * Browser API origin. The web app always calls same-origin `/v1`, which Next.js
+ * proxies to Fastify. Server-side callers use the upstream URL directly.
  */
 export const getApiUrl = (): string => {
   if (typeof window !== "undefined") {
-    const runtimeUrl = window.__GGE_API_URL__?.trim();
-    if (runtimeUrl) {
-      return runtimeUrl.replace(/\/$/, "");
-    }
+    return "";
   }
 
-  return (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000").replace(
-    /\/$/,
-    "",
-  );
+  return (
+    process.env.API_INTERNAL_URL ||
+    process.env.API_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    "http://localhost:4000"
+  ).replace(/\/$/, "");
 };

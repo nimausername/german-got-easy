@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import Script from "next/script";
 import { Fraunces, Geist } from "next/font/google";
 import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -46,7 +45,6 @@ export default function RootLayout({
       className={cn("h-full", display.variable, geist.variable)}
     >
       <body className="min-h-full overflow-x-hidden font-sans antialiased">
-        <Script id="gge-api-url" src="/env.js" strategy="beforeInteractive" />
         <ThemeProvider>
           {children}
           <MobileBottomNav />

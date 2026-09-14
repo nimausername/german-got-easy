@@ -9,7 +9,7 @@ German Got Easy ships as a Docker Compose stack: the Fastify API and the Next.js
 | Service | Internal port | Public | Notes |
 | --- | --- | --- | --- |
 | `backend` | 4000 | Yes | Runs `prisma migrate deploy`, content seed, then the API. First seed can take several minutes. |
-| `frontend` | 3000 | Yes | Reads `API_URL` at container start and writes `/env.js` for the browser. |
+| `frontend` | 3000 | Yes | Serves the web app and proxies browser `/v1` calls to the API over the Compose network. |
 
 Do not publish host `ports:`. Coolify Proxy routes using each service's domain.
 
@@ -27,12 +27,12 @@ Do not publish host `ports:`. Coolify Proxy routes using each service's domain.
    | `DATABASE_URL` | `postgres://USER:PASSWORD@HOST:PORT/DATABASE` |
    | `KEYCLOAK_URL` | `https://auth.example.com` |
    | `KEYCLOAK_BACKEND_CLIENT_SECRET` | confidential client secret |
-   | `CORS_ORIGIN` | `https://app.example.com` (no trailing slash) |
-   | `API_URL` | `https://api.example.com` (public API origin the browser calls) |
+   | `CORS_ORIGIN` | `https://app.example.com` (no trailing slash; use `https` once TLS is on) |
+   | `API_URL` | `https://api.example.com` (public API origin; the browser does not call this directly) |
 
 7. Optional:
    - `KEYCLOAK_INTERNAL_URL` if the API cannot reach Keycloak via the public hostname
-   - `COOKIE_SECURE=false` if the site is still plain HTTP
+   - `COOKIE_SECURE=true` when the frontend is HTTPS (`false` only on plain HTTP)
 8. Under each public service, set the domain **including the internal port**:
    - Frontend: `https://app.example.com:3000`
    - API: `https://api.example.com:4000`
@@ -40,7 +40,7 @@ Do not publish host `ports:`. Coolify Proxy routes using each service's domain.
 10. If Postgres or Keycloak are other Coolify resources on the same server, enable **Connect To Predefined Network** on **this application** (Configuration → Advanced) so `DATABASE_URL` / `KEYCLOAK_INTERNAL_URL` can resolve Coolify’s internal hostnames. Compose apps do not join that network by default.
 11. Deploy. Watch **backend logs** for migrate + seed; `/health` stays down until seed finishes.
 
-Use subdomains of the same registrable domain (for example `app.example.com` and `api.example.com`) so `COOKIE_SAME_SITE=lax` works with credentialed API calls.
+The browser talks only to the **frontend** domain. Auth cookies are set on that host. The public API domain is optional for `/health` and future clients; login does not depend on it.
 
 ## Environment variables
 
@@ -49,8 +49,8 @@ Use subdomains of the same registrable domain (for example `app.example.com` and
 | `DATABASE_URL` | required | Postgres connection string. |
 | `KEYCLOAK_URL` | required | Public Keycloak origin (JWT issuer). |
 | `KEYCLOAK_BACKEND_CLIENT_SECRET` | required | Confidential client secret. |
-| `CORS_ORIGIN` | required | Frontend origin, no trailing slash. |
-| `API_URL` | required | Public API origin used by the browser. |
+| `CORS_ORIGIN` | required | Frontend origin, no trailing slash. `http` and `https` (and `www`) variants are also allowed. |
+| `API_URL` | required | Public API origin. Compose still requires it; the web app proxies `/v1` to `http://backend:4000` instead. |
 | `KEYCLOAK_INTERNAL_URL` | empty | In-network Keycloak origin for token/admin calls. |
 | `KEYCLOAK_REALM` | `german` | Keycloak realm name. |
 | `KEYCLOAK_BACKEND_CLIENT_ID` | `german-backend` | Confidential client ID. |
@@ -101,7 +101,9 @@ Do not add `ports:` in the committed Compose files; Coolify would bypass its pro
 | Domain shows **No Available Server** | Service is not healthy, or the domain is missing the internal port (`:3000`, `:4000`). |
 | `Unexpected token authorized party` / issuer errors | `KEYCLOAK_URL` does not match the JWT `iss`. Use the public Keycloak URL and set `KEYCLOAK_INTERNAL_URL` for in-network calls. |
 | Browser login works locally but cookies vanish on HTTPS | `COOKIE_SECURE` must be `true` behind TLS. Use `false` only on plain HTTP. |
-| CORS / credentialed fetch fails | `CORS_ORIGIN` must be the frontend origin with no trailing slash. `API_URL` must be the public API origin. |
+| Browser login shows **Failed to fetch** and API logs have no `POST /v1/auth/login` | Redeploy this revision. The web app must proxy `/v1` to `http://backend:4000`. Confirm login in DevTools goes to `https://app.example.com/v1/auth/login`, not the API hostname. |
+| Login shows **The API is unavailable** | Frontend cannot reach `http://backend:4000`. Keep frontend and backend in the same Compose app. Do not split them into two Coolify resources. |
+| CORS / credentialed fetch fails | `CORS_ORIGIN` must be the frontend origin with no trailing slash (`https://app.example.com`). |
 | API starts, auth 500s | Keycloak unreachable, wrong client secret, or missing direct-access / service-account roles. |
 | Cannot connect to Coolify Postgres by service name | Enable **Connect To Predefined Network** on this app and use the **internal** Postgres URL. |
 | `prisma engines` / `right permissions` | Image built without OpenSSL 3. Redeploy from a commit that installs OpenSSL in the backend Docker **deps** stage. |

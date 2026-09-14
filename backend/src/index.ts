@@ -4,6 +4,7 @@ import cookie from "@fastify/cookie";
 import helmet from "@fastify/helmet";
 import rateLimit from "@fastify/rate-limit";
 import { randomUUID } from "node:crypto";
+import { expandCorsOrigins } from "./lib/cors-origins.js";
 import { env } from "./lib/env.js";
 import { prisma } from "./lib/prisma.js";
 import { registerErrorHandler } from "./lib/errors.js";
@@ -28,9 +29,7 @@ const buildServer = async () => {
     contentSecurityPolicy: false,
   });
   await app.register(cors, {
-    origin: env.CORS_ORIGIN.split(",")
-      .map((v) => v.trim().replace(/\/$/, ""))
-      .filter(Boolean),
+    origin: expandCorsOrigins(env.CORS_ORIGIN),
     credentials: true,
   });
   await app.register(cookie);

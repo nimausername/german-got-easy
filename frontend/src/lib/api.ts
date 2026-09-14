@@ -30,11 +30,15 @@ const isAuthPath = (path: string) => path.startsWith("/v1/auth/");
 const tryRefreshSession = async (): Promise<boolean> => {
   if (!refreshInFlight) {
     refreshInFlight = (async () => {
-      const response = await fetch(`${getApiUrl()}/v1/auth/refresh`, {
-        method: "POST",
-        credentials: "include",
-      });
-      return response.ok;
+      try {
+        const response = await fetch(`${getApiUrl()}/v1/auth/refresh`, {
+          method: "POST",
+          credentials: "include",
+        });
+        return response.ok;
+      } catch {
+        return false;
+      }
     })().finally(() => {
       refreshInFlight = null;
     });
@@ -54,12 +58,21 @@ export const apiFetch = async <T>(
     headers.set("Content-Type", "application/json");
   }
 
-  const doFetch = () =>
-    fetch(`${getApiUrl()}${path}`, {
-      ...init,
-      credentials: "include",
-      headers,
-    });
+  const doFetch = async () => {
+    try {
+      return await fetch(`${getApiUrl()}${path}`, {
+        ...init,
+        credentials: "include",
+        headers,
+      });
+    } catch {
+      throw new ApiRequestError(
+        0,
+        "NETWORK",
+        "Could not reach the API. Check your connection and try again.",
+      );
+    }
+  };
 
   let response = await doFetch();
 
@@ -70,7 +83,12 @@ export const apiFetch = async <T>(
     }
   }
 
-  const body = (await response.json()) as T | ApiError;
+  let body: T | ApiError;
+  try {
+    body = (await response.json()) as T | ApiError;
+  } catch {
+    throw new ApiRequestError(response.status, "REQUEST_FAILED", "Request failed");
+  }
   if (!response.ok) {
     const errorBody = body as ApiError;
     const message =
