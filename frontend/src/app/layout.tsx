@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Geist } from "next/font/google";
+import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 import "./globals.css";
@@ -19,6 +20,16 @@ export const metadata: Metadata = {
   description: "Learn German with a clear path, flashcards, and real progress.",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#e8f0f4" },
+    { media: "(prefers-color-scheme: dark)", color: "#1a2228" },
+  ],
+};
+
 /**
  * Root document shell with brand fonts, theme provider, and semantic tokens.
  */
@@ -33,8 +44,11 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn("h-full", display.variable, geist.variable)}
     >
-      <body className="min-h-full font-sans antialiased">
-        <ThemeProvider>{children}</ThemeProvider>
+      <body className="min-h-full overflow-x-hidden font-sans antialiased">
+        <ThemeProvider>
+          {children}
+          <MobileBottomNav />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -120,12 +120,27 @@ const seed = async () => {
     cefrBand: "A1" | "A2" | "B1";
     exampleDe: string;
     exampleEn: string;
+    examplePluralDe?: string | null;
+    examplePluralEn?: string | null;
     usageNote: string | null;
     frequencyRank: number;
+    image?: {
+      url: string;
+      credit: string;
+      license: string;
+      sourceUrl: string;
+    } | null;
   }>;
 
   // Upsert word bank so topic/plural corrections apply without wiping learner progress.
   for (const word of words) {
+    const imageUrl = word.image?.url ?? null;
+    const imageCredit = word.image?.credit ?? null;
+    const imageLicense = word.image?.license ?? null;
+    const imageSourceUrl = word.image?.sourceUrl ?? null;
+    const examplePluralDe = word.examplePluralDe ?? null;
+    const examplePluralEn = word.examplePluralEn ?? null;
+
     await prisma.word.upsert({
       where: {
         lemma_article: {
@@ -143,8 +158,14 @@ const seed = async () => {
         cefrBand: word.cefrBand,
         exampleDe: word.exampleDe,
         exampleEn: word.exampleEn,
+        examplePluralDe,
+        examplePluralEn,
         usageNote: word.usageNote,
         frequencyRank: word.frequencyRank,
+        imageUrl,
+        imageCredit,
+        imageLicense,
+        imageSourceUrl,
       },
       update: {
         plural: word.plural,
@@ -154,8 +175,14 @@ const seed = async () => {
         cefrBand: word.cefrBand,
         exampleDe: word.exampleDe,
         exampleEn: word.exampleEn,
+        examplePluralDe,
+        examplePluralEn,
         usageNote: word.usageNote,
         frequencyRank: word.frequencyRank,
+        imageUrl,
+        imageCredit,
+        imageLicense,
+        imageSourceUrl,
       },
     });
   }

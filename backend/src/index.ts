@@ -12,6 +12,7 @@ import { meRoutes } from "./routes/me.js";
 import { learnRoutes } from "./routes/learn.js";
 import { flashcardRoutes } from "./routes/flashcards.js";
 import { placementRoutes } from "./routes/placement.js";
+import { vocabularyRoutes } from "./routes/vocabulary.js";
 
 const buildServer = async () => {
   const app = Fastify({
@@ -43,6 +44,7 @@ const buildServer = async () => {
   await app.register(meRoutes);
   await app.register(learnRoutes);
   await app.register(flashcardRoutes);
+  await app.register(vocabularyRoutes);
   await app.register(placementRoutes);
 
   return app;

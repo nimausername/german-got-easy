@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { AppShell } from "@/components/app-shell";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useState } from "react";
+import { AuthenticatedShell } from "@/components/authenticated-shell";
 import { BackLink } from "@/components/back-link";
 import { ErrorAlert } from "@/components/error-alert";
 import { Badge } from "@/components/ui/badge";
@@ -95,8 +95,10 @@ type StudyContext = {
   title: string;
 };
 
-export default function FlashcardsPage() {
+const FlashcardsPageContent = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const topicFromQuery = searchParams.get("topic");
   const [topics, setTopics] = useState<Topic[]>([]);
   const [dueTotal, setDueTotal] = useState(0);
   const [study, setStudy] = useState<StudyContext | null>(null);
@@ -134,38 +136,44 @@ export default function FlashcardsPage() {
     void load();
   }, [router]);
 
-  const resetCardState = () => {
+  const resetCardState = useCallback(() => {
     setFlipped(false);
     setTypedAnswer("");
     setPhase("prompt");
     setFeedback(null);
-  };
+  }, []);
 
-  const startSession = async (context: StudyContext) => {
-    setLoadingSession(true);
-    setError(null);
-    setDone(false);
-    setIndex(0);
-    resetCardState();
-    try {
-      const query =
-        context.mode === "due"
-          ? "mode=due"
-          : `mode=topic&topic=${encodeURIComponent(context.topicId ?? "")}`;
-      const response = await apiFetch<{ data: { cards: CardItem[] } }>(
-        `/v1/flashcards/session?${query}`,
-      );
-      setStudy(context);
-      setCards(response.data.cards);
-      if (response.data.cards.length === 0) setDone(true);
-    } catch {
-      setError("Could not start a flashcard session.");
-    } finally {
-      setLoadingSession(false);
-    }
-  };
+  const startSession = useCallback(
+    async (context: StudyContext) => {
+      setLoadingSession(true);
+      setError(null);
+      setDone(false);
+      setIndex(0);
+      resetCardState();
+      try {
+        const query =
+          context.mode === "due"
+            ? "mode=due"
+            : `mode=topic&topic=${encodeURIComponent(context.topicId ?? "")}`;
+        const response = await apiFetch<{ data: { cards: CardItem[] } }>(
+          `/v1/flashcards/session?${query}`,
+        );
+        setStudy(context);
+        setCards(response.data.cards);
+        if (response.data.cards.length === 0) setDone(true);
+      } catch {
+        setError("Could not start a flashcard session.");
+      } finally {
+        setLoadingSession(false);
+      }
+    },
+    [resetCardState],
+  );
 
   const current = cards[index];
+  const deepLinkTopic = topicFromQuery
+    ? topics.find((topic) => topic.id === topicFromQuery)
+    : undefined;
 
   const handleBackToTopics = () => {
     setStudy(null);
@@ -267,34 +275,64 @@ export default function FlashcardsPage() {
 
   if (error && !study) {
     return (
-      <AppShell width="md" centered>
+      <AuthenticatedShell width="xl" centered>
         <ErrorAlert message={error} />
         <BackLink href="/dashboard" label="Dashboard" className="mt-4" />
-      </AppShell>
+      </AuthenticatedShell>
     );
   }
 
   if (!study) {
     return (
-      <AppShell width="md">
-        <BackLink href="/dashboard" label="Dashboard" />
-        <h1 className="mt-6 font-display text-4xl text-brand-ink">Flashcards</h1>
-        <p className="mt-3 max-w-xl text-muted-foreground">
+      <AuthenticatedShell width="xl" className="pt-6 sm:pt-8">
+        <h1 className="font-display text-3xl text-brand-ink sm:text-4xl">Flashcards</h1>
+        <p className="mt-2 max-w-xl text-sm text-muted-foreground sm:mt-3 sm:text-base">
           Pick a life topic to learn related words together. Use review-due to keep older words from
           fading.
         </p>
 
         {loadingTopics ? (
-          <div className="mt-8 grid gap-3 sm:grid-cols-2">
+          <div className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2 lg:grid-cols-3">
             <Skeleton className="h-36 w-full" />
             <Skeleton className="h-36 w-full" />
             <Skeleton className="h-36 w-full" />
             <Skeleton className="h-36 w-full" />
+            <Skeleton className="hidden h-36 w-full lg:block" />
+            <Skeleton className="hidden h-36 w-full lg:block" />
           </div>
         ) : null}
 
+        {!loadingTopics && deepLinkTopic ? (
+          <Card className="mt-8 border-primary/30">
+            <CardHeader>
+              <CardDescription>From vocabulary</CardDescription>
+              <CardTitle>Practice {deepLinkTopic.title}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">{deepLinkTopic.description}</p>
+            </CardContent>
+            <CardFooter>
+              <Button
+                type="button"
+                className="min-h-11 w-full touch-manipulation sm:w-auto"
+                disabled={loadingSession || (deepLinkTopic.dueCount === 0 && deepLinkTopic.newCount === 0)}
+                onClick={() =>
+                  void startSession({
+                    mode: "topic",
+                    topicId: deepLinkTopic.id,
+                    title: deepLinkTopic.title,
+                  })
+                }
+                aria-label={`Start ${deepLinkTopic.title} flashcards`}
+              >
+                Start topic
+              </Button>
+            </CardFooter>
+          </Card>
+        ) : null}
+
         {!loadingTopics && dueTotal > 0 ? (
-          <Card className="mt-8 border-primary/30 bg-primary text-primary-foreground">
+          <Card className={cn("border-primary/30 bg-primary text-primary-foreground", deepLinkTopic ? "mt-4" : "mt-6 sm:mt-8")}>
             <CardHeader>
               <CardDescription className="text-primary-foreground/80">Recommended</CardDescription>
               <CardTitle className="text-primary-foreground">Review due words</CardTitle>
@@ -308,6 +346,7 @@ export default function FlashcardsPage() {
               <Button
                 type="button"
                 variant="secondary"
+                className="min-h-11 w-full touch-manipulation sm:w-auto"
                 disabled={loadingSession}
                 onClick={() => void startSession({ mode: "due", title: "Review due words" })}
                 aria-label={`Review ${dueTotal} due words`}
@@ -318,7 +357,7 @@ export default function FlashcardsPage() {
           </Card>
         ) : null}
 
-        <div className="mt-8 grid gap-3 sm:grid-cols-2">
+        <div className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2 lg:grid-cols-3">
           {topics.map((topic) => (
             <Card key={topic.id} size="sm" className="transition-colors hover:bg-accent/40">
               <CardHeader>
@@ -335,7 +374,7 @@ export default function FlashcardsPage() {
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full"
+                  className="min-h-11 w-full touch-manipulation"
                   disabled={loadingSession || (topic.dueCount === 0 && topic.newCount === 0)}
                   onClick={() =>
                     void startSession({
@@ -352,57 +391,67 @@ export default function FlashcardsPage() {
             </Card>
           ))}
         </div>
-      </AppShell>
+      </AuthenticatedShell>
     );
   }
 
   if (done) {
     return (
-      <AppShell width="md" centered>
+      <AuthenticatedShell width="md" centered>
         <Card>
           <CardHeader>
-            <CardTitle className="font-display text-3xl">Session complete</CardTitle>
+            <CardTitle className="font-display text-2xl sm:text-3xl">Session complete</CardTitle>
             <CardDescription>
               Nice work in {study.title}. Come back for due reviews so the words stick.
             </CardDescription>
           </CardHeader>
-          <CardFooter className="gap-3">
-            <Button type="button" onClick={handleBackToTopics}>
+          <CardFooter className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:gap-3">
+            <Button
+              type="button"
+              className="min-h-11 w-full touch-manipulation sm:w-auto"
+              onClick={handleBackToTopics}
+            >
               Choose another topic
             </Button>
-            <Link href="/dashboard" className={buttonVariants({ variant: "outline" })}>
+            <Link
+              href="/dashboard"
+              className={cn(
+                buttonVariants({ variant: "outline" }),
+                "min-h-11 w-full touch-manipulation sm:w-auto",
+              )}
+            >
               Dashboard
             </Link>
           </CardFooter>
         </Card>
-      </AppShell>
+      </AuthenticatedShell>
     );
   }
 
   if (loadingSession || !current) {
     return (
-      <AppShell width="md" centered>
-        <Skeleton className="h-8 w-40" />
+      <AuthenticatedShell width="md" centered>
+        <Skeleton className="h-8 w-40 max-w-full" />
         <Skeleton className="mt-6 h-64 w-full" />
-      </AppShell>
+      </AuthenticatedShell>
     );
   }
 
   const showSelfRate = current.promptType === "recognize" ? flipped : phase === "correct";
 
   return (
-    <AppShell width="md">
+    <AuthenticatedShell width="md" className="pt-6 sm:pt-8">
       <Button
         type="button"
         variant="ghost"
         size="sm"
-        className="-ml-2 w-fit text-muted-foreground"
+        className="-ml-2 min-h-10 w-fit touch-manipulation text-muted-foreground"
         onClick={handleBackToTopics}
       >
         ← Topics
       </Button>
 
-      <div className="mt-6 flex flex-wrap items-center gap-2">
+      <div className="mt-4 flex flex-wrap items-center gap-2 sm:mt-6">
         <Badge variant="secondary">{study.title}</Badge>
         <Badge variant="outline">{current.mode === "new" ? "New word" : "Review"}</Badge>
         <Badge variant="outline">{PROMPT_LABEL[current.promptType]}</Badge>
@@ -429,12 +478,14 @@ export default function FlashcardsPage() {
               className="w-full rounded-lg text-left outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
               aria-label={flipped ? "Hide translation" : "Reveal translation"}
             >
-              <p className="font-display text-4xl text-brand-ink">
+              <p className="font-display text-3xl break-words text-brand-ink sm:text-4xl">
                 {germanForm(current.article, current.lemma)}
               </p>
               {flipped ? (
                 <div className="mt-6 space-y-3">
-                  <p className="text-xl font-semibold">{current.translation}</p>
+                  <p className="text-lg font-semibold break-words sm:text-xl">
+                    {current.translation}
+                  </p>
                   {current.plural ? (
                     <p className="text-sm font-medium">Plural: die {current.plural}</p>
                   ) : null}
@@ -454,7 +505,9 @@ export default function FlashcardsPage() {
 
           {current.promptType === "produce" && phase === "prompt" ? (
             <div className="space-y-4">
-              <p className="font-display text-4xl text-brand-ink">{current.translation}</p>
+              <p className="font-display text-3xl break-words text-brand-ink sm:text-4xl">
+                {current.translation}
+              </p>
               {current.hint ? <p className="text-sm text-muted-foreground">{current.hint}</p> : null}
               <Field>
                 <FieldLabel htmlFor="produce-answer" className="sr-only">
@@ -462,6 +515,7 @@ export default function FlashcardsPage() {
                 </FieldLabel>
                 <Input
                   id="produce-answer"
+                  className="min-h-11 text-base"
                   value={typedAnswer}
                   onChange={(event) => setTypedAnswer(event.target.value)}
                   onKeyDown={(event) => {
@@ -472,7 +526,12 @@ export default function FlashcardsPage() {
                   aria-label="Type the German word"
                 />
               </Field>
-              <Button type="button" disabled={busy || !typedAnswer.trim()} onClick={handleCheck}>
+              <Button
+                type="button"
+                className="min-h-11 w-full touch-manipulation sm:w-auto"
+                disabled={busy || !typedAnswer.trim()}
+                onClick={handleCheck}
+              >
                 Check
               </Button>
             </div>
@@ -480,7 +539,9 @@ export default function FlashcardsPage() {
 
           {current.promptType === "gender" && phase === "prompt" ? (
             <div className="space-y-4">
-              <p className="font-display text-4xl text-brand-ink">{current.lemma}</p>
+              <p className="font-display text-3xl break-words text-brand-ink sm:text-4xl">
+                {current.lemma}
+              </p>
               {current.hint ? <p className="text-sm text-muted-foreground">{current.hint}</p> : null}
               <div className="grid grid-cols-3 gap-2">
                 {GENDER_OPTIONS.map((article) => (
@@ -488,6 +549,7 @@ export default function FlashcardsPage() {
                     key={article}
                     type="button"
                     variant="outline"
+                    className="min-h-12 touch-manipulation text-base"
                     disabled={busy}
                     onClick={() => handleGender(article)}
                     aria-label={`Choose article ${article}`}
@@ -501,7 +563,9 @@ export default function FlashcardsPage() {
 
           {current.promptType === "cloze" && phase === "prompt" ? (
             <div className="space-y-4">
-              <p className="font-display text-2xl text-brand-ink">{current.clozeSentence}</p>
+              <p className="font-display text-xl break-words text-brand-ink sm:text-2xl">
+                {current.clozeSentence}
+              </p>
               {current.hint ? (
                 <p className="text-sm text-muted-foreground">Hint: {current.hint}</p>
               ) : null}
@@ -511,6 +575,7 @@ export default function FlashcardsPage() {
                 </FieldLabel>
                 <Input
                   id="cloze-answer"
+                  className="min-h-11 text-base"
                   value={typedAnswer}
                   onChange={(event) => setTypedAnswer(event.target.value)}
                   onKeyDown={(event) => {
@@ -521,7 +586,12 @@ export default function FlashcardsPage() {
                   aria-label="Type the missing German word"
                 />
               </Field>
-              <Button type="button" disabled={busy || !typedAnswer.trim()} onClick={handleCheck}>
+              <Button
+                type="button"
+                className="min-h-11 w-full touch-manipulation sm:w-auto"
+                disabled={busy || !typedAnswer.trim()}
+                onClick={handleCheck}
+              >
                 Check
               </Button>
             </div>
@@ -529,7 +599,7 @@ export default function FlashcardsPage() {
 
           {current.promptType === "plural" && phase === "prompt" ? (
             <div className="space-y-4">
-              <p className="font-display text-4xl text-brand-ink">
+              <p className="font-display text-3xl break-words text-brand-ink sm:text-4xl">
                 {germanForm(current.article, current.lemma)}
               </p>
               {current.hint ? <p className="text-sm text-muted-foreground">{current.hint}</p> : null}
@@ -539,6 +609,7 @@ export default function FlashcardsPage() {
                 </FieldLabel>
                 <Input
                   id="plural-answer"
+                  className="min-h-11 text-base"
                   value={typedAnswer}
                   onChange={(event) => setTypedAnswer(event.target.value)}
                   onKeyDown={(event) => {
@@ -549,7 +620,12 @@ export default function FlashcardsPage() {
                   aria-label="Type the plural form"
                 />
               </Field>
-              <Button type="button" disabled={busy || !typedAnswer.trim()} onClick={handleCheck}>
+              <Button
+                type="button"
+                className="min-h-11 w-full touch-manipulation sm:w-auto"
+                disabled={busy || !typedAnswer.trim()}
+                onClick={handleCheck}
+              >
                 Check
               </Button>
             </div>
@@ -558,13 +634,23 @@ export default function FlashcardsPage() {
           {phase === "grade" && feedback?.expected ? (
             <div className="mt-2 space-y-3 rounded-lg bg-destructive/5 p-4 ring-1 ring-destructive/20">
               <p className="text-sm font-semibold text-destructive">Not quite</p>
-              <p className="text-xl font-semibold text-brand-ink">
+              <p className="text-lg font-semibold break-words text-brand-ink sm:text-xl">
                 {germanForm(feedback.expected.article, feedback.expected.lemma)}
                 {feedback.expected.plural ? ` · die ${feedback.expected.plural}` : ""}
               </p>
               <p>{feedback.expected.translation}</p>
               <p className="text-muted-foreground">{feedback.expected.exampleDe}</p>
-              <Button type="button" onClick={handleContinueAfterFail}>
+              <Link
+                href={`/vocabulary/${current.wordId}`}
+                className={cn(buttonVariants({ variant: "link" }), "h-auto px-0")}
+              >
+                Open vocabulary entry
+              </Link>
+              <Button
+                type="button"
+                className="min-h-11 w-full touch-manipulation sm:w-auto"
+                onClick={handleContinueAfterFail}
+              >
                 Continue
               </Button>
             </div>
@@ -573,11 +659,17 @@ export default function FlashcardsPage() {
           {phase === "correct" ? (
             <div className="mt-2 space-y-2 rounded-lg bg-accent p-4 ring-1 ring-primary/15">
               <p className="text-sm font-semibold text-accent-foreground">Correct</p>
-              <p className="text-xl font-semibold text-brand-ink">
+              <p className="text-lg font-semibold break-words text-brand-ink sm:text-xl">
                 {germanForm(current.article, current.lemma)}
                 {current.plural ? ` · die ${current.plural}` : ""}
               </p>
               <p className="text-muted-foreground">{current.exampleDe}</p>
+              <Link
+                href={`/vocabulary/${current.wordId}`}
+                className={cn(buttonVariants({ variant: "link" }), "h-auto px-0")}
+              >
+                Open vocabulary entry
+              </Link>
             </div>
           ) : null}
         </CardContent>
@@ -601,13 +693,35 @@ export default function FlashcardsPage() {
                 variant="outline"
                 disabled={busy}
                 onClick={() => handleRate(value)}
-                className={cn(value === "good" && "border-primary/40")}
+                className={cn(
+                  "min-h-12 touch-manipulation",
+                  value === "good" && "border-primary/40",
+                )}
               >
                 {label}
               </Button>
             ))}
         </div>
       ) : null}
-    </AppShell>
+    </AuthenticatedShell>
+  );
+};
+
+/**
+ * Flashcard study page with Suspense for topic deep links.
+ */
+export default function FlashcardsPage() {
+  return (
+    <Suspense
+      fallback={
+        <AuthenticatedShell width="xl" user={null} loading>
+          <Skeleton className="h-8 w-32 max-w-full" />
+          <Skeleton className="mt-6 h-10 w-64 max-w-full" />
+          <Skeleton className="mt-8 h-40 w-full" />
+        </AuthenticatedShell>
+      }
+    >
+      <FlashcardsPageContent />
+    </Suspense>
   );
 }

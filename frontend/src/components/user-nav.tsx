@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { BookOpen, ChevronsUpDown, Layers, LogOut, MapPin } from "lucide-react";
+import { BookOpen, BookText, ChevronsUpDown, Layers, LogOut, MapPin } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -76,7 +76,9 @@ export const UserNav = ({ user }: UserNavProps) => {
         <Avatar size="sm">
           <AvatarFallback>{getInitials(user)}</AvatarFallback>
         </Avatar>
-        <span className="hidden max-w-28 truncate text-sm sm:inline">{label}</span>
+        <span className="hidden max-w-24 truncate text-sm md:inline lg:max-w-28">
+          {label}
+        </span>
         <ChevronsUpDown className="size-3.5 opacity-60" aria-hidden />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-56">
@@ -99,6 +101,10 @@ export const UserNav = ({ user }: UserNavProps) => {
           <DropdownMenuItem render={<Link href="/flashcards" />}>
             <Layers />
             Flashcards
+          </DropdownMenuItem>
+          <DropdownMenuItem render={<Link href="/vocabulary" />}>
+            <BookText />
+            Vocabulary
           </DropdownMenuItem>
           <DropdownMenuItem render={<Link href="/placement" />}>
             <MapPin />

@@ -29,6 +29,7 @@ pnpm --dir frontend dev
 - Prefer small, focused PRs with a clear description of why the change exists.
 - For backend logic, add or update focused tests when behavior is high risk (for example scheduling).
 - Lesson/word content lives under `backend/content/` (CC BY 4.0). Application code is MIT.
+- Product backlog and deferred features live in [`docs/future-plans.md`](./docs/future-plans.md). Update that doc when you ship or reprioritize work.
 
 ## Pull requests
 

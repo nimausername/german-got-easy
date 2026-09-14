@@ -98,13 +98,13 @@ export default function RegisterPage() {
   const passwordInvalid = Boolean(fieldErrors.password);
 
   return (
-    <AppShell width="sm" centered>
+    <AppShell width="sm" centered className="px-4 py-10 sm:px-6">
       <div className="flex justify-center">
-        <BrandLink />
+        <BrandLink className="text-xl sm:text-2xl" />
       </div>
-      <Card className="mt-8">
+      <Card className="mt-6 w-full sm:mt-8">
         <CardHeader>
-          <CardTitle className="text-2xl">Create account</CardTitle>
+          <CardTitle className="text-xl sm:text-2xl">Create account</CardTitle>
           <CardDescription>Start your German path in minutes.</CardDescription>
         </CardHeader>
         <CardContent>

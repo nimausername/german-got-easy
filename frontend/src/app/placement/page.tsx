@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
-import { AppShell } from "@/components/app-shell";
-import { BackLink } from "@/components/back-link";
+import { AuthenticatedShell } from "@/components/authenticated-shell";
 import { ErrorAlert } from "@/components/error-alert";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -19,6 +18,7 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiFetch } from "@/lib/api";
+import { cn } from "@/lib/utils";
 
 type Item = { id: string; prompt: string };
 
@@ -70,19 +70,20 @@ export default function PlacementPage() {
 
   if (loading) {
     return (
-      <AppShell width="md">
-        <Skeleton className="h-8 w-28" />
-        <Skeleton className="mt-6 h-10 w-56" />
+      <AuthenticatedShell width="md" className="pt-6 sm:pt-8">
+        <Skeleton className="h-8 w-28 max-w-full" />
+        <Skeleton className="mt-6 h-10 w-56 max-w-full" />
         <Skeleton className="mt-8 h-64 w-full" />
-      </AppShell>
+      </AuthenticatedShell>
     );
   }
 
   return (
-    <AppShell width="md">
-      <BackLink href="/dashboard" label="Dashboard" />
-      <h1 className="mt-6 font-display text-3xl text-brand-ink">Placement</h1>
-      <p className="mt-2 text-muted-foreground">A short check to suggest your starting level.</p>
+    <AuthenticatedShell width="md" className="pt-6 sm:pt-8">
+      <h1 className="font-display text-2xl text-brand-ink sm:text-3xl">Placement</h1>
+      <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+        A short check to suggest your starting level.
+      </p>
 
       {error ? (
         <div className="mt-4">
@@ -91,19 +92,22 @@ export default function PlacementPage() {
       ) : null}
 
       {result ? (
-        <Card className="mt-8">
+        <Card className="mt-6 sm:mt-8">
           <CardHeader>
             <CardTitle>Your suggestion</CardTitle>
             <CardDescription>{result}</CardDescription>
           </CardHeader>
           <CardFooter>
-            <Link href="/learn" className={buttonVariants()}>
+            <Link
+              href="/learn"
+              className={cn(buttonVariants(), "min-h-11 w-full touch-manipulation sm:w-auto")}
+            >
               Start learning
             </Link>
           </CardFooter>
         </Card>
       ) : (
-        <Card className="mt-8">
+        <Card className="mt-6 sm:mt-8">
           <CardHeader>
             <CardTitle>Quick check</CardTitle>
             <CardDescription>Answer briefly — spelling can be approximate.</CardDescription>
@@ -116,6 +120,7 @@ export default function PlacementPage() {
                     <FieldLabel htmlFor={item.id}>{item.prompt}</FieldLabel>
                     <Input
                       id={item.id}
+                      className="min-h-11 text-base"
                       value={answers[item.id] ?? ""}
                       onChange={(e) =>
                         setAnswers((prev) => ({ ...prev, [item.id]: e.target.value }))
@@ -127,12 +132,17 @@ export default function PlacementPage() {
             </form>
           </CardContent>
           <CardFooter>
-            <Button type="submit" form="placement-form" disabled={submitting || items.length === 0}>
+            <Button
+              type="submit"
+              form="placement-form"
+              className="min-h-11 w-full touch-manipulation sm:w-auto"
+              disabled={submitting || items.length === 0}
+            >
               {submitting ? "Checking…" : "Get suggestion"}
             </Button>
           </CardFooter>
         </Card>
       )}
-    </AppShell>
+    </AuthenticatedShell>
   );
 }

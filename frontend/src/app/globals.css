@@ -132,22 +132,40 @@
     @apply border-border outline-ring/50;
   }
 
+  html {
+    @apply font-sans bg-background;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply relative min-h-full bg-background text-foreground;
+    /* Solid fill only — gradients live on a fixed overlay so long pages never tile */
+    background-image: none;
+  }
+
+  /*
+   * Viewport-locked wash. Using a fixed layer (not background-attachment on body)
+   * avoids iOS jank and the vertical “repeat” seam on tall pages like vocabulary.
+   */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-color: var(--background);
     background-image:
       radial-gradient(1200px 600px at 8% -12%, oklch(0.9 0.04 180 / 0.55) 0%, transparent 55%),
       radial-gradient(900px 500px at 100% 0%, oklch(0.9 0.035 240 / 0.45) 0%, transparent 50%);
-    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: auto;
   }
 
-  .dark body,
-  html.dark body {
+  .dark body::before,
+  html.dark body::before {
     background-image:
       radial-gradient(1200px 600px at 8% -12%, oklch(0.28 0.04 180 / 0.35) 0%, transparent 55%),
       radial-gradient(900px 500px at 100% 0%, oklch(0.26 0.035 240 / 0.3) 0%, transparent 50%);
-  }
-
-  html {
-    @apply font-sans;
   }
 }

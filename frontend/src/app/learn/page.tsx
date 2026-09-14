@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { AppShell } from "@/components/app-shell";
+import { AuthenticatedShell } from "@/components/authenticated-shell";
 import { BackLink } from "@/components/back-link";
 import { ErrorAlert } from "@/components/error-alert";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Progress, ProgressLabel, ProgressValue } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiFetch } from "@/lib/api";
+import { cn } from "@/lib/utils";
 
 type Exercise = {
   id: string;
@@ -130,37 +131,38 @@ export default function LessonPlayerPage() {
   if (error && !lesson) {
     const isCompleted = error.toLowerCase().includes("completed");
     return (
-      <AppShell width="md" centered>
+      <AuthenticatedShell width="md" centered>
         <ErrorAlert
           title={isCompleted ? "Path complete" : "Lesson unavailable"}
           message={error}
         />
         <BackLink href="/dashboard" label="Dashboard" className="mt-4" />
-      </AppShell>
+      </AuthenticatedShell>
     );
   }
 
   if (!lesson || !current) {
     return (
-      <AppShell width="md">
-        <Skeleton className="h-8 w-32" />
-        <Skeleton className="mt-6 h-6 w-48" />
-        <Skeleton className="mt-2 h-10 w-72" />
+      <AuthenticatedShell width="md" className="pt-6 sm:pt-8">
+        <Skeleton className="h-8 w-32 max-w-full" />
+        <Skeleton className="mt-6 h-6 w-48 max-w-full" />
+        <Skeleton className="mt-2 h-10 w-72 max-w-full" />
         <Skeleton className="mt-8 h-56 w-full" />
-      </AppShell>
+      </AuthenticatedShell>
     );
   }
 
   const progressValue = ((index + (result ? 1 : 0)) / lesson.exercises.length) * 100;
 
   return (
-    <AppShell width="md">
-      <BackLink href="/dashboard" label="Dashboard" />
-      <div className="mt-6 flex flex-wrap items-center gap-2">
+    <AuthenticatedShell width="md" className="pt-6 sm:pt-8">
+      <div className="flex flex-wrap items-center gap-2">
         <Badge variant="secondary">{lesson.levelCode}</Badge>
         <Badge variant="outline">{lesson.unitTitle}</Badge>
       </div>
-      <h1 className="mt-3 font-display text-3xl text-brand-ink">{lesson.title}</h1>
+      <h1 className="mt-3 font-display text-2xl break-words text-brand-ink sm:text-3xl">
+        {lesson.title}
+      </h1>
 
       <Progress value={progressValue} className="mt-6">
         <ProgressLabel>
@@ -176,24 +178,34 @@ export default function LessonPlayerPage() {
       ) : null}
 
       {result ? (
-        <Card className="mt-8">
+        <Card className="mt-6 sm:mt-8">
           <CardHeader>
             <CardTitle>Lesson complete</CardTitle>
             <CardDescription>{result}</CardDescription>
           </CardHeader>
-          <CardFooter className="gap-3">
-            <Link href="/dashboard" className={buttonVariants()}>
+          <CardFooter className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:gap-3">
+            <Link
+              href="/dashboard"
+              className={cn(buttonVariants(), "min-h-11 w-full touch-manipulation sm:w-auto")}
+            >
               Back to dashboard
             </Link>
-            <Button type="button" variant="outline" onClick={() => void handleNextLesson()}>
+            <Button
+              type="button"
+              variant="outline"
+              className="min-h-11 w-full touch-manipulation sm:w-auto"
+              onClick={() => void handleNextLesson()}
+            >
               Next lesson
             </Button>
           </CardFooter>
         </Card>
       ) : (
-        <Card className="mt-8">
+        <Card className="mt-6 sm:mt-8">
           <CardHeader>
-            <CardTitle className="text-lg leading-relaxed">{current.prompt}</CardTitle>
+            <CardTitle className="text-base leading-relaxed sm:text-lg">
+              {current.prompt}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {current.type === "mcq" &&
@@ -203,7 +215,7 @@ export default function LessonPlayerPage() {
                   key={option}
                   type="button"
                   variant={answers[current.id] === option ? "default" : "outline"}
-                  className="h-auto w-full justify-start px-4 py-3 whitespace-normal"
+                  className="h-auto min-h-11 w-full justify-start px-4 py-3 touch-manipulation whitespace-normal"
                   onClick={() => handleAnswer(option)}
                 >
                   {option}
@@ -217,6 +229,7 @@ export default function LessonPlayerPage() {
                 </FieldLabel>
                 <Input
                   id="lesson-answer"
+                  className="min-h-11 text-base"
                   value={String(answers[current.id] ?? "")}
                   onChange={(e) => handleAnswer(e.target.value)}
                   aria-label="Your answer"
@@ -231,6 +244,7 @@ export default function LessonPlayerPage() {
                 </FieldLabel>
                 <Input
                   id="reorder-answer"
+                  className="min-h-11 text-base"
                   placeholder={(current.payload.tokens as string[]).join(" / ")}
                   value={String(answers[current.id] ?? "")}
                   onChange={(e) => handleAnswer(e.target.value.split(/\s+/).filter(Boolean))}
@@ -257,6 +271,7 @@ export default function LessonPlayerPage() {
             <Button
               type="button"
               size="lg"
+              className="min-h-11 w-full touch-manipulation sm:w-auto"
               disabled={answers[current.id] === undefined}
               onClick={() => void handleNext()}
             >
@@ -266,6 +281,6 @@ export default function LessonPlayerPage() {
           </CardFooter>
         </Card>
       )}
-    </AppShell>
+    </AuthenticatedShell>
   );
 }

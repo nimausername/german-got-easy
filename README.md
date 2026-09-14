@@ -51,6 +51,13 @@ pnpm --dir frontend dev
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
+## Docs
+
+- [Docs index](./docs/README.md)
+- [Future plans](./docs/future-plans.md) — categorized backlog of features to add next
+- [Vocabulary book](./docs/vocabulary-book.md) — what Vocabulary Book v1 shipped
+- [Image attribution](./docs/image-attribution.md) — free Commons images for concrete nouns
+
 ## License
 
 - Application code: [MIT](./LICENSE)

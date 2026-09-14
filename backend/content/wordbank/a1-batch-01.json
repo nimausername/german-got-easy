@@ -10,7 +10,9 @@
     "usageNote": null,
     "frequencyRank": 1,
     "plural": "Männer",
-    "topic": "PEOPLE"
+    "topic": "PEOPLE",
+    "examplePluralDe": "Die Männer arbeiten hier.",
+    "examplePluralEn": "The men work here."
   },
   {
     "lemma": "Frau",
@@ -23,7 +25,9 @@
     "usageNote": null,
     "frequencyRank": 2,
     "plural": "Frauen",
-    "topic": "PEOPLE"
+    "topic": "PEOPLE",
+    "examplePluralDe": "Die Frauen trinken Kaffee.",
+    "examplePluralEn": "The women drink coffee."
   },
   {
     "lemma": "Kind",
@@ -36,7 +40,9 @@
     "usageNote": null,
     "frequencyRank": 3,
     "plural": "Kinder",
-    "topic": "PEOPLE"
+    "topic": "PEOPLE",
+    "examplePluralDe": "Die Kinder spielen im Garten.",
+    "examplePluralEn": "The children play in the garden."
   },
   {
     "lemma": "Haus",
@@ -49,7 +55,15 @@
     "usageNote": null,
     "frequencyRank": 4,
     "plural": "Häuser",
-    "topic": "HOME"
+    "topic": "HOME",
+    "image": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Wohnhaus.jpg/960px-Wohnhaus.jpg",
+      "credit": "Huppertsberg",
+      "license": "CC BY 3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Wohnhaus.jpg"
+    },
+    "examplePluralDe": "Die Häuser sind alt.",
+    "examplePluralEn": "The houses are old."
   },
   {
     "lemma": "Stadt",
@@ -62,7 +76,9 @@
     "usageNote": null,
     "frequencyRank": 5,
     "plural": "Städte",
-    "topic": "TRAVEL"
+    "topic": "TRAVEL",
+    "examplePluralDe": "Wir besuchen viele Städte.",
+    "examplePluralEn": "We visit many cities."
   },
   {
     "lemma": "Land",
@@ -75,7 +91,9 @@
     "usageNote": null,
     "frequencyRank": 6,
     "plural": "Länder",
-    "topic": "TRAVEL"
+    "topic": "TRAVEL",
+    "examplePluralDe": "Europa hat viele Länder.",
+    "examplePluralEn": "Europe has many countries."
   },
   {
     "lemma": "Tag",
@@ -88,7 +106,9 @@
     "usageNote": null,
     "frequencyRank": 7,
     "plural": "Tage",
-    "topic": "TIME"
+    "topic": "TIME",
+    "examplePluralDe": "Die Tage werden länger.",
+    "examplePluralEn": "The days are getting longer."
   },
   {
     "lemma": "Nacht",
@@ -101,7 +121,9 @@
     "usageNote": null,
     "frequencyRank": 8,
     "plural": "Nächte",
-    "topic": "TIME"
+    "topic": "TIME",
+    "examplePluralDe": "Die Nächte sind kalt.",
+    "examplePluralEn": "The nights are cold."
   },
   {
     "lemma": "Morgen",
@@ -114,7 +136,9 @@
     "usageNote": null,
     "frequencyRank": 9,
     "plural": "Morgen",
-    "topic": "TIME"
+    "topic": "TIME",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "Abend",
@@ -127,7 +151,9 @@
     "usageNote": null,
     "frequencyRank": 10,
     "plural": "Abende",
-    "topic": "TIME"
+    "topic": "TIME",
+    "examplePluralDe": "An den Abenden lese ich.",
+    "examplePluralEn": "In the evenings I read."
   },
   {
     "lemma": "Woche",
@@ -140,7 +166,9 @@
     "usageNote": null,
     "frequencyRank": 11,
     "plural": "Wochen",
-    "topic": "TIME"
+    "topic": "TIME",
+    "examplePluralDe": "In zwei Wochen habe ich Zeit.",
+    "examplePluralEn": "In two weeks I have time."
   },
   {
     "lemma": "Monat",
@@ -153,7 +181,9 @@
     "usageNote": null,
     "frequencyRank": 12,
     "plural": "Monate",
-    "topic": "TIME"
+    "topic": "TIME",
+    "examplePluralDe": "Die Monate vergehen schnell.",
+    "examplePluralEn": "The months pass quickly."
   },
   {
     "lemma": "Jahr",
@@ -166,7 +196,9 @@
     "usageNote": null,
     "frequencyRank": 13,
     "plural": "Jahre",
-    "topic": "TIME"
+    "topic": "TIME",
+    "examplePluralDe": "In zwei Jahren spreche ich besser Deutsch.",
+    "examplePluralEn": "In two years I will speak German better."
   },
   {
     "lemma": "Zeit",
@@ -179,7 +211,9 @@
     "usageNote": null,
     "frequencyRank": 14,
     "plural": "Zeiten",
-    "topic": "TIME"
+    "topic": "TIME",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "Wasser",
@@ -192,7 +226,15 @@
     "usageNote": null,
     "frequencyRank": 15,
     "plural": "Wasser",
-    "topic": "FOOD_DRINK"
+    "topic": "FOOD_DRINK",
+    "image": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Glass_of_water.jpg/960px-Glass_of_water.jpg",
+      "credit": "deavmi",
+      "license": "CC BY-SA 4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Glass_of_water.jpg"
+    },
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "Kaffee",
@@ -205,7 +247,15 @@
     "usageNote": null,
     "frequencyRank": 16,
     "plural": "Kaffees",
-    "topic": "FOOD_DRINK"
+    "topic": "FOOD_DRINK",
+    "image": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Flat_Lay_Black_Coffee_%28Unsplash%29.jpg/960px-Flat_Lay_Black_Coffee_%28Unsplash%29.jpg",
+      "credit": "Ronaldo Arthur Vidal",
+      "license": "CC0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Flat_Lay_Black_Coffee_(Unsplash).jpg"
+    },
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "Brot",
@@ -218,7 +268,15 @@
     "usageNote": null,
     "frequencyRank": 17,
     "plural": "Brote",
-    "topic": "FOOD_DRINK"
+    "topic": "FOOD_DRINK",
+    "image": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Loaf_of_Bread_%28Unsplash_tm3Diid694Y%29.jpg/960px-Loaf_of_Bread_%28Unsplash_tm3Diid694Y%29.jpg",
+      "credit": "fireskystudios.com / asthetik",
+      "license": "CC0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Loaf_of_Bread_(Unsplash_tm3Diid694Y).jpg"
+    },
+    "examplePluralDe": "Die Brote liegen auf dem Tisch.",
+    "examplePluralEn": "The loaves of bread are on the table."
   },
   {
     "lemma": "Apfel",
@@ -231,7 +289,15 @@
     "usageNote": null,
     "frequencyRank": 18,
     "plural": "Äpfel",
-    "topic": "FOOD_DRINK"
+    "topic": "FOOD_DRINK",
+    "image": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Red_Apple.jpg/960px-Red_Apple.jpg",
+      "credit": "Abhijit Tembhekar",
+      "license": "CC BY 2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Red_Apple.jpg"
+    },
+    "examplePluralDe": "Die Äpfel sind rot.",
+    "examplePluralEn": "The apples are red."
   },
   {
     "lemma": "Milch",
@@ -244,7 +310,15 @@
     "usageNote": null,
     "frequencyRank": 19,
     "plural": null,
-    "topic": "FOOD_DRINK"
+    "topic": "FOOD_DRINK",
+    "image": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Glass_of_milk.jpg/960px-Glass_of_milk.jpg",
+      "credit": "Santeri Viinamäki",
+      "license": "CC BY-SA 4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Glass_of_milk.jpg"
+    },
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "Tee",
@@ -257,7 +331,15 @@
     "usageNote": null,
     "frequencyRank": 20,
     "plural": "Tees",
-    "topic": "FOOD_DRINK"
+    "topic": "FOOD_DRINK",
+    "image": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Cup_of_tea.jpg",
+      "credit": "Kailash Pant",
+      "license": "CC BY-SA 3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cup_of_tea.jpg"
+    },
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "Buch",
@@ -270,7 +352,9 @@
     "usageNote": null,
     "frequencyRank": 21,
     "plural": "Bücher",
-    "topic": "SCHOOL_WORK"
+    "topic": "SCHOOL_WORK",
+    "examplePluralDe": "Die Bücher sind neu.",
+    "examplePluralEn": "The books are new."
   },
   {
     "lemma": "Schule",
@@ -283,7 +367,9 @@
     "usageNote": null,
     "frequencyRank": 22,
     "plural": "Schulen",
-    "topic": "SCHOOL_WORK"
+    "topic": "SCHOOL_WORK",
+    "examplePluralDe": "Die Schulen beginnen um acht.",
+    "examplePluralEn": "The schools start at eight."
   },
   {
     "lemma": "Arbeit",
@@ -296,7 +382,9 @@
     "usageNote": null,
     "frequencyRank": 23,
     "plural": "Arbeiten",
-    "topic": "SCHOOL_WORK"
+    "topic": "SCHOOL_WORK",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "Freund",
@@ -309,7 +397,9 @@
     "usageNote": null,
     "frequencyRank": 24,
     "plural": "Freunde",
-    "topic": "PEOPLE"
+    "topic": "PEOPLE",
+    "examplePluralDe": "Meine Freunde wohnen hier.",
+    "examplePluralEn": "My friends live here."
   },
   {
     "lemma": "Freundin",
@@ -322,7 +412,9 @@
     "usageNote": null,
     "frequencyRank": 25,
     "plural": "Freundinnen",
-    "topic": "PEOPLE"
+    "topic": "PEOPLE",
+    "examplePluralDe": "Meine Freundinnen kommen später.",
+    "examplePluralEn": "My female friends are coming later."
   },
   {
     "lemma": "Familie",
@@ -335,7 +427,9 @@
     "usageNote": null,
     "frequencyRank": 26,
     "plural": "Familien",
-    "topic": "PEOPLE"
+    "topic": "PEOPLE",
+    "examplePluralDe": "Viele Familien wohnen hier.",
+    "examplePluralEn": "Many families live here."
   },
   {
     "lemma": "Name",
@@ -348,7 +442,9 @@
     "usageNote": null,
     "frequencyRank": 27,
     "plural": "Namen",
-    "topic": "PEOPLE"
+    "topic": "PEOPLE",
+    "examplePluralDe": "Schreib bitte die Namen.",
+    "examplePluralEn": "Please write the names."
   },
   {
     "lemma": "Nummer",
@@ -361,7 +457,9 @@
     "usageNote": null,
     "frequencyRank": 28,
     "plural": "Nummern",
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "Straße",
@@ -374,7 +472,9 @@
     "usageNote": null,
     "frequencyRank": 29,
     "plural": "Straßen",
-    "topic": "TRAVEL"
+    "topic": "TRAVEL",
+    "examplePluralDe": "Die Straßen sind eng.",
+    "examplePluralEn": "The streets are narrow."
   },
   {
     "lemma": "Tür",
@@ -387,7 +487,15 @@
     "usageNote": null,
     "frequencyRank": 30,
     "plural": "Türen",
-    "topic": "HOME"
+    "topic": "HOME",
+    "image": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Wooden_door.jpg/960px-Wooden_door.jpg",
+      "credit": "Superbmust",
+      "license": "CC BY-SA 3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Wooden_door.jpg"
+    },
+    "examplePluralDe": "Bitte die Türen schließen.",
+    "examplePluralEn": "Please close the doors."
   },
   {
     "lemma": "Fenster",
@@ -400,7 +508,15 @@
     "usageNote": null,
     "frequencyRank": 31,
     "plural": "Fenster",
-    "topic": "HOME"
+    "topic": "HOME",
+    "image": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Open_window.jpg/960px-Open_window.jpg",
+      "credit": "Stinglehammer",
+      "license": "CC0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Open_window.jpg"
+    },
+    "examplePluralDe": "Die Fenster sind offen.",
+    "examplePluralEn": "The windows are open."
   },
   {
     "lemma": "Tisch",
@@ -413,7 +529,15 @@
     "usageNote": null,
     "frequencyRank": 32,
     "plural": "Tische",
-    "topic": "HOME"
+    "topic": "HOME",
+    "image": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Wooden_table.jpg/960px-Wooden_table.jpg",
+      "credit": "Wikimedia Commons contributor",
+      "license": "CC BY 4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Wooden_table.jpg"
+    },
+    "examplePluralDe": "Die Tische sind groß.",
+    "examplePluralEn": "The tables are big."
   },
   {
     "lemma": "Stuhl",
@@ -426,7 +550,15 @@
     "usageNote": null,
     "frequencyRank": 33,
     "plural": "Stühle",
-    "topic": "HOME"
+    "topic": "HOME",
+    "image": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Stuhl.jpg/960px-Stuhl.jpg",
+      "credit": "Romantiker",
+      "license": "CC BY-SA 3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Stuhl.jpg"
+    },
+    "examplePluralDe": "Die Stühle sind bequem.",
+    "examplePluralEn": "The chairs are comfortable."
   },
   {
     "lemma": "Bett",
@@ -439,7 +571,15 @@
     "usageNote": null,
     "frequencyRank": 34,
     "plural": "Betten",
-    "topic": "HOME"
+    "topic": "HOME",
+    "image": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Bed.jpg/960px-Bed.jpg",
+      "credit": "Gausanchennai",
+      "license": "CC BY-SA 4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bed.jpg"
+    },
+    "examplePluralDe": "Die Betten sind gemacht.",
+    "examplePluralEn": "The beds are made."
   },
   {
     "lemma": "Zimmer",
@@ -452,7 +592,9 @@
     "usageNote": null,
     "frequencyRank": 35,
     "plural": "Zimmer",
-    "topic": "HOME"
+    "topic": "HOME",
+    "examplePluralDe": "Die Zimmer sind klein.",
+    "examplePluralEn": "The rooms are small."
   },
   {
     "lemma": "Küche",
@@ -465,7 +607,15 @@
     "usageNote": null,
     "frequencyRank": 36,
     "plural": "Küchen",
-    "topic": "HOME"
+    "topic": "HOME",
+    "image": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Kitchen.jpg/960px-Kitchen.jpg",
+      "credit": "Cristian Chirita",
+      "license": "CC BY-SA 3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kitchen.jpg"
+    },
+    "examplePluralDe": "Die Küchen sind hell.",
+    "examplePluralEn": "The kitchens are bright."
   },
   {
     "lemma": "Bad",
@@ -478,7 +628,15 @@
     "usageNote": null,
     "frequencyRank": 37,
     "plural": "Bäder",
-    "topic": "HOME"
+    "topic": "HOME",
+    "image": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Bathroom.jpg/960px-Bathroom.jpg",
+      "credit": "loki11",
+      "license": "Public domain",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bathroom.jpg"
+    },
+    "examplePluralDe": "Wo sind die Bäder?",
+    "examplePluralEn": "Where are the bathrooms?"
   },
   {
     "lemma": "Zug",
@@ -491,7 +649,15 @@
     "usageNote": null,
     "frequencyRank": 38,
     "plural": "Züge",
-    "topic": "TRAVEL"
+    "topic": "TRAVEL",
+    "image": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/72/Intercity_trains_Bochum_Hbf_during_winter_chaos.jpg",
+      "credit": "Etaped",
+      "license": "CC BY-SA 4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Intercity_trains_Bochum_Hbf_during_winter_chaos.jpg"
+    },
+    "examplePluralDe": "Die Züge kommen pünktlich.",
+    "examplePluralEn": "The trains arrive on time."
   },
   {
     "lemma": "Bus",
@@ -504,7 +670,15 @@
     "usageNote": null,
     "frequencyRank": 39,
     "plural": "Busse",
-    "topic": "TRAVEL"
+    "topic": "TRAVEL",
+    "image": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Bus_in_Alexandria.jpg/960px-Bus_in_Alexandria.jpg",
+      "credit": "Ici2015",
+      "license": "CC BY-SA 3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bus_in_Alexandria.jpg"
+    },
+    "examplePluralDe": "Die Busse fahren oft.",
+    "examplePluralEn": "The buses run often."
   },
   {
     "lemma": "Auto",
@@ -517,7 +691,15 @@
     "usageNote": null,
     "frequencyRank": 40,
     "plural": "Autos",
-    "topic": "TRAVEL"
+    "topic": "TRAVEL",
+    "image": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/f/f9/Automobile.jpg",
+      "credit": "Archeologo",
+      "license": "CC BY-SA 3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Automobile.jpg"
+    },
+    "examplePluralDe": "Die Autos sind blau.",
+    "examplePluralEn": "The cars are blue."
   },
   {
     "lemma": "Bahnhof",
@@ -530,7 +712,15 @@
     "usageNote": null,
     "frequencyRank": 41,
     "plural": "Bahnhöfe",
-    "topic": "TRAVEL"
+    "topic": "TRAVEL",
+    "image": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Train_station_in_Osijek.jpg",
+      "credit": "Samir Budimčić",
+      "license": "CC BY-SA 3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Train_station_in_Osijek.jpg"
+    },
+    "examplePluralDe": "Die Bahnhöfe sind groß.",
+    "examplePluralEn": "The train stations are big."
   },
   {
     "lemma": "Flughafen",
@@ -543,7 +733,9 @@
     "usageNote": null,
     "frequencyRank": 42,
     "plural": "Flughäfen",
-    "topic": "TRAVEL"
+    "topic": "TRAVEL",
+    "examplePluralDe": "Die Flughäfen sind weit.",
+    "examplePluralEn": "The airports are far."
   },
   {
     "lemma": "Ticket",
@@ -556,7 +748,9 @@
     "usageNote": null,
     "frequencyRank": 43,
     "plural": "Tickets",
-    "topic": "TRAVEL"
+    "topic": "TRAVEL",
+    "examplePluralDe": "Hast du die Tickets?",
+    "examplePluralEn": "Do you have the tickets?"
   },
   {
     "lemma": "Geld",
@@ -569,7 +763,9 @@
     "usageNote": null,
     "frequencyRank": 44,
     "plural": null,
-    "topic": "SHOPPING"
+    "topic": "SHOPPING",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "Euro",
@@ -582,7 +778,9 @@
     "usageNote": null,
     "frequencyRank": 45,
     "plural": "Euro",
-    "topic": "SHOPPING"
+    "topic": "SHOPPING",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "Preis",
@@ -595,7 +793,9 @@
     "usageNote": null,
     "frequencyRank": 46,
     "plural": "Preise",
-    "topic": "SHOPPING"
+    "topic": "SHOPPING",
+    "examplePluralDe": "Die Preise sind hoch.",
+    "examplePluralEn": "The prices are high."
   },
   {
     "lemma": "Laden",
@@ -608,7 +808,9 @@
     "usageNote": null,
     "frequencyRank": 47,
     "plural": "Läden",
-    "topic": "SHOPPING"
+    "topic": "SHOPPING",
+    "examplePluralDe": "Die Läden sind geschlossen.",
+    "examplePluralEn": "The shops are closed."
   },
   {
     "lemma": "Markt",
@@ -621,7 +823,9 @@
     "usageNote": null,
     "frequencyRank": 48,
     "plural": "Märkte",
-    "topic": "SHOPPING"
+    "topic": "SHOPPING",
+    "examplePluralDe": "Auf den Märkten gibt es Obst.",
+    "examplePluralEn": "At the markets there is fruit."
   },
   {
     "lemma": "sein",
@@ -634,7 +838,9 @@
     "usageNote": null,
     "frequencyRank": 49,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "haben",
@@ -647,7 +853,9 @@
     "usageNote": null,
     "frequencyRank": 50,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "heißen",
@@ -660,7 +868,9 @@
     "usageNote": null,
     "frequencyRank": 51,
     "plural": null,
-    "topic": "PEOPLE"
+    "topic": "PEOPLE",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "kommen",
@@ -673,7 +883,9 @@
     "usageNote": null,
     "frequencyRank": 52,
     "plural": null,
-    "topic": "TRAVEL"
+    "topic": "TRAVEL",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "gehen",
@@ -686,7 +898,9 @@
     "usageNote": null,
     "frequencyRank": 53,
     "plural": null,
-    "topic": "TRAVEL"
+    "topic": "TRAVEL",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "fahren",
@@ -699,7 +913,9 @@
     "usageNote": null,
     "frequencyRank": 54,
     "plural": null,
-    "topic": "TRAVEL"
+    "topic": "TRAVEL",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "machen",
@@ -712,7 +928,9 @@
     "usageNote": null,
     "frequencyRank": 55,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "sagen",
@@ -725,7 +943,9 @@
     "usageNote": null,
     "frequencyRank": 56,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "sprechen",
@@ -738,7 +958,9 @@
     "usageNote": null,
     "frequencyRank": 57,
     "plural": null,
-    "topic": "PEOPLE"
+    "topic": "PEOPLE",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "verstehen",
@@ -751,7 +973,9 @@
     "usageNote": null,
     "frequencyRank": 58,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "lernen",
@@ -764,7 +988,9 @@
     "usageNote": null,
     "frequencyRank": 59,
     "plural": null,
-    "topic": "SCHOOL_WORK"
+    "topic": "SCHOOL_WORK",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "lesen",
@@ -777,7 +1003,9 @@
     "usageNote": null,
     "frequencyRank": 60,
     "plural": null,
-    "topic": "SCHOOL_WORK"
+    "topic": "SCHOOL_WORK",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "schreiben",
@@ -790,7 +1018,9 @@
     "usageNote": null,
     "frequencyRank": 61,
     "plural": null,
-    "topic": "SCHOOL_WORK"
+    "topic": "SCHOOL_WORK",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "hören",
@@ -803,7 +1033,9 @@
     "usageNote": null,
     "frequencyRank": 62,
     "plural": null,
-    "topic": "SCHOOL_WORK"
+    "topic": "SCHOOL_WORK",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "sehen",
@@ -816,7 +1048,9 @@
     "usageNote": null,
     "frequencyRank": 63,
     "plural": null,
-    "topic": "SCHOOL_WORK"
+    "topic": "SCHOOL_WORK",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "essen",
@@ -829,7 +1063,9 @@
     "usageNote": null,
     "frequencyRank": 64,
     "plural": null,
-    "topic": "FOOD_DRINK"
+    "topic": "FOOD_DRINK",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "trinken",
@@ -842,7 +1078,9 @@
     "usageNote": null,
     "frequencyRank": 65,
     "plural": null,
-    "topic": "FOOD_DRINK"
+    "topic": "FOOD_DRINK",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "wohnen",
@@ -855,7 +1093,9 @@
     "usageNote": null,
     "frequencyRank": 66,
     "plural": null,
-    "topic": "HOME"
+    "topic": "HOME",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "arbeiten",
@@ -868,7 +1108,9 @@
     "usageNote": null,
     "frequencyRank": 67,
     "plural": null,
-    "topic": "SCHOOL_WORK"
+    "topic": "SCHOOL_WORK",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "kaufen",
@@ -881,7 +1123,9 @@
     "usageNote": null,
     "frequencyRank": 68,
     "plural": null,
-    "topic": "SHOPPING"
+    "topic": "SHOPPING",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "brauchen",
@@ -894,7 +1138,9 @@
     "usageNote": null,
     "frequencyRank": 69,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "möchten",
@@ -907,7 +1153,9 @@
     "usageNote": null,
     "frequencyRank": 70,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "können",
@@ -920,7 +1168,9 @@
     "usageNote": null,
     "frequencyRank": 71,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "müssen",
@@ -933,7 +1183,9 @@
     "usageNote": null,
     "frequencyRank": 72,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "wollen",
@@ -946,7 +1198,9 @@
     "usageNote": null,
     "frequencyRank": 73,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "gut",
@@ -959,7 +1213,9 @@
     "usageNote": null,
     "frequencyRank": 74,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "schlecht",
@@ -972,7 +1228,9 @@
     "usageNote": null,
     "frequencyRank": 75,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "groß",
@@ -985,7 +1243,9 @@
     "usageNote": null,
     "frequencyRank": 76,
     "plural": null,
-    "topic": "DESCRIPTIONS"
+    "topic": "DESCRIPTIONS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "klein",
@@ -998,7 +1258,9 @@
     "usageNote": null,
     "frequencyRank": 77,
     "plural": null,
-    "topic": "DESCRIPTIONS"
+    "topic": "DESCRIPTIONS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "neu",
@@ -1011,7 +1273,9 @@
     "usageNote": null,
     "frequencyRank": 78,
     "plural": null,
-    "topic": "DESCRIPTIONS"
+    "topic": "DESCRIPTIONS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "alt",
@@ -1024,7 +1288,9 @@
     "usageNote": null,
     "frequencyRank": 79,
     "plural": null,
-    "topic": "DESCRIPTIONS"
+    "topic": "DESCRIPTIONS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "schön",
@@ -1037,7 +1303,9 @@
     "usageNote": null,
     "frequencyRank": 80,
     "plural": null,
-    "topic": "DESCRIPTIONS"
+    "topic": "DESCRIPTIONS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "freundlich",
@@ -1050,7 +1318,9 @@
     "usageNote": null,
     "frequencyRank": 81,
     "plural": null,
-    "topic": "PEOPLE"
+    "topic": "PEOPLE",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "wichtig",
@@ -1063,7 +1333,9 @@
     "usageNote": null,
     "frequencyRank": 82,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "richtig",
@@ -1076,7 +1348,9 @@
     "usageNote": null,
     "frequencyRank": 83,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "heute",
@@ -1089,7 +1363,9 @@
     "usageNote": null,
     "frequencyRank": 84,
     "plural": null,
-    "topic": "TIME"
+    "topic": "TIME",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "morgen",
@@ -1102,7 +1378,9 @@
     "usageNote": null,
     "frequencyRank": 85,
     "plural": null,
-    "topic": "TIME"
+    "topic": "TIME",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "jetzt",
@@ -1115,7 +1393,9 @@
     "usageNote": null,
     "frequencyRank": 86,
     "plural": null,
-    "topic": "TIME"
+    "topic": "TIME",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "hier",
@@ -1128,7 +1408,9 @@
     "usageNote": null,
     "frequencyRank": 87,
     "plural": null,
-    "topic": "TRAVEL"
+    "topic": "TRAVEL",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "dort",
@@ -1141,7 +1423,9 @@
     "usageNote": null,
     "frequencyRank": 88,
     "plural": null,
-    "topic": "TRAVEL"
+    "topic": "TRAVEL",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "auch",
@@ -1154,7 +1438,9 @@
     "usageNote": null,
     "frequencyRank": 89,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "sehr",
@@ -1167,7 +1453,9 @@
     "usageNote": null,
     "frequencyRank": 90,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "bitte",
@@ -1180,7 +1468,9 @@
     "usageNote": null,
     "frequencyRank": 91,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "danke",
@@ -1193,7 +1483,9 @@
     "usageNote": null,
     "frequencyRank": 92,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "ja",
@@ -1206,7 +1498,9 @@
     "usageNote": null,
     "frequencyRank": 93,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "nein",
@@ -1219,7 +1513,9 @@
     "usageNote": null,
     "frequencyRank": 94,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "und",
@@ -1232,7 +1528,9 @@
     "usageNote": null,
     "frequencyRank": 95,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "oder",
@@ -1245,7 +1543,9 @@
     "usageNote": null,
     "frequencyRank": 96,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "aber",
@@ -1258,7 +1558,9 @@
     "usageNote": null,
     "frequencyRank": 97,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "mit",
@@ -1271,7 +1573,9 @@
     "usageNote": null,
     "frequencyRank": 98,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "ohne",
@@ -1284,7 +1588,9 @@
     "usageNote": null,
     "frequencyRank": 99,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "für",
@@ -1297,7 +1603,9 @@
     "usageNote": null,
     "frequencyRank": 100,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "von",
@@ -1310,7 +1618,9 @@
     "usageNote": null,
     "frequencyRank": 101,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "in",
@@ -1323,7 +1633,9 @@
     "usageNote": null,
     "frequencyRank": 102,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "auf",
@@ -1336,7 +1648,9 @@
     "usageNote": null,
     "frequencyRank": 103,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "ich",
@@ -1349,7 +1663,9 @@
     "usageNote": null,
     "frequencyRank": 104,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "du",
@@ -1362,7 +1678,9 @@
     "usageNote": null,
     "frequencyRank": 105,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "er",
@@ -1375,7 +1693,9 @@
     "usageNote": null,
     "frequencyRank": 106,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "sie",
@@ -1388,7 +1708,9 @@
     "usageNote": null,
     "frequencyRank": 107,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "wir",
@@ -1401,7 +1723,9 @@
     "usageNote": null,
     "frequencyRank": 108,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   },
   {
     "lemma": "ihr",
@@ -1414,6 +1738,8 @@
     "usageNote": null,
     "frequencyRank": 109,
     "plural": null,
-    "topic": "ESSENTIALS"
+    "topic": "ESSENTIALS",
+    "examplePluralDe": null,
+    "examplePluralEn": null
   }
 ]

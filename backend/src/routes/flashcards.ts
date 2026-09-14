@@ -11,7 +11,7 @@ import {
 } from "../services/flashcard-prompts.js";
 import { buildFlashcardSession, listTopicProgress } from "../services/flashcard-session.js";
 import { scheduleFlashcard } from "../services/flashcard-scheduler.js";
-import { isWordTopic, WORD_TOPICS } from "../services/flashcard-topics.js";
+import { WORD_TOPICS } from "../services/flashcard-topics.js";
 
 const ratingSchema = z.enum(["again", "hard", "good", "easy"]);
 
@@ -39,28 +39,6 @@ const toPromptWord = (word: {
 }): PromptWord => word;
 
 export const flashcardRoutes: FastifyPluginAsync = async (app) => {
-  app.get("/v1/words", async (request, reply) => {
-    const user = request.currentUser;
-    if (!user) return sendError(reply, 401, "UNAUTHORIZED", "Authentication required.");
-
-    const query = request.query as { limit?: string; band?: string; topic?: string };
-    const limit = Math.min(Number(query.limit ?? 50), 200);
-    const topic = query.topic && isWordTopic(query.topic) ? query.topic : undefined;
-    const words = await prisma.word.findMany({
-      where: {
-        ...(query.band ? { cefrBand: query.band as "A1" | "A2" | "B1" } : {}),
-        ...(topic ? { topic } : {}),
-      },
-      orderBy: { frequencyRank: "asc" },
-      take: limit,
-    });
-
-    return {
-      data: { words },
-      meta: { requestId: request.id },
-    };
-  });
-
   app.get("/v1/flashcards/topics", async (request, reply) => {
     const user = request.currentUser;
     if (!user) return sendError(reply, 401, "UNAUTHORIZED", "Authentication required.");

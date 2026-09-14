@@ -86,13 +86,13 @@ export default function LoginPage() {
   const passwordInvalid = Boolean(fieldErrors.password) || Boolean(formError);
 
   return (
-    <AppShell width="sm" centered>
+    <AppShell width="sm" centered className="px-4 py-10 sm:px-6">
       <div className="flex justify-center">
-        <BrandLink />
+        <BrandLink className="text-xl sm:text-2xl" />
       </div>
-      <Card className="mt-8">
+      <Card className="mt-6 w-full sm:mt-8">
         <CardHeader>
-          <CardTitle className="text-2xl">Log in</CardTitle>
+          <CardTitle className="text-xl sm:text-2xl">Log in</CardTitle>
           <CardDescription>Continue learning where you left off.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -111,6 +111,7 @@ export default function LoginPage() {
                     inputMode="email"
                     autoComplete="username"
                     placeholder="you@example.com"
+                    className="text-base"
                     required
                     aria-invalid={usernameInvalid || undefined}
                     value={usernameOrEmail}

@@ -178,8 +178,14 @@ model Word {
   topic          WordTopic    @default(ESSENTIALS)
   exampleDe      String
   exampleEn      String
+  examplePluralDe String?
+  examplePluralEn String?
   usageNote      String?
   frequencyRank  Int
+  imageUrl       String?
+  imageCredit    String?
+  imageLicense   String?
+  imageSourceUrl String?
   exercises      Exercise[]
   progress       UserWordProgress[]
 
