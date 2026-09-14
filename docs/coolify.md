@@ -37,7 +37,7 @@ Do not publish host `ports:`. Coolify Proxy routes using each service's domain.
    - Frontend: `https://app.example.com:3000`
    - API: `https://api.example.com:4000`
 9. Do **not** add Keycloak or Postgres hostnames as domains on this application.
-10. If Postgres or Keycloak are other Coolify resources on the same server, enable **Connect To Predefined Network** on this app (and on those resources) so `DATABASE_URL` / `KEYCLOAK_INTERNAL_URL` can use internal hostnames.
+10. If Postgres or Keycloak are other Coolify resources on the same server, enable **Connect To Predefined Network** on **this application** (Configuration → Advanced) so `DATABASE_URL` / `KEYCLOAK_INTERNAL_URL` can resolve Coolify’s internal hostnames. Compose apps do not join that network by default.
 11. Deploy. Watch **backend logs** for migrate + seed; `/health` stays down until seed finishes.
 
 Use subdomains of the same registrable domain (for example `app.example.com` and `api.example.com`) so `COOKIE_SAME_SITE=lax` works with credentialed API calls.
@@ -103,4 +103,5 @@ Do not add `ports:` in the committed Compose files; Coolify would bypass its pro
 | Browser login works locally but cookies vanish on HTTPS | `COOKIE_SECURE` must be `true` behind TLS. Use `false` only on plain HTTP. |
 | CORS / credentialed fetch fails | `CORS_ORIGIN` must be the frontend origin with no trailing slash. `API_URL` must be the public API origin. |
 | API starts, auth 500s | Keycloak unreachable, wrong client secret, or missing direct-access / service-account roles. |
-| Cannot connect to Coolify Postgres by service name | Enable **Connect To Predefined Network** and use the full container hostname in `DATABASE_URL`. |
+| Cannot connect to Coolify Postgres by service name | Enable **Connect To Predefined Network** on this app and use the **internal** Postgres URL. |
+| `prisma engines` / `right permissions` | Image built without OpenSSL 3. Redeploy from a commit that installs OpenSSL in the backend Docker **deps** stage. |
