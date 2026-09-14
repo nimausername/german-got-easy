@@ -1,0 +1,186 @@
+[
+  {
+    "slug": "daily-routine",
+    "title": "Daily routine",
+    "description": "Describe a simple day with present-tense verbs.",
+    "lessons": [
+      {
+        "slug": "present-regular",
+        "title": "Present tense (regular)",
+        "canDo": "I can conjugate a regular verb like machen in the present.",
+        "summary": "ich mache, du machst, er/sie macht…",
+        "skillTags": ["grammar", "writing"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "Regular verbs follow a clear path",
+            "body": "Take the stem (machen → mach-). Add endings: ich -e, du -st, er/sie/es -t, wir -en, ihr -t, sie/Sie -en. Example: ich mache, du machst, er macht, wir machen.",
+            "examples": [
+              { "de": "Ich mache Frühstück.", "en": "I make breakfast." },
+              { "de": "Du lernst Deutsch.", "en": "You learn German." }
+            ]
+          },
+          {
+            "type": "pattern",
+            "title": "I / you / he",
+            "template": "ich ____e / du ____st / er ____t",
+            "meaning": "Regular present endings",
+            "examples": ["ich wohne / du wohnst / er wohnt"]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "cloze",
+            "prompt": "Ich _____ Deutsch. (lernen)",
+            "payload": { "answer": "lerne", "accepted": ["lerne"] }
+          },
+          {
+            "type": "mcq",
+            "prompt": "Choose the correct form: Du ___ Kaffee. (trinken)",
+            "payload": {
+              "options": ["trinke", "trinkst", "trinkt", "trinken"],
+              "answer": "trinkst"
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "Sie (she) _____ Musik. (hören)",
+            "payload": { "answer": "hört", "accepted": ["hört", "hoert"] }
+          },
+          {
+            "type": "short_write",
+            "prompt": "Write: We learn German. (lernen)",
+            "payload": {
+              "answer": "Wir lernen Deutsch.",
+              "accepted": ["Wir lernen Deutsch.", "Wir lernen Deutsch"]
+            }
+          }
+        ]
+      },
+      {
+        "slug": "day-verbs",
+        "title": "A simple day",
+        "canDo": "I can describe morning-to-evening actions.",
+        "summary": "aufstehen, essen, arbeiten, schlafen.",
+        "skillTags": ["vocabulary", "phrases", "reading"],
+        "teachBlocks": [
+          {
+            "type": "phrases",
+            "title": "Day verbs",
+            "items": [
+              { "de": "aufstehen", "en": "to get up" },
+              { "de": "frühstücken", "en": "to have breakfast" },
+              { "de": "arbeiten", "en": "to work" },
+              { "de": "essen", "en": "to eat" },
+              { "de": "lernen", "en": "to learn / study" },
+              { "de": "schlafen", "en": "to sleep" }
+            ]
+          },
+          {
+            "type": "dialogue",
+            "title": "My day",
+            "lines": [
+              { "speaker": "A", "de": "Was machst du am Morgen?", "en": "What do you do in the morning?" },
+              { "speaker": "B", "de": "Ich stehe auf und frühstücke.", "en": "I get up and have breakfast." },
+              { "speaker": "B", "de": "Dann gehe ich zur Arbeit.", "en": "Then I go to work." }
+            ]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "match",
+            "prompt": "Match the day verbs",
+            "payload": {
+              "pairs": [
+                { "left": "aufstehen", "right": "get up" },
+                { "left": "arbeiten", "right": "work" },
+                { "left": "schlafen", "right": "sleep" },
+                { "left": "frühstücken", "right": "have breakfast" }
+              ]
+            }
+          },
+          {
+            "type": "mcq",
+            "prompt": "\"Ich stehe um sieben Uhr auf\" means…",
+            "payload": {
+              "options": [
+                "I sleep at seven",
+                "I get up at seven",
+                "I eat at seven",
+                "I work until seven"
+              ],
+              "answer": "I get up at seven"
+            }
+          },
+          {
+            "type": "reorder",
+            "prompt": "Order: \"Then I learn German\"",
+            "payload": {
+              "tokens": ["Dann", "lerne", "ich", "Deutsch"],
+              "answer": ["Dann", "lerne", "ich", "Deutsch"]
+            }
+          }
+        ]
+      },
+      {
+        "slug": "time-phrases",
+        "title": "Time-of-day phrases",
+        "canDo": "I can say when I do things (morning, evening).",
+        "summary": "am Morgen, am Abend, dann, später.",
+        "skillTags": ["phrases", "listening", "speaking"],
+        "teachBlocks": [
+          {
+            "type": "phrases",
+            "title": "When?",
+            "items": [
+              { "de": "am Morgen", "en": "in the morning" },
+              { "de": "am Nachmittag", "en": "in the afternoon" },
+              { "de": "am Abend", "en": "in the evening" },
+              { "de": "in der Nacht", "en": "at night" },
+              { "de": "dann", "en": "then" },
+              { "de": "später", "en": "later" }
+            ]
+          },
+          {
+            "type": "listen_model",
+            "title": "Listen",
+            "text": "Am Morgen arbeite ich. Am Abend lerne ich Deutsch.",
+            "hint": "am + time of day"
+          }
+        ],
+        "exercises": [
+          {
+            "type": "cloze",
+            "prompt": "___ Abend lese ich. (in the evening)",
+            "payload": { "answer": "Am", "accepted": ["Am", "am"] }
+          },
+          {
+            "type": "listen_mcq",
+            "prompt": "Listen. When?",
+            "payload": {
+              "speakText": "Am Morgen",
+              "options": ["morning", "afternoon", "evening", "night"],
+              "answer": "morning"
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Say one thing you do in the evening.",
+            "payload": {
+              "modelText": "Am Abend lerne ich Deutsch.",
+              "hint": "Start with Am Abend."
+            }
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which means \"later\"?",
+            "payload": {
+              "options": ["dann", "später", "heute", "Uhr"],
+              "answer": "später"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

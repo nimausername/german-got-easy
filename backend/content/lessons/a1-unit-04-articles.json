@@ -1,0 +1,187 @@
+[
+  {
+    "slug": "articles-things",
+    "title": "Articles & things",
+    "description": "Learn der, die, das with everyday objects.",
+    "lessons": [
+      {
+        "slug": "der-die-das",
+        "title": "der, die, das",
+        "canDo": "I can recognize the three articles for the / a noun.",
+        "summary": "Every German noun has a gender article.",
+        "skillTags": ["grammar", "vocabulary"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "Nouns come with a little word",
+            "body": "German nouns have gender. Learn the article with the word: der Tisch (masculine), die Lampe (feminine), das Buch (neuter). Do not guess from English. Memorize pairs.",
+            "examples": [
+              { "de": "der Tisch", "en": "the table" },
+              { "de": "die Tür", "en": "the door" },
+              { "de": "das Fenster", "en": "the window" }
+            ]
+          },
+          {
+            "type": "phrases",
+            "title": "Learn as pairs",
+            "items": [
+              { "de": "der Stuhl", "en": "the chair" },
+              { "de": "die Lampe", "en": "the lamp" },
+              { "de": "das Buch", "en": "the book" },
+              { "de": "der Apfel", "en": "the apple" },
+              { "de": "die Banane", "en": "the banana" },
+              { "de": "das Wasser", "en": "the water" }
+            ]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "mcq",
+            "prompt": "Which article goes with Buch?",
+            "payload": {
+              "options": ["der", "die", "das", "den"],
+              "answer": "das"
+            }
+          },
+          {
+            "type": "match",
+            "prompt": "Match article + noun meaning",
+            "payload": {
+              "pairs": [
+                { "left": "der Tisch", "right": "table" },
+                { "left": "die Tür", "right": "door" },
+                { "left": "das Fenster", "right": "window" }
+              ]
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "___ Apfel (the apple, masculine)",
+            "payload": { "answer": "der", "accepted": ["der"] }
+          }
+        ]
+      },
+      {
+        "slug": "ein-eine",
+        "title": "ein and eine",
+        "canDo": "I can say a / an with ein and eine.",
+        "summary": "Indefinite articles follow gender too.",
+        "skillTags": ["grammar", "writing"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "a / an in German",
+            "body": "Use ein with masculine and neuter: ein Tisch, ein Buch. Use eine with feminine: eine Lampe. There is no separate plural \"a\"; plurals often have no article or use keine for none.",
+            "examples": [
+              { "de": "Das ist ein Stuhl.", "en": "That is a chair." },
+              { "de": "Das ist eine Tür.", "en": "That is a door." }
+            ]
+          },
+          {
+            "type": "pattern",
+            "title": "That is a …",
+            "template": "Das ist ein / eine ____.",
+            "meaning": "That is a ____.",
+            "examples": ["Das ist ein Buch.", "Das ist eine Banane."]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "mcq",
+            "prompt": "Das ist ___ Lampe.",
+            "payload": {
+              "options": ["ein", "eine", "einen", "einem"],
+              "answer": "eine"
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "Das ist _____ Buch.",
+            "payload": { "answer": "ein", "accepted": ["ein"] }
+          },
+          {
+            "type": "short_write",
+            "prompt": "Write: That is a table.",
+            "payload": {
+              "answer": "Das ist ein Tisch.",
+              "accepted": ["Das ist ein Tisch.", "Das ist ein Tisch"]
+            }
+          }
+        ]
+      },
+      {
+        "slug": "home-objects",
+        "title": "Things at home",
+        "canDo": "I can name common home objects with their articles.",
+        "summary": "Chair, table, bed, phone, and more.",
+        "skillTags": ["vocabulary", "listening", "speaking"],
+        "teachBlocks": [
+          {
+            "type": "phrases",
+            "title": "Home words",
+            "items": [
+              { "de": "der Tisch", "en": "table" },
+              { "de": "der Stuhl", "en": "chair" },
+              { "de": "das Bett", "en": "bed" },
+              { "de": "das Handy", "en": "phone" },
+              { "de": "die Küche", "en": "kitchen" },
+              { "de": "das Bad", "en": "bathroom" }
+            ]
+          },
+          {
+            "type": "listen_model",
+            "title": "Listen",
+            "text": "Das ist der Tisch. Das ist das Bett.",
+            "hint": "Hear der vs das."
+          },
+          {
+            "type": "speak_model",
+            "title": "Say it",
+            "prompt": "Name one object in your room with its article.",
+            "modelText": "Das ist das Handy.",
+            "hint": "Article + noun together."
+          }
+        ],
+        "exercises": [
+          {
+            "type": "match",
+            "prompt": "Match the objects",
+            "payload": {
+              "pairs": [
+                { "left": "Bett", "right": "bed" },
+                { "left": "Handy", "right": "phone" },
+                { "left": "Küche", "right": "kitchen" },
+                { "left": "Stuhl", "right": "chair" }
+              ]
+            }
+          },
+          {
+            "type": "listen_mcq",
+            "prompt": "Listen. Which object?",
+            "payload": {
+              "speakText": "das Handy",
+              "options": ["table", "phone", "bed", "kitchen"],
+              "answer": "phone"
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Say: That is the bed.",
+            "payload": {
+              "modelText": "Das ist das Bett.",
+              "hint": "das Bett"
+            }
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which is correct?",
+            "payload": {
+              "options": ["der Bett", "die Bett", "das Bett", "ein Bettin"],
+              "answer": "das Bett"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

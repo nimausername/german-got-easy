@@ -1,0 +1,212 @@
+[
+  {
+    "slug": "work-school",
+    "title": "Work & school",
+    "description": "Talk about jobs, studies, and simple workplace phrases.",
+    "lessons": [
+      {
+        "slug": "jobs",
+        "title": "Jobs and roles",
+        "canDo": "I can say my job or that I am a student.",
+        "summary": "Student, Lehrer, Arzt, and Ich bin…",
+        "skillTags": ["vocabulary", "phrases", "speaking"],
+        "teachBlocks": [
+          {
+            "type": "phrases",
+            "title": "Work words",
+            "items": [
+              { "de": "der Student / die Studentin", "en": "student (m/f)" },
+              { "de": "der Lehrer / die Lehrerin", "en": "teacher" },
+              { "de": "der Arzt / die Ärztin", "en": "doctor" },
+              { "de": "die Arbeit", "en": "work / job" },
+              { "de": "die Schule", "en": "school" },
+              { "de": "die Universität", "en": "university" }
+            ]
+          },
+          {
+            "type": "pattern",
+            "title": "I am a …",
+            "template": "Ich bin ____.",
+            "meaning": "I am a ____.",
+            "examples": ["Ich bin Student.", "Ich bin Lehrerin."]
+          },
+          {
+            "type": "speak_model",
+            "title": "Say it",
+            "prompt": "Say what you do (job or student).",
+            "modelText": "Ich bin Student.",
+            "hint": "Use Ich bin…"
+          }
+        ],
+        "exercises": [
+          {
+            "type": "match",
+            "prompt": "Match the jobs",
+            "payload": {
+              "pairs": [
+                { "left": "Lehrerin", "right": "teacher (f)" },
+                { "left": "Arzt", "right": "doctor (m)" },
+                { "left": "Student", "right": "student (m)" },
+                { "left": "Schule", "right": "school" }
+              ]
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "Ich _____ Lehrer. (bin)",
+            "payload": { "answer": "bin", "accepted": ["bin"] }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Say you are a student.",
+            "payload": {
+              "modelText": "Ich bin Student.",
+              "hint": "Or Studentin if you prefer."
+            }
+          },
+          {
+            "type": "mcq",
+            "prompt": "Where do children usually learn?",
+            "payload": {
+              "options": ["die Kasse", "die Schule", "die Tüte", "das Wetter"],
+              "answer": "die Schule"
+            }
+          }
+        ]
+      },
+      {
+        "slug": "arbeiten-lernen",
+        "title": "arbeiten and lernen",
+        "canDo": "I can say I work or I study somewhere.",
+        "summary": "Ich arbeite bei… / Ich lerne an…",
+        "skillTags": ["grammar", "phrases"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "Work vs study verbs",
+            "body": "arbeiten = to work. lernen = to learn / study. Useful chunks: Ich arbeite bei Siemens. Ich lerne Deutsch. Ich gehe zur Arbeit / zur Schule.",
+            "examples": [
+              { "de": "Ich arbeite in einem Büro.", "en": "I work in an office." },
+              { "de": "Ich lerne an der Universität.", "en": "I study at the university." }
+            ]
+          },
+          {
+            "type": "dialogue",
+            "title": "Small talk",
+            "lines": [
+              { "speaker": "A", "de": "Was machst du beruflich?", "en": "What do you do for work?" },
+              { "speaker": "B", "de": "Ich arbeite als Lehrerin.", "en": "I work as a teacher." },
+              { "speaker": "A", "de": "Interessant!", "en": "Interesting!" }
+            ]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "cloze",
+            "prompt": "Ich _____ in Berlin. (arbeite)",
+            "payload": { "answer": "arbeite", "accepted": ["arbeite"] }
+          },
+          {
+            "type": "mcq",
+            "prompt": "\"Was machst du beruflich?\" asks…",
+            "payload": {
+              "options": [
+                "Where do you live?",
+                "What do you do for work?",
+                "How old are you?",
+                "What time is it?"
+              ],
+              "answer": "What do you do for work?"
+            }
+          },
+          {
+            "type": "reorder",
+            "prompt": "Order: \"I learn German\"",
+            "payload": {
+              "tokens": ["Ich", "lerne", "Deutsch"],
+              "answer": ["Ich", "lerne", "Deutsch"]
+            }
+          },
+          {
+            "type": "short_write",
+            "prompt": "Write: I work in an office.",
+            "payload": {
+              "answer": "Ich arbeite in einem Büro.",
+              "accepted": ["Ich arbeite in einem Büro.", "Ich arbeite in einem Büro", "Ich arbeite in einem Buero.", "Ich arbeite in einem Buero"]
+            }
+          }
+        ]
+      },
+      {
+        "slug": "office-phrases",
+        "title": "Simple work phrases",
+        "canDo": "I can use a few workplace survival phrases.",
+        "summary": "Meeting, email, pause, and Ich habe eine Frage.",
+        "skillTags": ["phrases", "listening", "reading"],
+        "teachBlocks": [
+          {
+            "type": "phrases",
+            "title": "Office / school chunks",
+            "items": [
+              { "de": "die Pause", "en": "the break" },
+              { "de": "die E-Mail", "en": "the email" },
+              { "de": "das Meeting / die Besprechung", "en": "the meeting" },
+              { "de": "Ich habe eine Frage.", "en": "I have a question." },
+              { "de": "Können Sie das wiederholen?", "en": "Can you repeat that?" }
+            ]
+          },
+          {
+            "type": "listen_model",
+            "title": "Listen",
+            "text": "Ich habe eine Frage.",
+            "hint": "Useful in every class."
+          }
+        ],
+        "exercises": [
+          {
+            "type": "match",
+            "prompt": "Match work phrases",
+            "payload": {
+              "pairs": [
+                { "left": "Pause", "right": "break" },
+                { "left": "E-Mail", "right": "email" },
+                { "left": "Besprechung", "right": "meeting" },
+                { "left": "Frage", "right": "question" }
+              ]
+            }
+          },
+          {
+            "type": "listen_mcq",
+            "prompt": "Listen. What does the person have?",
+            "payload": {
+              "speakText": "Ich habe eine Frage.",
+              "options": ["a break", "a question", "an email", "a job"],
+              "answer": "a question"
+            }
+          },
+          {
+            "type": "mcq",
+            "prompt": "How do you ask someone to repeat?",
+            "payload": {
+              "options": [
+                "Können Sie das wiederholen?",
+                "Ich bin Hunger.",
+                "Das kostet zehn Euro.",
+                "Gehen Sie links."
+              ],
+              "answer": "Können Sie das wiederholen?"
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Say you have a question.",
+            "payload": {
+              "modelText": "Ich habe eine Frage.",
+              "hint": "habe + eine Frage"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

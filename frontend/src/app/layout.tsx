@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Geist } from "next/font/google";
 import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 import { ThemeProvider } from "@/components/theme-provider";
+import { QueryProvider } from "@/components/query-provider";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
@@ -44,11 +45,13 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn("h-full", display.variable, geist.variable)}
     >
-      <body className="min-h-full overflow-x-hidden font-sans antialiased">
-        <ThemeProvider>
-          {children}
-          <MobileBottomNav />
-        </ThemeProvider>
+      <body className="min-h-dvh overflow-x-hidden font-sans antialiased">
+        <QueryProvider>
+          <ThemeProvider>
+            {children}
+            <MobileBottomNav />
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );

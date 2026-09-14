@@ -1,9 +1,12 @@
 "use client";
 
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { apiFetch, ApiRequestError } from "@/lib/api";
+import { useEffect } from "react";
 import type { UserNavUser } from "@/components/user-nav";
+import { ApiRequestError } from "@/lib/api";
+import { fetchMe } from "@/lib/api-queries";
+import { queryKeys } from "@/lib/query-keys";
 
 export type MeData = {
   readonly user: UserNavUser & {
@@ -19,10 +22,6 @@ export type MeData = {
   };
 };
 
-type MeResponse = {
-  data: MeData;
-};
-
 type UseMeOptions = {
   readonly enabled?: boolean;
   readonly redirectOnUnauthorized?: boolean;
@@ -34,38 +33,11 @@ type UseMeResult = {
   readonly error: string | null;
 };
 
-type MeCache = {
-  data: MeData;
-  at: number;
-};
-
-const ME_TTL_MS = 30_000;
-let meCache: MeCache | null = null;
-let meInFlight: Promise<MeData> | null = null;
-
 /**
- * Clears the short-lived /v1/me cache (call on logout).
+ * Clears cached learner profile queries (call on logout).
  */
-export const clearMeCache = () => {
-  meCache = null;
-  meInFlight = null;
-};
-
-const fetchMe = async (): Promise<MeData> => {
-  if (meCache && Date.now() - meCache.at < ME_TTL_MS) {
-    return meCache.data;
-  }
-  if (!meInFlight) {
-    meInFlight = apiFetch<MeResponse>("/v1/me")
-      .then((response) => {
-        meCache = { data: response.data, at: Date.now() };
-        return response.data;
-      })
-      .finally(() => {
-        meInFlight = null;
-      });
-  }
-  return meInFlight;
+export const clearMeCache = (queryClient?: { removeQueries: (opts: { queryKey: readonly unknown[] }) => void }) => {
+  queryClient?.removeQueries({ queryKey: queryKeys.me });
 };
 
 /**
@@ -74,49 +46,56 @@ const fetchMe = async (): Promise<MeData> => {
 export const useMe = (options: UseMeOptions = {}): UseMeResult => {
   const { enabled = true, redirectOnUnauthorized = true } = options;
   const router = useRouter();
-  const [me, setMe] = useState<MeData | null>(() =>
-    meCache && Date.now() - meCache.at < ME_TTL_MS ? meCache.data : null,
-  );
-  const [loading, setLoading] = useState(enabled && !me);
-  const [error, setError] = useState<string | null>(null);
+  const query = useQuery({
+    queryKey: queryKeys.me,
+    queryFn: fetchMe,
+    enabled,
+    staleTime: 30_000,
+  });
 
   useEffect(() => {
-    if (!enabled) {
-      return;
+    if (!query.isError || !redirectOnUnauthorized) return;
+    if (query.error instanceof ApiRequestError && query.error.status === 401) {
+      router.replace("/login");
     }
+  }, [query.error, query.isError, redirectOnUnauthorized, router]);
 
-    let cancelled = false;
+  const errorMessage =
+    query.error instanceof ApiRequestError
+      ? query.error.message
+      : query.isError
+        ? "Please log in to continue."
+        : null;
 
-    const load = async () => {
-      if (!(meCache && Date.now() - meCache.at < ME_TTL_MS)) {
-        setLoading(true);
-      }
-      try {
-        const data = await fetchMe();
-        if (cancelled) return;
-        setMe(data);
-        setError(null);
-      } catch (err) {
-        if (cancelled) return;
-        clearMeCache();
-        const message =
-          err instanceof ApiRequestError
-            ? err.message
-            : "Please log in to continue.";
-        setError(message);
-        if (redirectOnUnauthorized) {
-          router.replace("/login");
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-    void load();
+  return {
+    me: query.data ?? null,
+    loading: query.isLoading || (query.isFetching && !query.data),
+    error: errorMessage,
+  };
+};
 
-    return () => {
-      cancelled = true;
-    };
-  }, [enabled, redirectOnUnauthorized, router]);
+type ShellUserState = {
+  readonly user: UserNavUser | null;
+  readonly loading: boolean;
+};
 
-  return { me, loading, error };
+/**
+ * Shared /v1/me state for AuthenticatedShell so product pages reuse one cache.
+ */
+export const useShellUser = (): ShellUserState => {
+  const { me, loading } = useMe();
+  return {
+    user: me?.user ?? null,
+    loading,
+  };
+};
+
+/**
+ * Invalidates all authenticated product caches after logout.
+ */
+export const useClearSessionQueries = () => {
+  const queryClient = useQueryClient();
+  return () => {
+    queryClient.clear();
+  };
 };

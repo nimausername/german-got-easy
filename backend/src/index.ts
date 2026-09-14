@@ -1,4 +1,5 @@
 import Fastify from "fastify";
+import compress from "@fastify/compress";
 import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import helmet from "@fastify/helmet";
@@ -13,6 +14,7 @@ import { authRoutes } from "./routes/auth.js";
 import { meRoutes } from "./routes/me.js";
 import { learnRoutes } from "./routes/learn.js";
 import { flashcardRoutes } from "./routes/flashcards.js";
+import { mediaRoutes } from "./routes/media.js";
 import { placementRoutes } from "./routes/placement.js";
 import { vocabularyRoutes } from "./routes/vocabulary.js";
 import { startWordReleaseScheduler } from "./services/word-release-scheduler.js";
@@ -28,6 +30,11 @@ const buildServer = async () => {
 
   await app.register(helmet, {
     contentSecurityPolicy: false,
+  });
+  await app.register(compress, {
+    global: true,
+    encodings: ["br", "gzip"],
+    threshold: 1024,
   });
   await app.register(cors, {
     origin: expandCorsOrigins(env.CORS_ORIGIN),
@@ -67,6 +74,7 @@ const buildServer = async () => {
   });
 
   await app.register(authRoutes);
+  await app.register(mediaRoutes);
   await app.register(authPlugin);
   await app.register(meRoutes);
   await app.register(learnRoutes);

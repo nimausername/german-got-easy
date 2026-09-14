@@ -1,0 +1,191 @@
+[
+  {
+    "slug": "where-i-live",
+    "title": "Where I live",
+    "description": "Say where you live and where you come from.",
+    "lessons": [
+      {
+        "slug": "wohnen",
+        "title": "Ich wohne in…",
+        "canDo": "I can say where I live.",
+        "summary": "wohnen = to live / reside.",
+        "skillTags": ["grammar", "phrases", "speaking"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "wohnen for your home",
+            "body": "Use wohnen for the place you live: Ich wohne in Berlin. Use in before cities and countries in this simple pattern. For \"at home\" say zu Hause.",
+            "examples": [
+              { "de": "Ich wohne in Hamburg.", "en": "I live in Hamburg." },
+              { "de": "Wir wohnen in Österreich.", "en": "We live in Austria." }
+            ]
+          },
+          {
+            "type": "pattern",
+            "title": "I live in …",
+            "template": "Ich wohne in ____.",
+            "meaning": "I live in ____.",
+            "examples": ["Ich wohne in Köln.", "Ich wohne in der Schweiz."]
+          },
+          {
+            "type": "speak_model",
+            "title": "Say it",
+            "prompt": "Say where you live.",
+            "modelText": "Ich wohne in Berlin.",
+            "hint": "Use your real city if you want."
+          }
+        ],
+        "exercises": [
+          {
+            "type": "cloze",
+            "prompt": "Ich _____ in München.",
+            "payload": { "answer": "wohne", "accepted": ["wohne"] }
+          },
+          {
+            "type": "reorder",
+            "prompt": "Order: \"I live in Berlin\"",
+            "payload": {
+              "tokens": ["Ich", "wohne", "in", "Berlin"],
+              "answer": ["Ich", "wohne", "in", "Berlin"]
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Say where you live with Ich wohne in…",
+            "payload": {
+              "modelText": "Ich wohne in Berlin.",
+              "hint": "City name after in."
+            }
+          }
+        ]
+      },
+      {
+        "slug": "kommen-aus",
+        "title": "Ich komme aus…",
+        "canDo": "I can say where I come from.",
+        "summary": "kommen aus = come from.",
+        "skillTags": ["phrases", "listening", "writing"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "Origin with kommen aus",
+            "body": "Ich komme aus… tells your origin (country or city). Ask someone: Woher kommst du? or polite Woher kommen Sie?",
+            "examples": [
+              { "de": "Ich komme aus Spanien.", "en": "I come from Spain." },
+              { "de": "Woher kommst du?", "en": "Where do you come from?" }
+            ]
+          },
+          {
+            "type": "dialogue",
+            "title": "Where from?",
+            "lines": [
+              { "speaker": "A", "de": "Woher kommst du?", "en": "Where do you come from?" },
+              { "speaker": "B", "de": "Ich komme aus Italien. Und du?", "en": "I come from Italy. And you?" },
+              { "speaker": "A", "de": "Ich komme aus Deutschland.", "en": "I come from Germany." }
+            ]
+          },
+          {
+            "type": "listen_model",
+            "title": "Listen",
+            "text": "Ich komme aus Deutschland.",
+            "hint": "aus + country."
+          }
+        ],
+        "exercises": [
+          {
+            "type": "cloze",
+            "prompt": "Ich komme _____ Frankreich.",
+            "payload": { "answer": "aus", "accepted": ["aus"] }
+          },
+          {
+            "type": "mcq",
+            "prompt": "What does \"Woher kommst du?\" ask?",
+            "payload": {
+              "options": [
+                "How old are you?",
+                "Where do you come from?",
+                "Where do you work?",
+                "What time is it?"
+              ],
+              "answer": "Where do you come from?"
+            }
+          },
+          {
+            "type": "listen_mcq",
+            "prompt": "Listen. Where from?",
+            "payload": {
+              "speakText": "Ich komme aus Spanien.",
+              "options": ["Germany", "Spain", "Italy", "Austria"],
+              "answer": "Spain"
+            }
+          },
+          {
+            "type": "short_write",
+            "prompt": "Write: I come from Germany.",
+            "payload": {
+              "answer": "Ich komme aus Deutschland.",
+              "accepted": ["Ich komme aus Deutschland.", "Ich komme aus Deutschland"]
+            }
+          }
+        ]
+      },
+      {
+        "slug": "places",
+        "title": "Places in town",
+        "canDo": "I can name simple places like station and supermarket.",
+        "summary": "Useful place nouns for daily life.",
+        "skillTags": ["vocabulary", "reading"],
+        "teachBlocks": [
+          {
+            "type": "phrases",
+            "title": "Places",
+            "items": [
+              { "de": "der Bahnhof", "en": "train station" },
+              { "de": "der Supermarkt", "en": "supermarket" },
+              { "de": "die Schule", "en": "school" },
+              { "de": "die Arbeit", "en": "work" },
+              { "de": "das Café", "en": "café" },
+              { "de": "die Stadt", "en": "city" }
+            ]
+          },
+          {
+            "type": "explain",
+            "title": "I am going to …",
+            "body": "A simple pattern: Ich gehe zum Bahnhof / zur Schule. For now, learn the place words; more prepositions come later.",
+            "examples": [
+              { "de": "Ich gehe zum Supermarkt.", "en": "I am going to the supermarket." },
+              { "de": "Die Schule ist in der Stadt.", "en": "The school is in the city." }
+            ]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "match",
+            "prompt": "Match the places",
+            "payload": {
+              "pairs": [
+                { "left": "Bahnhof", "right": "train station" },
+                { "left": "Schule", "right": "school" },
+                { "left": "Supermarkt", "right": "supermarket" },
+                { "left": "Stadt", "right": "city" }
+              ]
+            }
+          },
+          {
+            "type": "mcq",
+            "prompt": "Where do trains leave from?",
+            "payload": {
+              "options": ["die Schule", "der Bahnhof", "das Bett", "die Milch"],
+              "answer": "der Bahnhof"
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "Ich gehe zum _____. (supermarket)",
+            "payload": { "answer": "Supermarkt", "accepted": ["Supermarkt"] }
+          }
+        ]
+      }
+    ]
+  }
+]

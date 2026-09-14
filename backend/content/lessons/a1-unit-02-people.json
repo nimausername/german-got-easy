@@ -1,0 +1,196 @@
+[
+  {
+    "slug": "people",
+    "title": "People & pronouns",
+    "description": "Talk about people with pronouns and simple family words.",
+    "lessons": [
+      {
+        "slug": "pronouns",
+        "title": "ich, du, er, sie, wir",
+        "canDo": "I can use the basic personal pronouns.",
+        "summary": "The small words for I, you, he, she, we.",
+        "skillTags": ["grammar", "vocabulary"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "Pronouns are the shortcut for people",
+            "body": "Learn these first: ich (I), du (you informal), er (he), sie (she), es (it), wir (we), ihr (you plural), sie (they). Polite you is Sie. Context tells you if sie means she or they.",
+            "examples": [
+              { "de": "Ich bin hier.", "en": "I am here." },
+              { "de": "Wir sind Freunde.", "en": "We are friends." }
+            ]
+          },
+          {
+            "type": "phrases",
+            "title": "Pronoun list",
+            "items": [
+              { "de": "ich", "en": "I" },
+              { "de": "du", "en": "you (informal)" },
+              { "de": "er / sie / es", "en": "he / she / it" },
+              { "de": "wir", "en": "we" },
+              { "de": "ihr", "en": "you (plural)" },
+              { "de": "Sie", "en": "you (polite)" }
+            ]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "match",
+            "prompt": "Match the pronouns",
+            "payload": {
+              "pairs": [
+                { "left": "ich", "right": "I" },
+                { "left": "du", "right": "you" },
+                { "left": "wir", "right": "we" },
+                { "left": "er", "right": "he" }
+              ]
+            }
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which word means \"we\"?",
+            "payload": {
+              "options": ["ihr", "wir", "sie", "du"],
+              "answer": "wir"
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "___ bin Student. (I)",
+            "payload": { "answer": "Ich", "accepted": ["Ich", "ich"] }
+          }
+        ]
+      },
+      {
+        "slug": "family",
+        "title": "Meine Familie",
+        "canDo": "I can name close family members.",
+        "summary": "Mother, father, sister, brother, and more.",
+        "skillTags": ["vocabulary", "phrases"],
+        "teachBlocks": [
+          {
+            "type": "phrases",
+            "title": "Family words",
+            "items": [
+              { "de": "die Mutter", "en": "mother" },
+              { "de": "der Vater", "en": "father" },
+              { "de": "die Schwester", "en": "sister" },
+              { "de": "der Bruder", "en": "brother" },
+              { "de": "die Eltern", "en": "parents" },
+              { "de": "das Kind", "en": "child" }
+            ]
+          },
+          {
+            "type": "pattern",
+            "title": "This is my …",
+            "template": "Das ist mein / meine ____.",
+            "meaning": "This is my ____.",
+            "examples": ["Das ist meine Mutter.", "Das ist mein Bruder."]
+          },
+          {
+            "type": "dialogue",
+            "title": "Talking about family",
+            "lines": [
+              { "speaker": "A", "de": "Hast du Geschwister?", "en": "Do you have siblings?" },
+              { "speaker": "B", "de": "Ja, ich habe eine Schwester.", "en": "Yes, I have a sister." }
+            ]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "match",
+            "prompt": "Match the family words",
+            "payload": {
+              "pairs": [
+                { "left": "Mutter", "right": "mother" },
+                { "left": "Vater", "right": "father" },
+                { "left": "Bruder", "right": "brother" },
+                { "left": "Schwester", "right": "sister" }
+              ]
+            }
+          },
+          {
+            "type": "mcq",
+            "prompt": "What is \"die Eltern\"?",
+            "payload": {
+              "options": ["children", "parents", "friends", "grandparents"],
+              "answer": "parents"
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "Das ist meine ____. (mother)",
+            "payload": { "answer": "Mutter", "accepted": ["Mutter"] }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Say: This is my brother.",
+            "payload": {
+              "modelText": "Das ist mein Bruder.",
+              "hint": "mein + Bruder"
+            }
+          }
+        ]
+      },
+      {
+        "slug": "describe-person",
+        "title": "Who is that?",
+        "canDo": "I can say who someone is with sein.",
+        "summary": "Combine pronouns and sein to point to people.",
+        "skillTags": ["grammar", "speaking", "reading"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "Point with Das ist…",
+            "body": "Use Das ist… to introduce a person. Then add a role or relation: Das ist mein Vater. Er ist Arzt. Keep sentences short.",
+            "examples": [
+              { "de": "Das ist Anna. Sie ist Lehrerin.", "en": "This is Anna. She is a teacher." },
+              { "de": "Das ist Tom. Er ist Student.", "en": "This is Tom. He is a student." }
+            ]
+          },
+          {
+            "type": "listen_model",
+            "title": "Listen",
+            "text": "Das ist meine Schwester. Sie heißt Mia.",
+            "hint": "Listen for Das ist and Sie heißt."
+          }
+        ],
+        "exercises": [
+          {
+            "type": "reorder",
+            "prompt": "Order: \"This is my mother\"",
+            "payload": {
+              "tokens": ["Das", "ist", "meine", "Mutter"],
+              "answer": ["Das", "ist", "meine", "Mutter"]
+            }
+          },
+          {
+            "type": "mcq",
+            "prompt": "Das ist Paul. ___ ist Student.",
+            "payload": {
+              "options": ["Sie", "Es", "Er", "Wir"],
+              "answer": "Er"
+            }
+          },
+          {
+            "type": "listen_mcq",
+            "prompt": "Listen. Who is introduced?",
+            "payload": {
+              "speakText": "Das ist meine Mutter.",
+              "options": ["mother", "father", "sister", "brother"],
+              "answer": "mother"
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Introduce a family member with Das ist…",
+            "payload": {
+              "modelText": "Das ist mein Vater.",
+              "hint": "Use mein or meine."
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

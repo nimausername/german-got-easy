@@ -3,6 +3,8 @@
  * shuffling order-sensitive prompt material.
  */
 
+import { audioUrlForText } from "./lesson-audio.js";
+
 const SECRET_KEYS = new Set([
   "answer",
   "accepted",
@@ -43,14 +45,35 @@ export const toClientExercisePayload = (
   type: string,
   payload: Record<string, unknown>,
 ): Record<string, unknown> => {
-  if (type === "mcq") {
-    return {
+  if (type === "mcq" || type === "listen_mcq") {
+    const safe: Record<string, unknown> = {
       options: Array.isArray(payload.options) ? payload.options : [],
     };
+    if (type === "listen_mcq" && typeof payload.speakText === "string") {
+      safe.speakText = payload.speakText;
+      const audioUrl = audioUrlForText(payload.speakText);
+      if (audioUrl) {
+        safe.audioUrl = audioUrl;
+      }
+    }
+    return safe;
   }
 
   if (type === "cloze" || type === "short_write") {
     return {};
+  }
+
+  if (type === "speak_prompt") {
+    const modelText = typeof payload.modelText === "string" ? payload.modelText : "";
+    const safe: Record<string, unknown> = {
+      modelText,
+      hint: typeof payload.hint === "string" ? payload.hint : undefined,
+    };
+    const audioUrl = audioUrlForText(modelText);
+    if (audioUrl) {
+      safe.audioUrl = audioUrl;
+    }
+    return safe;
   }
 
   if (type === "reorder") {

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AuthenticatedShell } from "@/components/authenticated-shell";
 import { BackLink } from "@/components/back-link";
 import { ErrorAlert } from "@/components/error-alert";
@@ -12,6 +13,7 @@ import {
   type FlashcardRating,
 } from "@/components/flashcard-rating-bar";
 import { FlashcardStudyCard } from "@/components/flashcard-study-card";
+import { PageFrame } from "@/components/page-frame";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -27,8 +29,16 @@ import {
   ProgressLabel,
   ProgressValue,
 } from "@/components/ui/progress";
-import { Skeleton } from "@/components/ui/skeleton";
+import {
+  FlashcardsPageSuspenseSkeleton,
+  FlashcardsSessionSkeleton,
+  FlashcardsTopicsSkeleton,
+} from "@/components/skeletons";
+import { useShellUser } from "@/hooks/use-me";
 import { apiFetch, ApiRequestError } from "@/lib/api";
+import { fetchFlashcardTopics } from "@/lib/api-queries";
+import { APP_CONTENT_WIDTH, STUDY_CONTENT_CLASS } from "@/lib/layout";
+import { queryKeys } from "@/lib/query-keys";
 import { cn } from "@/lib/utils";
 
 type PromptType = "recognize" | "produce" | "gender" | "cloze" | "plural";
@@ -102,10 +112,10 @@ type StudyContext = {
 
 const FlashcardsPageContent = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const shellUser = useShellUser();
   const searchParams = useSearchParams();
   const topicFromQuery = searchParams.get("topic");
-  const [topics, setTopics] = useState<Topic[]>([]);
-  const [dueTotal, setDueTotal] = useState(0);
   const [study, setStudy] = useState<StudyContext | null>(null);
   const [cards, setCards] = useState<CardItem[]>([]);
   const [index, setIndex] = useState(0);
@@ -114,32 +124,33 @@ const FlashcardsPageContent = () => {
   const [phase, setPhase] = useState<"prompt" | "grade" | "correct">("prompt");
   const [feedback, setFeedback] = useState<AnswerResponse["data"] | null>(null);
   const [busy, setBusy] = useState(false);
-  const [loadingTopics, setLoadingTopics] = useState(true);
   const [loadingSession, setLoadingSession] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [sessionError, setSessionError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
+  const topicsQuery = useQuery({
+    queryKey: queryKeys.flashcardTopics,
+    queryFn: fetchFlashcardTopics,
+    staleTime: 30_000,
+  });
+
   useEffect(() => {
-    const load = async () => {
-      try {
-        const response = await apiFetch<{
-          data: { topics: Topic[]; dueTotal: number };
-        }>("/v1/flashcards/topics");
-        setTopics(response.data.topics);
-        setDueTotal(response.data.dueTotal);
-      } catch (err) {
-        if (err instanceof ApiRequestError && err.status === 401) {
-          setError("Please log in to study flashcards.");
-          router.replace("/login");
-          return;
-        }
-        setError("Could not load flashcard topics. Try again.");
-      } finally {
-        setLoadingTopics(false);
-      }
-    };
-    void load();
-  }, [router]);
+    if (!(topicsQuery.error instanceof ApiRequestError) || topicsQuery.error.status !== 401) {
+      return;
+    }
+    router.replace("/login");
+  }, [router, topicsQuery.error]);
+
+  const topics = topicsQuery.data?.topics ?? [];
+  const dueTotal = topicsQuery.data?.dueTotal ?? 0;
+  const loadingTopics = topicsQuery.isLoading;
+  const error =
+    sessionError ??
+    (topicsQuery.error instanceof ApiRequestError && topicsQuery.error.status === 401
+      ? "Please log in to study flashcards."
+      : topicsQuery.isError
+        ? "Could not load flashcard topics. Try again."
+        : null);
 
   const resetCardState = useCallback(() => {
     setFlipped(false);
@@ -151,7 +162,7 @@ const FlashcardsPageContent = () => {
   const startSession = useCallback(
     async (context: StudyContext) => {
       setLoadingSession(true);
-      setError(null);
+      setSessionError(null);
       setDone(false);
       setIndex(0);
       resetCardState();
@@ -167,7 +178,7 @@ const FlashcardsPageContent = () => {
         setCards(response.data.cards);
         if (response.data.cards.length === 0) setDone(true);
       } catch {
-        setError("Could not start a flashcard session.");
+        setSessionError("Could not start a flashcard session.");
       } finally {
         setLoadingSession(false);
       }
@@ -186,17 +197,8 @@ const FlashcardsPageContent = () => {
     setIndex(0);
     setDone(false);
     resetCardState();
-    void (async () => {
-      try {
-        const response = await apiFetch<{
-          data: { topics: Topic[]; dueTotal: number };
-        }>("/v1/flashcards/topics");
-        setTopics(response.data.topics);
-        setDueTotal(response.data.dueTotal);
-      } catch {
-        // Keep existing topic list if refresh fails.
-      }
-    })();
+    void queryClient.invalidateQueries({ queryKey: queryKeys.flashcardTopics });
+    void queryClient.invalidateQueries({ queryKey: queryKeys.me });
   };
 
   const advance = useCallback(
@@ -256,7 +258,7 @@ const FlashcardsPageContent = () => {
         setFeedback(result);
         setPhase("correct");
       } catch {
-        setError("Could not save your answer. Try again.");
+        setSessionError("Could not save your answer. Try again.");
       } finally {
         setBusy(false);
       }
@@ -356,7 +358,12 @@ const FlashcardsPageContent = () => {
 
   if (error && !study) {
     return (
-      <AuthenticatedShell width="xl" centered>
+      <AuthenticatedShell
+        width={APP_CONTENT_WIDTH}
+        centered
+        user={shellUser.user}
+        loading={shellUser.loading}
+      >
         <ErrorAlert message={error} />
         <BackLink href="/dashboard" label="Dashboard" className="mt-4" />
       </AuthenticatedShell>
@@ -365,120 +372,143 @@ const FlashcardsPageContent = () => {
 
   if (!study) {
     return (
-      <AuthenticatedShell width="xl" className="pt-6 sm:pt-8">
-        <h1 className="font-display text-3xl text-brand-ink sm:text-4xl">Flashcards</h1>
-        <p className="mt-2 max-w-xl text-sm text-muted-foreground sm:mt-3 sm:text-base">
-          Pick a life topic to learn related words together. Use review-due to keep older words from
-          fading.
-        </p>
-
-        {loadingTopics ? (
-          <div className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2 lg:grid-cols-3">
-            <Skeleton className="h-36 w-full" />
-            <Skeleton className="h-36 w-full" />
-            <Skeleton className="h-36 w-full" />
-            <Skeleton className="h-36 w-full" />
-            <Skeleton className="hidden h-36 w-full lg:block" />
-            <Skeleton className="hidden h-36 w-full lg:block" />
-          </div>
-        ) : null}
-
-        {!loadingTopics && deepLinkTopic ? (
-          <Card className="mt-8 border-primary/30">
-            <CardHeader>
-              <CardDescription>From vocabulary</CardDescription>
-              <CardTitle>Practice {deepLinkTopic.title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">{deepLinkTopic.description}</p>
-            </CardContent>
-            <CardFooter>
-              <Button
-                type="button"
-                className="min-h-11 w-full touch-manipulation sm:w-auto"
-                disabled={loadingSession || (deepLinkTopic.dueCount === 0 && deepLinkTopic.newCount === 0)}
-                onClick={() =>
-                  void startSession({
-                    mode: "topic",
-                    topicId: deepLinkTopic.id,
-                    title: deepLinkTopic.title,
-                  })
-                }
-                aria-label={`Start ${deepLinkTopic.title} flashcards`}
-              >
-                Start topic
-              </Button>
-            </CardFooter>
-          </Card>
-        ) : null}
-
-        {!loadingTopics && dueTotal > 0 ? (
-          <Card className={cn("border-primary/30 bg-primary text-primary-foreground", deepLinkTopic ? "mt-4" : "mt-6 sm:mt-8")}>
-            <CardHeader>
-              <CardDescription className="text-primary-foreground/80">Recommended</CardDescription>
-              <CardTitle className="text-primary-foreground">Review due words</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-primary-foreground/80">
-                {dueTotal} card{dueTotal === 1 ? "" : "s"} waiting across all topics
+      <AuthenticatedShell
+        width={APP_CONTENT_WIDTH}
+        className="pt-6 sm:pt-8"
+        user={shellUser.user}
+        loading={shellUser.loading}
+      >
+        <PageFrame
+          header={
+            <>
+              <h1 className="font-display text-3xl text-brand-ink sm:text-4xl">Flashcards</h1>
+              <p className="mt-2 max-w-xl text-sm text-muted-foreground sm:mt-3 sm:text-base">
+                Pick a life topic to learn related words together. Use review-due to keep older
+                words from fading.
               </p>
-            </CardContent>
-            <CardFooter>
-              <Button
-                type="button"
-                variant="secondary"
-                className="min-h-11 w-full touch-manipulation sm:w-auto"
-                disabled={loadingSession}
-                onClick={() => void startSession({ mode: "due", title: "Review due words" })}
-                aria-label={`Review ${dueTotal} due words`}
-              >
-                Start review
-              </Button>
-            </CardFooter>
-          </Card>
-        ) : null}
+            </>
+          }
+          contentClassName="pb-2"
+        >
+          {loadingTopics ? <FlashcardsTopicsSkeleton /> : null}
 
-        <div className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2 lg:grid-cols-3">
-          {topics.map((topic) => (
-            <Card key={topic.id} size="sm" className="transition-colors hover:bg-accent/40">
+          {!loadingTopics && deepLinkTopic ? (
+            <Card className="border-primary/30">
               <CardHeader>
-                <CardTitle>{topic.title}</CardTitle>
-                <CardDescription>{topic.description}</CardDescription>
+                <CardDescription>From vocabulary</CardDescription>
+                <CardTitle>Practice {deepLinkTopic.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  {topic.dueCount > 0 ? `${topic.dueCount} due · ` : ""}
-                  {topic.newCount} new · {topic.learningCount + topic.knownCount} started
+                <p className="text-sm text-muted-foreground">{deepLinkTopic.description}</p>
+              </CardContent>
+              <CardFooter>
+                <Button
+                  type="button"
+                  className="min-h-11 w-full touch-manipulation sm:w-auto"
+                  disabled={
+                    loadingSession ||
+                    (deepLinkTopic.dueCount === 0 && deepLinkTopic.newCount === 0)
+                  }
+                  onClick={() =>
+                    void startSession({
+                      mode: "topic",
+                      topicId: deepLinkTopic.id,
+                      title: deepLinkTopic.title,
+                    })
+                  }
+                  aria-label={`Start ${deepLinkTopic.title} flashcards`}
+                >
+                  Start topic
+                </Button>
+              </CardFooter>
+            </Card>
+          ) : null}
+
+          {!loadingTopics && dueTotal > 0 ? (
+            <Card
+              className={cn(
+                "border-primary/30 bg-primary text-primary-foreground",
+                deepLinkTopic ? "mt-4" : null,
+              )}
+            >
+              <CardHeader>
+                <CardDescription className="text-primary-foreground/80">
+                  Recommended
+                </CardDescription>
+                <CardTitle className="text-primary-foreground">Review due words</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-primary-foreground/80">
+                  {dueTotal} card{dueTotal === 1 ? "" : "s"} waiting across all topics
                 </p>
               </CardContent>
               <CardFooter>
                 <Button
                   type="button"
-                  variant="outline"
-                  className="min-h-11 w-full touch-manipulation"
-                  disabled={loadingSession || (topic.dueCount === 0 && topic.newCount === 0)}
-                  onClick={() =>
-                    void startSession({
-                      mode: "topic",
-                      topicId: topic.id,
-                      title: topic.title,
-                    })
-                  }
-                  aria-label={`Study topic ${topic.title}`}
+                  variant="secondary"
+                  className="min-h-11 w-full touch-manipulation sm:w-auto"
+                  disabled={loadingSession}
+                  onClick={() => void startSession({ mode: "due", title: "Review due words" })}
+                  aria-label={`Review ${dueTotal} due words`}
                 >
-                  Study topic
+                  Start review
                 </Button>
               </CardFooter>
             </Card>
-          ))}
-        </div>
+          ) : null}
+
+          <div
+            className={cn(
+              "grid gap-3 sm:grid-cols-2 lg:grid-cols-3",
+              !loadingTopics && (deepLinkTopic || dueTotal > 0) ? "mt-6" : null,
+            )}
+          >
+            {topics.map((topic) => (
+              <Card key={topic.id} size="sm" className="transition-colors hover:bg-accent/40">
+                <CardHeader>
+                  <CardTitle>{topic.title}</CardTitle>
+                  <CardDescription>{topic.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    {topic.dueCount > 0 ? `${topic.dueCount} due · ` : ""}
+                    {topic.newCount} new · {topic.learningCount + topic.knownCount} started
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="min-h-11 w-full touch-manipulation"
+                    disabled={loadingSession || (topic.dueCount === 0 && topic.newCount === 0)}
+                    onClick={() =>
+                      void startSession({
+                        mode: "topic",
+                        topicId: topic.id,
+                        title: topic.title,
+                      })
+                    }
+                    aria-label={`Study topic ${topic.title}`}
+                  >
+                    Study topic
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </PageFrame>
       </AuthenticatedShell>
     );
   }
 
   if (done) {
     return (
-      <AuthenticatedShell width="md" centered>
+      <AuthenticatedShell
+        width="md"
+        centered
+        user={shellUser.user}
+        loading={shellUser.loading}
+      >
         <Card>
           <CardHeader>
             <CardTitle className="font-display text-2xl sm:text-3xl">Session complete</CardTitle>
@@ -511,9 +541,16 @@ const FlashcardsPageContent = () => {
 
   if (loadingSession || !current) {
     return (
-      <AuthenticatedShell width="md" centered>
-        <Skeleton className="h-8 w-40 max-w-full" />
-        <Skeleton className="mt-6 h-64 w-full" />
+      <AuthenticatedShell
+        width={APP_CONTENT_WIDTH}
+        className={cn(
+          "py-0 pt-2 sm:pt-3",
+          "pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-6",
+        )}
+        user={shellUser.user}
+        loading={shellUser.loading}
+      >
+        <FlashcardsSessionSkeleton />
       </AuthenticatedShell>
     );
   }
@@ -522,17 +559,15 @@ const FlashcardsPageContent = () => {
 
   return (
     <AuthenticatedShell
-      width="2xl"
+      width={APP_CONTENT_WIDTH}
       className={cn(
-        // Header is outside main — size to the remaining viewport so ratings
-        // never force a page scroll. Side padding on the card stage is the
-        // bloom room; keep overflow hidden only on this shell.
-        "flex min-h-0 flex-col overflow-hidden py-0 pt-2 sm:pt-3",
-        "h-[calc(100dvh-3.5rem)] max-h-[calc(100dvh-3.5rem)]",
+        "py-0 pt-2 sm:pt-3",
         "pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-6",
       )}
+      user={shellUser.user}
+      loading={shellUser.loading}
     >
-      <div className="mx-auto flex w-full max-w-lg shrink-0 items-start justify-between gap-3">
+      <div className={cn(STUDY_CONTENT_CLASS, "flex shrink-0 items-start justify-between gap-3")}>
         <Button
           type="button"
           variant="ghost"
@@ -548,7 +583,7 @@ const FlashcardsPageContent = () => {
         </p>
       </div>
 
-      <div className="mx-auto mt-2 w-full max-w-lg shrink-0 space-y-2 sm:mt-3">
+      <div className={cn(STUDY_CONTENT_CLASS, "mt-2 shrink-0 space-y-2 sm:mt-3")}>
         <Progress value={progressValue} className="w-full gap-2">
           <ProgressLabel className="truncate text-xs sm:text-sm">{study.title}</ProgressLabel>
           <ProgressValue className="text-xs sm:text-sm">
@@ -562,7 +597,7 @@ const FlashcardsPageContent = () => {
       </div>
 
       {error ? (
-        <div className="mx-auto mt-2 w-full max-w-lg shrink-0">
+        <div className={cn(STUDY_CONTENT_CLASS, "mt-2 shrink-0")}>
           <ErrorAlert message={error} />
         </div>
       ) : null}
@@ -574,7 +609,7 @@ const FlashcardsPageContent = () => {
       <div className="flex min-h-0 w-full flex-1 items-center justify-center overflow-hidden px-10 sm:px-16 md:px-24">
         <div
           key={`${current.wordId}-${current.promptType}-${index}`}
-          className="w-full max-w-lg animate-in fade-in-0 duration-300"
+          className={cn(STUDY_CONTENT_CLASS, "animate-in fade-in-0 duration-300")}
         >
           <FlashcardStudyCard
             card={current}
@@ -594,7 +629,8 @@ const FlashcardsPageContent = () => {
 
       <div
         className={cn(
-          "mx-auto w-full max-w-lg shrink-0 px-1 md:px-0",
+          STUDY_CONTENT_CLASS,
+          "shrink-0 px-1 md:px-0",
           "min-h-14 sm:min-h-12",
         )}
       >
@@ -620,10 +656,8 @@ export default function FlashcardsPage() {
   return (
     <Suspense
       fallback={
-        <AuthenticatedShell width="xl" user={null} loading>
-          <Skeleton className="h-8 w-32 max-w-full" />
-          <Skeleton className="mt-6 h-10 w-64 max-w-full" />
-          <Skeleton className="mt-8 h-40 w-full" />
+        <AuthenticatedShell width={APP_CONTENT_WIDTH} user={null} loading className="pt-6 sm:pt-8">
+          <FlashcardsPageSuspenseSkeleton />
         </AuthenticatedShell>
       }
     >

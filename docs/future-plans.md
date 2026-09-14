@@ -26,7 +26,7 @@ Features that deepen the vocabulary book without replacing flashcards.
 | Why | Spelling alone is not enough for German (Umlauts, final-obstruent, article+noun stress). Audio closes the loop between reading and speaking. |
 | Scope | IPA string per word; playable audio (TTS or recorded). Show on `/vocabulary/[wordId]`; optional play control after flashcard flip. |
 | Out of scope | Full speech recognition / speaking drills (separate category). |
-| Suggested approach | Add nullable `ipa` and `audioUrl` (or `audioKey`) on `Word`. Prefer one TTS pipeline (for example Azure/Google/Amazon) generating files into object storage, or vendor stream URLs with caching. Seed IPA for high-frequency A1 first. Do not block list/search on audio availability. |
+| Suggested approach | Add nullable `ipa` and `audioUrl` (or `audioKey`) on `Word`. Reuse the Learn Edge TTS pipeline (`pnpm --dir backend audio:generate` → `audio:upload-r2`, manifest under `content/audio-manifest.json`) or vendor stream URLs with caching. Seed IPA for high-frequency A1 first. Do not block list/search on audio availability. |
 | Dependencies | Content licensing for recorded voices if not TTS; CDN/storage; schema migration. |
 | Done when | ≥80% of A1 seeded words have IPA; detail page plays audio when present; missing audio does not error the page; API returns `ipa` / `audioUrl` as nullable camelCase fields. |
 
@@ -163,18 +163,18 @@ Features that deepen the vocabulary book without replacing flashcards.
 | Status | `next` |
 | Goal | Complete unit/lesson graphs for A1, then A2/B1, with exercises wired to words where useful. |
 | Why | Vocabulary alone is not a course; grammar and skills need a path. |
-| Scope | JSON content under `backend/content/lessons/`; seed idempotent; skill tags consistent. |
-| Done when | Learner can progress through published units without empty stubs; path/next never points at missing lessons. |
+| Scope | **A1 complete path shipped** (16 units under `backend/content/lessons/a1-unit-*.json`). A2/B1 content and `Exercise.wordId` wiring still open. |
+| Done when | Learner can progress through published A1 units without empty stubs; path/next never points at missing lessons; A2/B1 filled the same way. |
 
 ### 4.2 Grammar explainers beside exercises
 
 | Field | Detail |
 | --- | --- |
-| Status | `planned` |
-| Goal | Short, focused grammar notes (Nominativ vs Akkusativ, separable verbs) linked from lessons. |
+| Status | `next` |
+| Goal | Short, focused grammar notes (and phrase/dialogue/listen/speak teach blocks) inside each lesson before practice. |
 | Why | Drills without explanation feel random. |
-| Scope | Content blocks, not a full grammar textbook; open from lesson UI. |
-| Done when | At least A1 Unit 1 exercises that need case/gender link to an explainer. |
+| Scope | **Shipped for A1:** `Lesson.teachBlocks` + lesson player teach phase; authoring in [lesson-authoring.md](./lesson-authoring.md). Pre-generated Edge TTS (`de-DE-KatjaNeural`) for speakable German with browser Speech Synthesis fallback. Remaining: vocabulary word audio / IPA (see 1.1); STT. |
+| Done when | A1 lessons that need a rule open with a teach block before graded drills. |
 
 ---
 

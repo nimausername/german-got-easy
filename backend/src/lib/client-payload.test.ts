@@ -46,6 +46,34 @@ describe("toClientExercisePayload", () => {
     assert.deepEqual([...(safe.rights as string[])].sort(), ["Good morning", "Hello"].sort());
     assert.equal("pairs" in safe, false);
   });
+
+  it("keeps speakText for listen_mcq and strips the answer", () => {
+    const safe = toClientExercisePayload("listen_mcq", {
+      speakText: "Guten Morgen",
+      options: ["Guten Morgen", "Guten Abend"],
+      answer: "Guten Morgen",
+    });
+    assert.equal(safe.speakText, "Guten Morgen");
+    assert.deepEqual(safe.options, ["Guten Morgen", "Guten Abend"]);
+    assert.equal("answer" in safe, false);
+    if ("audioUrl" in safe) {
+      assert.match(String(safe.audioUrl), /^\/v1\/media\/audio\/[a-f0-9]{32}\.mp3$/);
+    }
+  });
+
+  it("exposes speak_prompt model text without secrets", () => {
+    const safe = toClientExercisePayload("speak_prompt", {
+      modelText: "Guten Tag!",
+      hint: "Speak clearly",
+      answer: "should-not-leak",
+    });
+    assert.equal(safe.modelText, "Guten Tag!");
+    assert.equal(safe.hint, "Speak clearly");
+    assert.equal("answer" in safe, false);
+    if ("audioUrl" in safe) {
+      assert.match(String(safe.audioUrl), /^\/v1\/media\/audio\/[a-f0-9]{32}\.mp3$/);
+    }
+  });
 });
 
 describe("gradeMatchAnswer", () => {

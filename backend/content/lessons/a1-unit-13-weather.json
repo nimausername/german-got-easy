@@ -1,0 +1,197 @@
+[
+  {
+    "slug": "weather",
+    "title": "Weather & seasons",
+    "description": "Describe the weather and name the seasons.",
+    "lessons": [
+      {
+        "slug": "weather-words",
+        "title": "How is the weather?",
+        "canDo": "I can describe basic weather.",
+        "summary": "sonnig, regnerisch, kalt, warm.",
+        "skillTags": ["vocabulary", "phrases", "listening"],
+        "teachBlocks": [
+          {
+            "type": "phrases",
+            "title": "Weather words",
+            "items": [
+              { "de": "das Wetter", "en": "the weather" },
+              { "de": "sonnig", "en": "sunny" },
+              { "de": "regnerisch / es regnet", "en": "rainy / it is raining" },
+              { "de": "kalt", "en": "cold" },
+              { "de": "warm", "en": "warm" },
+              { "de": "windig", "en": "windy" }
+            ]
+          },
+          {
+            "type": "pattern",
+            "title": "Ask and answer",
+            "template": "Wie ist das Wetter? — Es ist ____.",
+            "meaning": "How is the weather? — It is ____.",
+            "examples": ["Es ist sonnig.", "Es ist kalt.", "Es regnet."]
+          },
+          {
+            "type": "listen_model",
+            "title": "Listen",
+            "text": "Heute ist das Wetter schön. Es ist sonnig.",
+            "hint": "schön = nice"
+          }
+        ],
+        "exercises": [
+          {
+            "type": "match",
+            "prompt": "Match the weather",
+            "payload": {
+              "pairs": [
+                { "left": "sonnig", "right": "sunny" },
+                { "left": "kalt", "right": "cold" },
+                { "left": "warm", "right": "warm" },
+                { "left": "windig", "right": "windy" }
+              ]
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "Wie ist das _____?",
+            "payload": { "answer": "Wetter", "accepted": ["Wetter"] }
+          },
+          {
+            "type": "listen_mcq",
+            "prompt": "Listen. How is the weather?",
+            "payload": {
+              "speakText": "Es ist kalt.",
+              "options": ["hot", "cold", "rainy", "windy"],
+              "answer": "cold"
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Say today's weather in one short line.",
+            "payload": {
+              "modelText": "Es ist sonnig.",
+              "hint": "Es ist + adjective, or Es regnet."
+            }
+          }
+        ]
+      },
+      {
+        "slug": "seasons",
+        "title": "Seasons",
+        "canDo": "I can name the four seasons.",
+        "summary": "Frühling, Sommer, Herbst, Winter.",
+        "skillTags": ["vocabulary", "writing"],
+        "teachBlocks": [
+          {
+            "type": "phrases",
+            "title": "The year",
+            "items": [
+              { "de": "der Frühling", "en": "spring" },
+              { "de": "der Sommer", "en": "summer" },
+              { "de": "der Herbst", "en": "autumn / fall" },
+              { "de": "der Winter", "en": "winter" },
+              { "de": "im Sommer", "en": "in summer" }
+            ]
+          },
+          {
+            "type": "explain",
+            "title": "im + season",
+            "body": "Use im before seasons: im Sommer, im Winter. Example: Im Winter ist es kalt. Im Sommer schwimme ich gern.",
+            "examples": [
+              { "de": "Im Herbst regnet es oft.", "en": "In autumn it often rains." },
+              { "de": "Im Frühling ist es warm.", "en": "In spring it is warm." }
+            ]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "match",
+            "prompt": "Match the seasons",
+            "payload": {
+              "pairs": [
+                { "left": "Frühling", "right": "spring" },
+                { "left": "Sommer", "right": "summer" },
+                { "left": "Herbst", "right": "autumn" },
+                { "left": "Winter", "right": "winter" }
+              ]
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "___ Sommer ist es warm.",
+            "payload": { "answer": "Im", "accepted": ["Im", "im"] }
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which season is usually coldest?",
+            "payload": {
+              "options": ["Frühling", "Sommer", "Herbst", "Winter"],
+              "answer": "Winter"
+            }
+          },
+          {
+            "type": "short_write",
+            "prompt": "Write: In winter it is cold.",
+            "payload": {
+              "answer": "Im Winter ist es kalt.",
+              "accepted": ["Im Winter ist es kalt.", "Im Winter ist es kalt"]
+            }
+          }
+        ]
+      },
+      {
+        "slug": "weather-chat",
+        "title": "Weather small talk",
+        "canDo": "I can make short weather small talk.",
+        "summary": "Schönes Wetter heute! / Schade.",
+        "skillTags": ["phrases", "speaking", "reading"],
+        "teachBlocks": [
+          {
+            "type": "dialogue",
+            "title": "Outside",
+            "lines": [
+              { "speaker": "A", "de": "Schönes Wetter heute!", "en": "Nice weather today!" },
+              { "speaker": "B", "de": "Ja, es ist warm und sonnig.", "en": "Yes, it is warm and sunny." },
+              { "speaker": "A", "de": "Perfekt für einen Spaziergang.", "en": "Perfect for a walk." }
+            ]
+          },
+          {
+            "type": "phrases",
+            "title": "Reactions",
+            "items": [
+              { "de": "Schönes Wetter!", "en": "Nice weather!" },
+              { "de": "Schlechtes Wetter.", "en": "Bad weather." },
+              { "de": "Schade.", "en": "What a pity." },
+              { "de": "Zum Glück!", "en": "Luckily!" }
+            ]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "mcq",
+            "prompt": "\"Schönes Wetter heute!\" means…",
+            "payload": {
+              "options": ["Bad weather today", "Nice weather today", "No weather today", "Cold coffee today"],
+              "answer": "Nice weather today"
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Comment on nice weather.",
+            "payload": {
+              "modelText": "Schönes Wetter heute!",
+              "hint": "Friendly small talk."
+            }
+          },
+          {
+            "type": "reorder",
+            "prompt": "Order: \"Yes, it is warm\"",
+            "payload": {
+              "tokens": ["Ja", "es", "ist", "warm"],
+              "answer": ["Ja", "es", "ist", "warm"]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

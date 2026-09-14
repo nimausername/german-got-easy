@@ -1,0 +1,251 @@
+[
+  {
+    "slug": "numbers-time",
+    "title": "Numbers & time",
+    "description": "Count, name the days, and tell simple clock times.",
+    "lessons": [
+      {
+        "slug": "numbers-1-20",
+        "title": "Numbers 1–20",
+        "canDo": "I can say the numbers from 1 to 20.",
+        "summary": "eins, zwei, drei … zwanzig.",
+        "skillTags": ["vocabulary", "listening"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "Count with a steady rhythm",
+            "body": "Learn 1–12 first, then 13–20. Notice elf and zwölf are special. From 13, many numbers end with -zehn (dreizehn, vierzehn). Twenty is zwanzig.",
+            "examples": [
+              { "de": "eins, zwei, drei", "en": "one, two, three" },
+              { "de": "fünfzehn, zwanzig", "en": "fifteen, twenty" }
+            ]
+          },
+          {
+            "type": "phrases",
+            "title": "Key numbers",
+            "items": [
+              { "de": "eins", "en": "1" },
+              { "de": "fünf", "en": "5" },
+              { "de": "zehn", "en": "10" },
+              { "de": "zwölf", "en": "12" },
+              { "de": "fünfzehn", "en": "15" },
+              { "de": "zwanzig", "en": "20" }
+            ]
+          },
+          {
+            "type": "listen_model",
+            "title": "Listen",
+            "text": "eins zwei drei vier fünf",
+            "hint": "Count along out loud."
+          }
+        ],
+        "exercises": [
+          {
+            "type": "mcq",
+            "prompt": "What is \"twelve\" in German?",
+            "payload": {
+              "options": ["zwanzig", "zwölf", "zwei", "zehn"],
+              "answer": "zwölf"
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "Write the number: 7 → _____",
+            "payload": { "answer": "sieben", "accepted": ["sieben"] }
+          },
+          {
+            "type": "match",
+            "prompt": "Match numbers",
+            "payload": {
+              "pairs": [
+                { "left": "eins", "right": "1" },
+                { "left": "fünf", "right": "5" },
+                { "left": "zehn", "right": "10" },
+                { "left": "zwanzig", "right": "20" }
+              ]
+            }
+          },
+          {
+            "type": "listen_mcq",
+            "prompt": "Listen. Which number?",
+            "payload": {
+              "speakText": "fünfzehn",
+              "options": ["5", "12", "15", "20"],
+              "answer": "15"
+            }
+          }
+        ]
+      },
+      {
+        "slug": "numbers-21-100",
+        "title": "Numbers to 100",
+        "canDo": "I can read bigger numbers like 21 and 45.",
+        "summary": "einundzwanzig: ones before tens.",
+        "skillTags": ["vocabulary", "grammar"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "Ones before tens",
+            "body": "From 21, German says the ones first: einundzwanzig = one-and-twenty. Same idea for 45: fünfundvierzig. Learn the tens: dreißig, vierzig, fünfzig, … hundert.",
+            "examples": [
+              { "de": "einundzwanzig", "en": "21" },
+              { "de": "fünfundvierzig", "en": "45" },
+              { "de": "hundert", "en": "100" }
+            ]
+          },
+          {
+            "type": "pattern",
+            "title": "Build a number",
+            "template": "____und____",
+            "meaning": "ones + und + tens",
+            "examples": ["dreiunddreißig", "neunundneunzig"]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "mcq",
+            "prompt": "What is 21 in German?",
+            "payload": {
+              "options": ["zwanzigeins", "einundzwanzig", "einszwanzig", "zwanzigundeins"],
+              "answer": "einundzwanzig"
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "Write 30 in German.",
+            "payload": { "answer": "dreißig", "accepted": ["dreißig", "dreissig"] }
+          },
+          {
+            "type": "short_write",
+            "prompt": "Write 42 in German.",
+            "payload": {
+              "answer": "zweiundvierzig",
+              "accepted": ["zweiundvierzig"]
+            }
+          }
+        ]
+      },
+      {
+        "slug": "days",
+        "title": "Days of the week",
+        "canDo": "I can name the days of the week.",
+        "summary": "Montag to Sonntag.",
+        "skillTags": ["vocabulary", "phrases"],
+        "teachBlocks": [
+          {
+            "type": "phrases",
+            "title": "The week",
+            "items": [
+              { "de": "Montag", "en": "Monday" },
+              { "de": "Dienstag", "en": "Tuesday" },
+              { "de": "Mittwoch", "en": "Wednesday" },
+              { "de": "Donnerstag", "en": "Thursday" },
+              { "de": "Freitag", "en": "Friday" },
+              { "de": "Samstag / Sonnabend", "en": "Saturday" },
+              { "de": "Sonntag", "en": "Sunday" }
+            ]
+          },
+          {
+            "type": "explain",
+            "title": "On Monday = am Montag",
+            "body": "Use am before a day: am Montag. The weekend is das Wochenende. Today is heute. Tomorrow is morgen.",
+            "examples": [
+              { "de": "Am Freitag arbeite ich.", "en": "I work on Friday." },
+              { "de": "Heute ist Sonntag.", "en": "Today is Sunday." }
+            ]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "match",
+            "prompt": "Match the days",
+            "payload": {
+              "pairs": [
+                { "left": "Montag", "right": "Monday" },
+                { "left": "Freitag", "right": "Friday" },
+                { "left": "Sonntag", "right": "Sunday" },
+                { "left": "Mittwoch", "right": "Wednesday" }
+              ]
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "___ Montag (on Monday)",
+            "payload": { "answer": "Am", "accepted": ["Am", "am"] }
+          },
+          {
+            "type": "mcq",
+            "prompt": "What does \"heute\" mean?",
+            "payload": {
+              "options": ["yesterday", "today", "tomorrow", "evening"],
+              "answer": "today"
+            }
+          }
+        ]
+      },
+      {
+        "slug": "clock",
+        "title": "Simple clock times",
+        "canDo": "I can say full hours like Es ist drei Uhr.",
+        "summary": "Es ist … Uhr for full hours.",
+        "skillTags": ["phrases", "listening", "speaking"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "Full hours first",
+            "body": "Start with whole hours: Es ist drei Uhr (It is three o'clock). Half past uses halb + next hour: halb vier ≈ 3:30. Keep A1 simple: master Es ist … Uhr first.",
+            "examples": [
+              { "de": "Es ist zwei Uhr.", "en": "It is two o'clock." },
+              { "de": "Es ist zwölf Uhr.", "en": "It is twelve o'clock." }
+            ]
+          },
+          {
+            "type": "pattern",
+            "title": "Tell the hour",
+            "template": "Es ist ____ Uhr.",
+            "meaning": "It is ____ o'clock.",
+            "examples": ["Es ist eins Uhr.", "Es ist acht Uhr."]
+          },
+          {
+            "type": "listen_model",
+            "title": "Listen",
+            "text": "Es ist fünf Uhr.",
+            "hint": "Repeat after the voice."
+          }
+        ],
+        "exercises": [
+          {
+            "type": "cloze",
+            "prompt": "Es ist drei ____.",
+            "payload": { "answer": "Uhr", "accepted": ["Uhr"] }
+          },
+          {
+            "type": "listen_mcq",
+            "prompt": "Listen. What time?",
+            "payload": {
+              "speakText": "Es ist acht Uhr.",
+              "options": ["6:00", "7:00", "8:00", "9:00"],
+              "answer": "8:00"
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Say: It is ten o'clock.",
+            "payload": {
+              "modelText": "Es ist zehn Uhr.",
+              "hint": "Es ist + number + Uhr"
+            }
+          },
+          {
+            "type": "mcq",
+            "prompt": "How do you say 4:00?",
+            "payload": {
+              "options": ["Es ist vier Uhr.", "Es vier ist Uhr.", "Vier es Uhr ist.", "Uhr ist vier."],
+              "answer": "Es ist vier Uhr."
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

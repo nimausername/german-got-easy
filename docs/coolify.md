@@ -59,6 +59,10 @@ After deploy, open the **web** domain and register a user. `GET /health` on the 
 | `RUN_SEED` | `true` | Upserts lesson/word content after migrate. Safe to leave on. |
 | `WORD_DAILY_RELEASE_LIMIT` | `20` | Queued words unlocked per UTC day (API catch-up + `word:release`). |
 | `WORD_RELEASE_CRON_ENABLED` | `true` | Hourly drip catch-up inside the API process. Set `false` to rely on an external cron only. |
+| `AUDIO_PUBLIC_BASE_URL` | empty (required in production) | Public R2/CDN origin for hashed MP3s (no trailing slash). When set, lesson payloads use that origin. |
+| `R2_BUCKET` / `R2_ENDPOINT` / `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` | empty | Only for `pnpm --dir backend audio:upload-r2` on a machine that has local MP3s. EU buckets need the `.eu.` endpoint. |
+
+Lesson MP3s are **not** shipped in the Docker image. Generate locally, upload to R2, commit only `content/audio-manifest.json`.
 
 You do **not** set `API_URL`. The web container always proxies to `http://backend:4000`. If Coolify still lists `API_URL` from an older revision, delete that variable.
 

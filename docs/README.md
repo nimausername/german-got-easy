@@ -10,6 +10,8 @@ This app is the learning API and the web UI. You host **PostgreSQL** and **Keycl
 | [Keycloak](./keycloak.md) | Operators | Realm and `german-backend` client. This app does not run Keycloak |
 | [Contributing](../CONTRIBUTING.md) | Contributors | Local `pnpm` setup, PR guidelines, licenses |
 | [Future plans](./future-plans.md) | Contributors | Backlog of features to add later, with scope notes |
+| [Curriculum](./curriculum.md) | Contributors | Learn path pedagogy: CEFR units, teach → practice, skill tags, A1 map |
+| [Lesson authoring](./lesson-authoring.md) | Contributors | JSON shapes for units, teach blocks, and exercises |
 | [Vocabulary book](./vocabulary-book.md) | Contributors | What shipped in Vocabulary Book v1 |
 | [Image attribution](./image-attribution.md) | Contributors | Free Wikimedia Commons images for concrete nouns |
 

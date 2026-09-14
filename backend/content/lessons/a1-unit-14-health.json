@@ -1,0 +1,202 @@
+[
+  {
+    "slug": "health",
+    "title": "Health basics",
+    "description": "Say how you feel and use simple doctor phrases.",
+    "lessons": [
+      {
+        "slug": "how-are-you",
+        "title": "How are you?",
+        "canDo": "I can say how I feel.",
+        "summary": "Mir geht es gut / nicht so gut.",
+        "skillTags": ["phrases", "speaking", "listening"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "Feelings with Mir geht es…",
+            "body": "Ask Wie geht es dir? (informal) or Wie geht es Ihnen? (polite). Answer: Mir geht es gut. / Mir geht es nicht so gut. / Ich bin müde.",
+            "examples": [
+              { "de": "Wie geht es dir?", "en": "How are you?" },
+              { "de": "Mir geht es gut, danke.", "en": "I am fine, thanks." }
+            ]
+          },
+          {
+            "type": "phrases",
+            "title": "Feelings",
+            "items": [
+              { "de": "müde", "en": "tired" },
+              { "de": "krank", "en": "ill / sick" },
+              { "de": "gut", "en": "well / good" },
+              { "de": "Ich bin müde.", "en": "I am tired." },
+              { "de": "Mir ist schlecht.", "en": "I feel sick / nauseous." }
+            ]
+          },
+          {
+            "type": "listen_model",
+            "title": "Listen",
+            "text": "Mir geht es nicht so gut. Ich bin krank.",
+            "hint": "nicht so gut = not so well"
+          }
+        ],
+        "exercises": [
+          {
+            "type": "match",
+            "prompt": "Match the feelings",
+            "payload": {
+              "pairs": [
+                { "left": "müde", "right": "tired" },
+                { "left": "krank", "right": "ill" },
+                { "left": "Mir geht es gut.", "right": "I am fine." },
+                { "left": "Wie geht es dir?", "right": "How are you?" }
+              ]
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "Mir _____ es gut.",
+            "payload": { "answer": "geht", "accepted": ["geht"] }
+          },
+          {
+            "type": "listen_mcq",
+            "prompt": "Listen. How does the person feel?",
+            "payload": {
+              "speakText": "Ich bin müde.",
+              "options": ["hungry", "tired", "happy", "cold"],
+              "answer": "tired"
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Answer: How are you?",
+            "payload": {
+              "modelText": "Mir geht es gut, danke.",
+              "hint": "Or: Ich bin müde."
+            }
+          }
+        ]
+      },
+      {
+        "slug": "body-pain",
+        "title": "It hurts here",
+        "canDo": "I can say a simple pain phrase.",
+        "summary": "Kopfschmerzen, Bauchschmerzen, Ich habe …",
+        "skillTags": ["vocabulary", "phrases"],
+        "teachBlocks": [
+          {
+            "type": "phrases",
+            "title": "Body & pain",
+            "items": [
+              { "de": "der Kopf", "en": "head" },
+              { "de": "der Bauch", "en": "stomach" },
+              { "de": "der Hals", "en": "throat / neck" },
+              { "de": "Kopfschmerzen", "en": "headache" },
+              { "de": "Ich habe Kopfschmerzen.", "en": "I have a headache." },
+              { "de": "Es tut weh.", "en": "It hurts." }
+            ]
+          },
+          {
+            "type": "pattern",
+            "title": "I have … pain",
+            "template": "Ich habe ____.",
+            "meaning": "I have ____.",
+            "examples": ["Ich habe Kopfschmerzen.", "Ich habe Halsschmerzen."]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "mcq",
+            "prompt": "\"Ich habe Kopfschmerzen\" means…",
+            "payload": {
+              "options": ["I am hungry", "I have a headache", "I am cold", "I need coffee"],
+              "answer": "I have a headache"
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "Ich habe _____. (headache)",
+            "payload": { "answer": "Kopfschmerzen", "accepted": ["Kopfschmerzen"] }
+          },
+          {
+            "type": "match",
+            "prompt": "Match body words",
+            "payload": {
+              "pairs": [
+                { "left": "Kopf", "right": "head" },
+                { "left": "Bauch", "right": "stomach" },
+                { "left": "Hals", "right": "throat" },
+                { "left": "Es tut weh.", "right": "It hurts." }
+              ]
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Say you have a headache.",
+            "payload": {
+              "modelText": "Ich habe Kopfschmerzen.",
+              "hint": "habe + Kopfschmerzen"
+            }
+          }
+        ]
+      },
+      {
+        "slug": "at-doctor",
+        "title": "At the doctor",
+        "canDo": "I can use a few doctor-visit phrases.",
+        "summary": "Arzt, Termin, Rezept, Apotheke.",
+        "skillTags": ["phrases", "reading", "speaking"],
+        "teachBlocks": [
+          {
+            "type": "dialogue",
+            "title": "At the practice",
+            "lines": [
+              { "speaker": "You", "de": "Guten Tag. Ich habe einen Termin.", "en": "Hello. I have an appointment." },
+              { "speaker": "Doctor", "de": "Was fehlt Ihnen?", "en": "What is wrong? / What seems to be the problem?" },
+              { "speaker": "You", "de": "Ich habe Halsschmerzen.", "en": "I have a sore throat." }
+            ]
+          },
+          {
+            "type": "phrases",
+            "title": "Health places",
+            "items": [
+              { "de": "der Arzt / die Ärztin", "en": "doctor" },
+              { "de": "die Apotheke", "en": "pharmacy" },
+              { "de": "das Rezept", "en": "prescription" },
+              { "de": "Was fehlt Ihnen?", "en": "What is the matter?" }
+            ]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "mcq",
+            "prompt": "Where do you buy medicine?",
+            "payload": {
+              "options": ["Bahnhof", "Apotheke", "Kino", "Supermarkt only for tickets"],
+              "answer": "Apotheke"
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "Ich habe einen _____. (appointment)",
+            "payload": { "answer": "Termin", "accepted": ["Termin"] }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Tell the doctor you have a sore throat.",
+            "payload": {
+              "modelText": "Ich habe Halsschmerzen.",
+              "hint": "Short and clear."
+            }
+          },
+          {
+            "type": "reorder",
+            "prompt": "Order: \"I have an appointment\"",
+            "payload": {
+              "tokens": ["Ich", "habe", "einen", "Termin"],
+              "answer": ["Ich", "habe", "einen", "Termin"]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

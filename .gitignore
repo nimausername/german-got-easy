@@ -47,6 +47,9 @@ docker-compose.override.yml
 *.bak
 backend/prisma/migrations/**/migration_lock.toml.bak
 
+# Generated lesson TTS — served from Cloudflare R2 in prod
+backend/content/audio/*.mp3
+
 # Test artifacts
 /tmp/
 *.tmp

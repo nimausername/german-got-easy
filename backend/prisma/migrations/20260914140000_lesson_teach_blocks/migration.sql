@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Lesson" ADD COLUMN "canDo" TEXT NOT NULL DEFAULT '';
+ALTER TABLE "Lesson" ADD COLUMN "summary" TEXT;
+ALTER TABLE "Lesson" ADD COLUMN "teachBlocks" JSONB NOT NULL DEFAULT '[]';

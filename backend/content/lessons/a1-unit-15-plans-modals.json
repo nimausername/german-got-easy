@@ -1,0 +1,265 @@
+[
+  {
+    "slug": "plans-modals",
+    "title": "Plans & modals",
+    "description": "Make appointments and use können, müssen, wollen.",
+    "lessons": [
+      {
+        "slug": "termin",
+        "title": "Making a Termin",
+        "canDo": "I can suggest a time for a meeting.",
+        "summary": "Haben Sie Zeit? / Passt es dir…?",
+        "skillTags": ["phrases", "speaking"],
+        "teachBlocks": [
+          {
+            "type": "phrases",
+            "title": "Appointment chunks",
+            "items": [
+              { "de": "der Termin", "en": "appointment / meeting" },
+              { "de": "Haben Sie Zeit?", "en": "Do you have time?" },
+              { "de": "Passt es dir am Montag?", "en": "Does Monday work for you?" },
+              { "de": "Ja, gerne.", "en": "Yes, gladly." },
+              { "de": "Leider nicht.", "en": "Unfortunately not." },
+              { "de": "Bis bald!", "en": "See you soon!" }
+            ]
+          },
+          {
+            "type": "dialogue",
+            "title": "Finding a time",
+            "lines": [
+              { "speaker": "A", "de": "Hast du am Freitag Zeit?", "en": "Do you have time on Friday?" },
+              { "speaker": "B", "de": "Am Nachmittag, ja.", "en": "In the afternoon, yes." },
+              { "speaker": "A", "de": "Super. Um drei Uhr?", "en": "Great. At three o'clock?" },
+              { "speaker": "B", "de": "Ja, gerne. Bis Freitag!", "en": "Yes, gladly. See you Friday!" }
+            ]
+          },
+          {
+            "type": "speak_model",
+            "title": "Say it",
+            "prompt": "Ask if someone has time on Monday.",
+            "modelText": "Hast du am Montag Zeit?",
+            "hint": "Or polite: Haben Sie am Montag Zeit?"
+          }
+        ],
+        "exercises": [
+          {
+            "type": "match",
+            "prompt": "Match appointment phrases",
+            "payload": {
+              "pairs": [
+                { "left": "Haben Sie Zeit?", "right": "Do you have time?" },
+                { "left": "Ja, gerne.", "right": "Yes, gladly." },
+                { "left": "Leider nicht.", "right": "Unfortunately not." },
+                { "left": "Bis bald!", "right": "See you soon!" }
+              ]
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "Hast du am Freitag _____?",
+            "payload": { "answer": "Zeit", "accepted": ["Zeit"] }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Suggest Friday at three.",
+            "payload": {
+              "modelText": "Passt es dir am Freitag um drei Uhr?",
+              "hint": "paszt / Passt es…"
+            }
+          },
+          {
+            "type": "mcq",
+            "prompt": "Someone cannot meet. A polite answer is…",
+            "payload": {
+              "options": ["Nein!", "Leider nicht.", "Gib Zeit!", "Das ist Brot."],
+              "answer": "Leider nicht."
+            }
+          }
+        ]
+      },
+      {
+        "slug": "koennen",
+        "title": "können — can",
+        "canDo": "I can say what I can or cannot do.",
+        "summary": "ich kann, du kannst, er/sie kann.",
+        "skillTags": ["grammar", "writing"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "Modal verb können",
+            "body": "können = can / to be able to. Forms: ich kann, du kannst, er/sie kann, wir können. The second verb stays at the end in infinitive: Ich kann Deutsch sprechen. Ich kann heute nicht kommen.",
+            "examples": [
+              { "de": "Kannst du mir helfen?", "en": "Can you help me?" },
+              { "de": "Ich kann nicht schwimmen.", "en": "I cannot swim." }
+            ]
+          },
+          {
+            "type": "pattern",
+            "title": "I can …",
+            "template": "Ich kann ____.",
+            "meaning": "I can ____.",
+            "examples": ["Ich kann gut kochen.", "Ich kann um acht Uhr."]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "cloze",
+            "prompt": "Ich _____ Deutsch sprechen.",
+            "payload": { "answer": "kann", "accepted": ["kann"] }
+          },
+          {
+            "type": "mcq",
+            "prompt": "Du ___ mir helfen.",
+            "payload": {
+              "options": ["kann", "kannst", "können", "könnt"],
+              "answer": "kannst"
+            }
+          },
+          {
+            "type": "reorder",
+            "prompt": "Order: \"I cannot come today\"",
+            "payload": {
+              "tokens": ["Ich", "kann", "heute", "nicht", "kommen"],
+              "answer": ["Ich", "kann", "heute", "nicht", "kommen"]
+            }
+          },
+          {
+            "type": "short_write",
+            "prompt": "Write: Can you help me?",
+            "payload": {
+              "answer": "Kannst du mir helfen?",
+              "accepted": ["Kannst du mir helfen?", "Kannst du mir helfen"]
+            }
+          }
+        ]
+      },
+      {
+        "slug": "muessen-wollen",
+        "title": "müssen and wollen",
+        "canDo": "I can say what I must do and what I want.",
+        "summary": "ich muss / ich will + infinitive at the end.",
+        "skillTags": ["grammar", "phrases"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "must and want",
+            "body": "müssen = must / have to: ich muss, du musst, er/sie muss. wollen = want to: ich will, du willst, er/sie will. Same word order as können: Ich muss arbeiten. Ich will nach Hause gehen.",
+            "examples": [
+              { "de": "Ich muss jetzt gehen.", "en": "I have to go now." },
+              { "de": "Willst du Kaffee?", "en": "Do you want coffee?" }
+            ]
+          },
+          {
+            "type": "phrases",
+            "title": "Useful lines",
+            "items": [
+              { "de": "Ich muss arbeiten.", "en": "I have to work." },
+              { "de": "Ich will schlafen.", "en": "I want to sleep." },
+              { "de": "Wir müssen üben.", "en": "We have to practice." }
+            ]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "cloze",
+            "prompt": "Ich _____ jetzt gehen. (must)",
+            "payload": { "answer": "muss", "accepted": ["muss"] }
+          },
+          {
+            "type": "mcq",
+            "prompt": "Ich ___ nach Hause gehen. (want)",
+            "payload": {
+              "options": ["will", "muss", "kann", "bin"],
+              "answer": "will"
+            }
+          },
+          {
+            "type": "match",
+            "prompt": "Match the modals",
+            "payload": {
+              "pairs": [
+                { "left": "können", "right": "can" },
+                { "left": "müssen", "right": "must" },
+                { "left": "wollen", "right": "want to" },
+                { "left": "möchten", "right": "would like" }
+              ]
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Say you have to work.",
+            "payload": {
+              "modelText": "Ich muss arbeiten.",
+              "hint": "muss + infinitive"
+            }
+          }
+        ]
+      },
+      {
+        "slug": "invitation",
+        "title": "Invitations",
+        "canDo": "I can invite someone and accept or decline.",
+        "summary": "Hast du Lust…? / Ja, gerne. / Nein, danke.",
+        "skillTags": ["phrases", "listening", "speaking"],
+        "teachBlocks": [
+          {
+            "type": "dialogue",
+            "title": "Coffee invite",
+            "lines": [
+              { "speaker": "A", "de": "Hast du Lust auf einen Kaffee?", "en": "Do you feel like a coffee?" },
+              { "speaker": "B", "de": "Ja, gerne. Wann?", "en": "Yes, gladly. When?" },
+              { "speaker": "A", "de": "Um vier Uhr im Café?", "en": "At four at the café?" },
+              { "speaker": "B", "de": "Perfekt.", "en": "Perfect." }
+            ]
+          },
+          {
+            "type": "listen_model",
+            "title": "Listen",
+            "text": "Hast du Lust auf einen Kaffee?",
+            "hint": "Lust auf = feel like"
+          }
+        ],
+        "exercises": [
+          {
+            "type": "mcq",
+            "prompt": "\"Hast du Lust auf einen Kaffee?\" means…",
+            "payload": {
+              "options": [
+                "Do you sell coffee?",
+                "Do you feel like a coffee?",
+                "Is coffee expensive?",
+                "Where is the café?"
+              ],
+              "answer": "Do you feel like a coffee?"
+            }
+          },
+          {
+            "type": "listen_mcq",
+            "prompt": "Listen. What is the invite for?",
+            "payload": {
+              "speakText": "Hast du Lust auf einen Kaffee?",
+              "options": ["tea", "coffee", "film", "football"],
+              "answer": "coffee"
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Invite a friend for coffee.",
+            "payload": {
+              "modelText": "Hast du Lust auf einen Kaffee?",
+              "hint": "Friendly tone."
+            }
+          },
+          {
+            "type": "reorder",
+            "prompt": "Order: \"Yes, gladly. When?\"",
+            "payload": {
+              "tokens": ["Ja", "gerne", "Wann"],
+              "answer": ["Ja", "gerne", "Wann"]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

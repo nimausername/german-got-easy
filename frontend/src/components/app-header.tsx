@@ -72,7 +72,13 @@ export const AppHeader = ({
           {nav ?? defaultNav}
           <ThemeToggle />
           {loading ? (
-            <Skeleton className="hidden h-8 w-28 rounded-full sm:block" />
+            <div
+              className="hidden h-8 items-center gap-1.5 rounded-full border border-border/80 pr-2.5 pl-1 sm:flex"
+              aria-hidden
+            >
+              <Skeleton className="size-6 shrink-0 rounded-full" />
+              <Skeleton className="h-3.5 w-16" />
+            </div>
           ) : user ? (
             <UserNav user={user} />
           ) : null}

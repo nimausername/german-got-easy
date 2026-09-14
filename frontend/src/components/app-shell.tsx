@@ -21,7 +21,8 @@ const widthClass = {
 
 /**
  * Consistent page container for authenticated and marketing flows.
- * Authenticated pages (theme toggle off) reserve space for the mobile bottom nav.
+ * Authenticated pages lock the viewport under the header; page chrome stays
+ * fixed and only inner regions scroll (via PageFrame / ScrollFade).
  */
 export const AppShell = ({
   children,
@@ -34,12 +35,15 @@ export const AppShell = ({
     {showThemeToggle ? <ThemeToggleCorner /> : null}
     <main
       className={cn(
-        "mx-auto min-h-screen w-full min-w-0 px-4 py-8 sm:px-6 sm:py-10 md:py-12",
+        "mx-auto w-full min-w-0 px-4 py-6 sm:px-6 sm:py-10 md:py-12",
         showThemeToggle
-          ? "pb-10 sm:pb-12"
-          : "pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-12",
+          ? "min-h-dvh pb-10 sm:pb-12"
+          : cn(
+              "flex h-full min-h-0 flex-1 flex-col overflow-hidden",
+              "pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-12",
+            ),
         widthClass[width],
-        centered && "flex flex-col justify-center",
+        centered && "justify-center",
         className,
       )}
     >

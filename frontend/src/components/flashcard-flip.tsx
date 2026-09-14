@@ -1,6 +1,6 @@
 "use client";
 
-import { BorderBeam } from "border-beam";
+import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
 import {
   useEffect,
@@ -9,6 +9,11 @@ import {
   type ReactNode,
 } from "react";
 import { cn } from "@/lib/utils";
+
+const BorderBeam = dynamic(
+  () => import("border-beam").then((mod) => mod.BorderBeam),
+  { ssr: false },
+);
 
 type FlashcardFlipProps = {
   readonly flipped: boolean;

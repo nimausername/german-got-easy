@@ -9,3 +9,5 @@ coverage
 *.log
 *.tsbuildinfo
 .DS_Store
+# Hashed MP3s live on R2; keep manifest + empty audio dir in the image
+content/audio/*.mp3

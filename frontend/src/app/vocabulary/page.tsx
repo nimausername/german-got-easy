@@ -2,15 +2,21 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { AuthenticatedShell } from "@/components/authenticated-shell";
 import { ErrorAlert } from "@/components/error-alert";
+import { PageFrame } from "@/components/page-frame";
+import { VocabularyListSkeleton } from "@/components/skeletons";
 import { VocabularyFilters } from "@/components/vocabulary-filters";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { apiFetch, ApiRequestError } from "@/lib/api";
+import { useShellUser } from "@/hooks/use-me";
+import { ApiRequestError } from "@/lib/api";
+import { fetchWordsPage } from "@/lib/api-queries";
+import { APP_CONTENT_WIDTH } from "@/lib/layout";
+import { queryKeys } from "@/lib/query-keys";
 import { cn } from "@/lib/utils";
 import {
   formatGermanLemma,
@@ -18,15 +24,6 @@ import {
   topicTitle,
   type VocabularyWordListItem,
 } from "@/lib/vocabulary";
-
-type WordsResponse = {
-  data: {
-    words: VocabularyWordListItem[];
-    nextCursor: string | null;
-    totalInBank: number | null;
-    matchedCount: number | null;
-  };
-};
 
 const SUGGESTION_LIMIT = 8;
 const VIRTUALIZE_AFTER = 40;
@@ -36,65 +33,64 @@ const VIRTUALIZE_AFTER = 40;
  */
 export default function VocabularyPage() {
   const router = useRouter();
+  const shellUser = useShellUser();
   const listParentRef = useRef<HTMLDivElement | null>(null);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [topic, setTopic] = useState<string>("");
   const [cefrBand, setCefrBand] = useState<string>("");
   const [status, setStatus] = useState<string>("");
-  const [words, setWords] = useState<VocabularyWordListItem[]>([]);
-  const [nextCursor, setNextCursor] = useState<string | null>(null);
-  const [totalInBank, setTotalInBank] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setDebouncedQuery(query.trim()), 250);
     return () => window.clearTimeout(timer);
   }, [query]);
 
-  const buildQueryString = useCallback(
-    (cursor?: string | null) => {
-      const params = new URLSearchParams();
-      params.set("limit", "40");
-      if (debouncedQuery) params.set("q", debouncedQuery);
-      if (topic) params.set("topic", topic);
-      if (cefrBand) params.set("cefrBand", cefrBand);
-      if (status) params.set("status", status);
-      if (cursor) {
-        params.set("cursor", cursor);
-        params.set("includeCounts", "false");
-      }
-      return params.toString();
-    },
+  const filters = useMemo(
+    () => ({
+      q: debouncedQuery,
+      topic,
+      cefrBand,
+      status,
+    }),
     [cefrBand, debouncedQuery, status, topic],
   );
 
+  const wordsQuery = useInfiniteQuery({
+    queryKey: queryKeys.words(filters),
+    queryFn: ({ pageParam }) =>
+      fetchWordsPage({
+        ...filters,
+        cursor: pageParam,
+      }),
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    staleTime: 30_000,
+  });
+
   useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await apiFetch<WordsResponse>(`/v1/words?${buildQueryString()}`);
-        setWords(response.data.words);
-        setNextCursor(response.data.nextCursor);
-        if (response.data.totalInBank !== null) {
-          setTotalInBank(response.data.totalInBank);
-        }
-      } catch (err) {
-        if (err instanceof ApiRequestError && err.status === 401) {
-          setError("Please log in to browse vocabulary.");
-          router.replace("/login");
-          return;
-        }
-        setError("Could not load vocabulary. Try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    void load();
-  }, [buildQueryString, router]);
+    if (!(wordsQuery.error instanceof ApiRequestError) || wordsQuery.error.status !== 401) {
+      return;
+    }
+    router.replace("/login");
+  }, [router, wordsQuery.error]);
+
+  const words = useMemo(
+    () => wordsQuery.data?.pages.flatMap((page) => page.words) ?? [],
+    [wordsQuery.data],
+  );
+  const totalInBank = wordsQuery.data?.pages[0]?.totalInBank ?? null;
+  const nextCursor = wordsQuery.hasNextPage
+    ? (wordsQuery.data?.pages.at(-1)?.nextCursor ?? null)
+    : null;
+  const loading = wordsQuery.isLoading;
+  const loadingMore = wordsQuery.isFetchingNextPage;
+  const error =
+    wordsQuery.error instanceof ApiRequestError && wordsQuery.error.status === 401
+      ? "Please log in to browse vocabulary."
+      : wordsQuery.isError
+        ? "Could not load vocabulary. Try again."
+        : null;
 
   const suggestions = useMemo(
     () =>
@@ -115,21 +111,9 @@ export default function VocabularyPage() {
     measureElement: (element) => element.getBoundingClientRect().height,
   });
 
-  const handleLoadMore = async () => {
-    if (!nextCursor || loadingMore) return;
-    setLoadingMore(true);
-    setError(null);
-    try {
-      const response = await apiFetch<WordsResponse>(
-        `/v1/words?${buildQueryString(nextCursor)}`,
-      );
-      setWords((prev) => [...prev, ...response.data.words]);
-      setNextCursor(response.data.nextCursor);
-    } catch {
-      setError("Could not load more words.");
-    } finally {
-      setLoadingMore(false);
-    }
+  const handleLoadMore = () => {
+    if (!wordsQuery.hasNextPage || loadingMore) return;
+    void wordsQuery.fetchNextPage();
   };
 
   const handleClearFilters = () => {
@@ -168,63 +152,63 @@ export default function VocabularyPage() {
   );
 
   return (
-    <AuthenticatedShell width="xl" className="pt-6 sm:pt-8">
-      <h1 className="font-display text-3xl text-brand-ink sm:text-4xl">Vocabulary</h1>
-      <p className="mt-2 max-w-xl text-sm text-muted-foreground sm:mt-3 sm:text-base">
-        Browse the everyday word bank by frequency, look up meanings and examples, then practice
-        with flashcards.
-      </p>
-
-      <VocabularyFilters
-        query={query}
-        topic={topic}
-        cefrBand={cefrBand}
-        status={status}
-        loadedCount={words.length}
-        totalInBank={totalInBank}
-        loading={loading}
-        suggestions={suggestions}
-        suggestionsLoading={loading && Boolean(debouncedQuery)}
-        onQueryChange={setQuery}
-        onTopicChange={setTopic}
-        onCefrBandChange={setCefrBand}
-        onStatusChange={setStatus}
-        onClearAll={handleClearFilters}
-        onWordSelect={(wordId) => router.push(`/vocabulary/${wordId}`)}
-      />
-
-      {error ? (
-        <div className="mt-6">
-          <ErrorAlert message={error} />
-        </div>
-      ) : null}
-
-      <section className="mt-6 space-y-2 sm:mt-8 sm:space-y-3" aria-label="Vocabulary results">
-        {loading ? (
+    <AuthenticatedShell
+      width={APP_CONTENT_WIDTH}
+      className="pt-6 sm:pt-8"
+      user={shellUser.user}
+      loading={shellUser.loading}
+    >
+      <PageFrame
+        contentRef={listParentRef}
+        header={
           <>
-            <Skeleton className="h-20 w-full" />
-            <Skeleton className="h-20 w-full" />
-            <Skeleton className="h-20 w-full" />
+            <h1 className="font-display text-2xl text-brand-ink sm:text-4xl">Vocabulary</h1>
+            <p className="mt-1 hidden max-w-xl text-sm text-muted-foreground sm:mt-3 sm:block sm:text-base">
+              Browse the everyday word bank by frequency, look up meanings and examples, then
+              practice with flashcards.
+            </p>
+            <VocabularyFilters
+              query={query}
+              topic={topic}
+              cefrBand={cefrBand}
+              status={status}
+              loadedCount={words.length}
+              totalInBank={totalInBank}
+              loading={loading}
+              suggestions={suggestions}
+              suggestionsLoading={loading && Boolean(debouncedQuery)}
+              onQueryChange={setQuery}
+              onTopicChange={setTopic}
+              onCefrBandChange={setCefrBand}
+              onStatusChange={setStatus}
+              onClearAll={handleClearFilters}
+              onWordSelect={(wordId) => router.push(`/vocabulary/${wordId}`)}
+            />
+            {error ? (
+              <div className="mt-4">
+                <ErrorAlert message={error} />
+              </div>
+            ) : null}
           </>
-        ) : null}
+        }
+        contentClassName="pb-2"
+      >
+        <section className="space-y-2 sm:space-y-3" aria-label="Vocabulary results">
+          {loading ? <VocabularyListSkeleton /> : null}
 
-        {!loading && words.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No words match these filters.</p>
-        ) : null}
+          {!loading && words.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No words match these filters.</p>
+          ) : null}
 
-        {!loading && !useVirtual
-          ? words.map((word) => renderWordLink(word))
-          : null}
+          {!loading && !useVirtual ? words.map((word) => renderWordLink(word)) : null}
 
-        {!loading && useVirtual ? (
-          <div
-            ref={listParentRef}
-            className="max-h-[70vh] overflow-auto"
-            style={{ contain: "strict" }}
-          >
+          {!loading && useVirtual ? (
             <div
               className="relative w-full"
-              style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
+              style={{
+                height: `${rowVirtualizer.getTotalSize()}px`,
+                contain: "strict",
+              }}
             >
               {rowVirtualizer.getVirtualItems().map((virtualRow) => {
                 const word = words[virtualRow.index];
@@ -244,31 +228,34 @@ export default function VocabularyPage() {
                 );
               })}
             </div>
+          ) : null}
+        </section>
+
+        {nextCursor ? (
+          <div className="mt-6">
+            <Button
+              type="button"
+              variant="outline"
+              className="min-h-11 w-full touch-manipulation sm:w-auto"
+              disabled={loadingMore}
+              onClick={handleLoadMore}
+              aria-label="Load more vocabulary words"
+            >
+              {loadingMore ? "Loading…" : "Load more"}
+            </Button>
           </div>
         ) : null}
-      </section>
 
-      {nextCursor ? (
-        <div className="mt-6">
-          <Button
-            type="button"
-            variant="outline"
-            className="min-h-11 w-full touch-manipulation sm:w-auto"
-            disabled={loadingMore}
-            onClick={() => void handleLoadMore()}
-            aria-label="Load more vocabulary words"
+        <p className="mt-8 text-sm text-muted-foreground">
+          Prefer drills?{" "}
+          <Link
+            href="/flashcards"
+            className={cn(buttonVariants({ variant: "link" }), "h-auto px-0")}
           >
-            {loadingMore ? "Loading…" : "Load more"}
-          </Button>
-        </div>
-      ) : null}
-
-      <p className="mt-8 text-sm text-muted-foreground">
-        Prefer drills?{" "}
-        <Link href="/flashcards" className={cn(buttonVariants({ variant: "link" }), "h-auto px-0")}>
-          Study flashcards
-        </Link>
-      </p>
+            Study flashcards
+          </Link>
+        </p>
+      </PageFrame>
     </AuthenticatedShell>
   );
 }

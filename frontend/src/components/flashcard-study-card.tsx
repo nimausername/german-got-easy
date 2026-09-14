@@ -6,6 +6,7 @@ import { FlashcardFlip, FLASHCARD_FACE_HEIGHT } from "@/components/flashcard-fli
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { ScrollFade } from "@/components/ui/scroll-fade";
 import {
   articleGenderTextClass,
   splitGermanArticles,
@@ -65,14 +66,14 @@ const CardFace = ({
   readonly children: ReactNode;
   readonly className?: string;
 }) => (
-  <div
+  <ScrollFade
     className={cn(
-      "flex h-full flex-col justify-between gap-4 overflow-y-auto overscroll-contain p-5 sm:gap-6 sm:p-7 md:p-8",
+      "flex h-full flex-col justify-between gap-4 p-5 sm:gap-6 sm:p-7 md:p-8",
       className,
     )}
   >
     {children}
-  </div>
+  </ScrollFade>
 );
 
 const PromptEyebrow = ({ children }: { readonly children: ReactNode }) => (

@@ -13,7 +13,9 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
     "prisma:seed": "tsx prisma/seed.ts",
-    "word:release": "tsx src/scripts/word-release.ts"
+    "word:release": "tsx src/scripts/word-release.ts",
+    "audio:generate": "PYTHONUNBUFFERED=1 python3 scripts/generate-lesson-audio.py",
+    "audio:upload-r2": "tsx src/scripts/upload-audio-r2.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -22,6 +24,8 @@
     "node": ">=20"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1131.0",
+    "@fastify/compress": "^9.2.0",
     "@fastify/cookie": "^11.1.2",
     "@fastify/cors": "^11.3.0",
     "@fastify/helmet": "^13.1.1",

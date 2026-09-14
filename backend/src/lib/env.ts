@@ -29,12 +29,22 @@ const envSchema = z.object({
     .string()
     .optional()
     .transform((v) => v !== "false"),
+  AUDIO_PUBLIC_BASE_URL: z.preprocess(
+    (value) => (typeof value === "string" && value.trim() === "" ? undefined : value),
+    z.string().url().optional(),
+  ),
 });
 
 const parsed = envSchema.parse(process.env);
 
 if (parsed.COOKIE_SAME_SITE === "none" && !parsed.COOKIE_SECURE) {
   throw new Error("COOKIE_SAME_SITE=none requires COOKIE_SECURE=true");
+}
+
+if (process.env.NODE_ENV === "production" && !parsed.AUDIO_PUBLIC_BASE_URL) {
+  throw new Error(
+    "AUDIO_PUBLIC_BASE_URL is required in production (Cloudflare R2 / CDN origin for lesson MP3s).",
+  );
 }
 
 export const env = parsed;
@@ -52,3 +62,11 @@ export const keycloakApiBaseUrl = trimSlash(env.KEYCLOAK_INTERNAL_URL ?? env.KEY
 
 /** JWT issuer that access tokens must carry. */
 export const keycloakIssuer = `${keycloakPublicBaseUrl}/realms/${env.KEYCLOAK_REALM}`;
+
+/**
+ * Public origin for hashed lesson MP3s (CDN / R2 custom domain), no trailing slash.
+ * When unset, the API serves audio from `/v1/media/audio/:file`.
+ */
+export const audioPublicBaseUrl = env.AUDIO_PUBLIC_BASE_URL
+  ? trimSlash(env.AUDIO_PUBLIC_BASE_URL)
+  : undefined;

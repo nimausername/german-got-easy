@@ -1,0 +1,216 @@
+[
+  {
+    "slug": "shopping",
+    "title": "Shopping & money",
+    "description": "Ask prices, buy things, and pay in shops.",
+    "lessons": [
+      {
+        "slug": "shop-words",
+        "title": "In the shop",
+        "canDo": "I can name shop words and ask for something.",
+        "summary": "Shop, cashier, bag, and Ich hätte gern…",
+        "skillTags": ["vocabulary", "phrases"],
+        "teachBlocks": [
+          {
+            "type": "phrases",
+            "title": "Shop words",
+            "items": [
+              { "de": "der Laden / das Geschäft", "en": "the shop" },
+              { "de": "die Kasse", "en": "the checkout / till" },
+              { "de": "die Tüte", "en": "the bag" },
+              { "de": "teuer", "en": "expensive" },
+              { "de": "billig", "en": "cheap" },
+              { "de": "Ich hätte gern…", "en": "I would like…" }
+            ]
+          },
+          {
+            "type": "dialogue",
+            "title": "At the counter",
+            "lines": [
+              { "speaker": "You", "de": "Ich hätte gern das Brot.", "en": "I would like the bread." },
+              { "speaker": "Clerk", "de": "Sonst noch etwas?", "en": "Anything else?" },
+              { "speaker": "You", "de": "Nein, danke.", "en": "No, thank you." }
+            ]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "match",
+            "prompt": "Match the shop words",
+            "payload": {
+              "pairs": [
+                { "left": "Kasse", "right": "checkout" },
+                { "left": "Tüte", "right": "bag" },
+                { "left": "teuer", "right": "expensive" },
+                { "left": "billig", "right": "cheap" }
+              ]
+            }
+          },
+          {
+            "type": "mcq",
+            "prompt": "How do you politely ask for something in a shop?",
+            "payload": {
+              "options": ["Gib mir!", "Ich hätte gern…", "Du bist Brot.", "Wo schläfst du?"],
+              "answer": "Ich hätte gern…"
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "Ich _____ gern das Wasser. (hätte)",
+            "payload": { "answer": "hätte", "accepted": ["hätte", "haette"] }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Ask for bread in a shop.",
+            "payload": {
+              "modelText": "Ich hätte gern das Brot.",
+              "hint": "Use Ich hätte gern…"
+            }
+          }
+        ]
+      },
+      {
+        "slug": "prices",
+        "title": "Was kostet das?",
+        "canDo": "I can ask how much something costs and understand euro prices.",
+        "summary": "Was kostet das? / Das kostet … Euro.",
+        "skillTags": ["phrases", "listening", "vocabulary"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "Ask the price",
+            "body": "Ask Was kostet das? (What does that cost?). Answer: Das kostet acht Euro. or Es kostet zwei Euro fünfzig. Euro stays Euro in the plural in prices.",
+            "examples": [
+              { "de": "Was kostet das?", "en": "What does that cost?" },
+              { "de": "Das kostet zehn Euro.", "en": "That costs ten euros." }
+            ]
+          },
+          {
+            "type": "listen_model",
+            "title": "Listen",
+            "text": "Das kostet fünf Euro.",
+            "hint": "Hear kostet and Euro."
+          },
+          {
+            "type": "pattern",
+            "title": "Price pattern",
+            "template": "Das kostet ____ Euro.",
+            "meaning": "That costs ____ euros.",
+            "examples": ["Das kostet drei Euro.", "Das kostet zwanzig Euro."]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "cloze",
+            "prompt": "Was _____ das?",
+            "payload": { "answer": "kostet", "accepted": ["kostet"] }
+          },
+          {
+            "type": "listen_mcq",
+            "prompt": "Listen. How much?",
+            "payload": {
+              "speakText": "Das kostet zwölf Euro.",
+              "options": ["2 Euro", "10 Euro", "12 Euro", "20 Euro"],
+              "answer": "12 Euro"
+            }
+          },
+          {
+            "type": "short_write",
+            "prompt": "Write: That costs five euros.",
+            "payload": {
+              "answer": "Das kostet fünf Euro.",
+              "accepted": ["Das kostet fünf Euro.", "Das kostet fünf Euro"]
+            }
+          },
+          {
+            "type": "mcq",
+            "prompt": "\"Sonst noch etwas?\" means…",
+            "payload": {
+              "options": ["How much is it?", "Anything else?", "Where is the bag?", "Open now?"],
+              "answer": "Anything else?"
+            }
+          }
+        ]
+      },
+      {
+        "slug": "paying",
+        "title": "Paying",
+        "canDo": "I can say how I want to pay.",
+        "summary": "bar, mit Karte, Quittung.",
+        "skillTags": ["phrases", "speaking"],
+        "teachBlocks": [
+          {
+            "type": "phrases",
+            "title": "Pay phrases",
+            "items": [
+              { "de": "bar", "en": "in cash" },
+              { "de": "mit Karte", "en": "by card" },
+              { "de": "die Quittung", "en": "the receipt" },
+              { "de": "Stimmt so.", "en": "Keep the change." },
+              { "de": "Kann ich mit Karte zahlen?", "en": "Can I pay by card?" }
+            ]
+          },
+          {
+            "type": "dialogue",
+            "title": "At the till",
+            "lines": [
+              { "speaker": "Clerk", "de": "Das macht fünfzehn Euro.", "en": "That comes to fifteen euros." },
+              { "speaker": "You", "de": "Kann ich mit Karte zahlen?", "en": "Can I pay by card?" },
+              { "speaker": "Clerk", "de": "Ja, natürlich.", "en": "Yes, of course." }
+            ]
+          },
+          {
+            "type": "speak_model",
+            "title": "Say it",
+            "prompt": "Ask to pay by card.",
+            "modelText": "Kann ich mit Karte zahlen?",
+            "hint": "Clear and polite."
+          }
+        ],
+        "exercises": [
+          {
+            "type": "match",
+            "prompt": "Match paying phrases",
+            "payload": {
+              "pairs": [
+                { "left": "bar", "right": "cash" },
+                { "left": "mit Karte", "right": "by card" },
+                { "left": "Quittung", "right": "receipt" },
+                { "left": "Stimmt so.", "right": "Keep the change." }
+              ]
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Ask if you can pay by card.",
+            "payload": {
+              "modelText": "Kann ich mit Karte zahlen?",
+              "hint": "End with zahlen?"
+            }
+          },
+          {
+            "type": "mcq",
+            "prompt": "\"Das macht zehn Euro\" means…",
+            "payload": {
+              "options": [
+                "That makes ten people",
+                "That comes to ten euros",
+                "Open at ten",
+                "Ten bags please"
+              ],
+              "answer": "That comes to ten euros"
+            }
+          },
+          {
+            "type": "reorder",
+            "prompt": "Order: \"Can I pay by card?\"",
+            "payload": {
+              "tokens": ["Kann", "ich", "mit", "Karte", "zahlen"],
+              "answer": ["Kann", "ich", "mit", "Karte", "zahlen"]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

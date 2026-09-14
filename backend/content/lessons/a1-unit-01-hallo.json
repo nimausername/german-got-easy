@@ -1,0 +1,278 @@
+[
+  {
+    "slug": "hallo",
+    "title": "Hallo & ich",
+    "description": "Greet people, introduce yourself, and use heißen and sein.",
+    "lessons": [
+      {
+        "slug": "hello",
+        "title": "Hallo & Guten Tag",
+        "canDo": "I can greet someone and say goodbye in German.",
+        "summary": "Hello, good day, good evening, and goodbye.",
+        "skillTags": ["phrases", "listening", "speaking"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "Greetings change with the time of day",
+            "body": "Hallo works any time. Guten Morgen is for the morning. Guten Tag is the safe daytime greeting. Guten Abend is for the evening. To leave, say Auf Wiedersehen or the shorter Tschüss with friends.",
+            "examples": [
+              { "de": "Guten Tag!", "en": "Good day!" },
+              { "de": "Auf Wiedersehen!", "en": "Goodbye!" }
+            ]
+          },
+          {
+            "type": "phrases",
+            "title": "Useful greetings",
+            "items": [
+              { "de": "Hallo", "en": "Hello" },
+              { "de": "Guten Morgen", "en": "Good morning" },
+              { "de": "Guten Tag", "en": "Good day" },
+              { "de": "Guten Abend", "en": "Good evening" },
+              { "de": "Auf Wiedersehen", "en": "Goodbye" },
+              { "de": "Tschüss", "en": "Bye (informal)" }
+            ]
+          },
+          {
+            "type": "listen_model",
+            "title": "Listen",
+            "text": "Guten Tag! Auf Wiedersehen!",
+            "hint": "Play once, then whisper along."
+          },
+          {
+            "type": "speak_model",
+            "title": "Say it",
+            "prompt": "Greet someone politely during the day.",
+            "modelText": "Guten Tag!",
+            "hint": "Speak out loud, then reveal the model."
+          }
+        ],
+        "exercises": [
+          {
+            "type": "mcq",
+            "prompt": "How do you say \"Good day\" in German?",
+            "payload": {
+              "options": ["Gute Nacht", "Guten Tag", "Auf Wiedersehen", "Bitte"],
+              "answer": "Guten Tag"
+            }
+          },
+          {
+            "type": "match",
+            "prompt": "Match the greetings",
+            "payload": {
+              "pairs": [
+                { "left": "Hallo", "right": "Hello" },
+                { "left": "Guten Morgen", "right": "Good morning" },
+                { "left": "Guten Abend", "right": "Good evening" },
+                { "left": "Tschüss", "right": "Bye" }
+              ]
+            }
+          },
+          {
+            "type": "listen_mcq",
+            "prompt": "Listen. What did you hear?",
+            "payload": {
+              "speakText": "Guten Morgen",
+              "options": ["Guten Morgen", "Guten Abend", "Auf Wiedersehen", "Hallo"],
+              "answer": "Guten Morgen"
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Say a polite daytime greeting out loud.",
+            "payload": {
+              "modelText": "Guten Tag!",
+              "hint": "Tap when you have said it."
+            }
+          }
+        ]
+      },
+      {
+        "slug": "introduce",
+        "title": "Ich heiße…",
+        "canDo": "I can ask someone's name and say my own.",
+        "summary": "Use heißen to say and ask names.",
+        "skillTags": ["grammar", "phrases", "writing"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "heißen = to be called",
+            "body": "Germans often say Ich heiße… for My name is…. To ask a friend: Wie heißt du? With adults you do not know well, use Wie heißen Sie? (polite you).",
+            "examples": [
+              { "de": "Ich heiße Anna.", "en": "My name is Anna." },
+              { "de": "Wie heißt du?", "en": "What is your name? (informal)" }
+            ]
+          },
+          {
+            "type": "pattern",
+            "title": "Say your name",
+            "template": "Ich heiße ____.",
+            "meaning": "My name is ____.",
+            "examples": ["Ich heiße Lea.", "Ich heiße Tom."]
+          },
+          {
+            "type": "dialogue",
+            "title": "Meeting someone",
+            "lines": [
+              { "speaker": "A", "de": "Hallo! Wie heißt du?", "en": "Hello! What is your name?" },
+              { "speaker": "B", "de": "Ich heiße Max. Und du?", "en": "My name is Max. And you?" },
+              { "speaker": "A", "de": "Ich heiße Sara.", "en": "My name is Sara." }
+            ]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "cloze",
+            "prompt": "Complete: Ich _____ Anna.",
+            "payload": { "answer": "heiße", "accepted": ["heiße", "heisse"] }
+          },
+          {
+            "type": "mcq",
+            "prompt": "What does \"Wie heißt du?\" mean?",
+            "payload": {
+              "options": [
+                "How old are you?",
+                "What is your name?",
+                "Where do you live?",
+                "How are you?"
+              ],
+              "answer": "What is your name?"
+            }
+          },
+          {
+            "type": "short_write",
+            "prompt": "Write: My name is Tim. (German)",
+            "payload": {
+              "answer": "Ich heiße Tim.",
+              "accepted": ["Ich heiße Tim.", "Ich heiße Tim", "Ich heisse Tim.", "Ich heisse Tim"]
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Say your name using Ich heiße…",
+            "payload": {
+              "modelText": "Ich heiße Anna.",
+              "hint": "Use your real name if you like."
+            }
+          }
+        ]
+      },
+      {
+        "slug": "sein",
+        "title": "Verb: sein (to be)",
+        "canDo": "I can use bin, bist, and ist to say who I am.",
+        "summary": "The most important verb: sein.",
+        "skillTags": ["grammar", "writing"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "sein — the tiny forms you need first",
+            "body": "Learn three forms now: ich bin (I am), du bist (you are, informal), er/sie/es ist (he/she/it is). Polite you uses Sie sind. Put the verb in second place: Ich bin Student.",
+            "examples": [
+              { "de": "Ich bin Student.", "en": "I am a student." },
+              { "de": "Du bist nett.", "en": "You are nice." },
+              { "de": "Sie ist Lehrerin.", "en": "She is a teacher." }
+            ]
+          },
+          {
+            "type": "pattern",
+            "title": "I am …",
+            "template": "Ich bin ____.",
+            "meaning": "I am ____.",
+            "examples": ["Ich bin müde.", "Ich bin aus Deutschland."]
+          },
+          {
+            "type": "listen_model",
+            "title": "Listen",
+            "text": "Ich bin Student. Du bist Lehrerin.",
+            "hint": "Notice bin and bist."
+          }
+        ],
+        "exercises": [
+          {
+            "type": "cloze",
+            "prompt": "Ich _____ Student.",
+            "payload": { "answer": "bin", "accepted": ["bin"] }
+          },
+          {
+            "type": "mcq",
+            "prompt": "Choose the correct form: Sie ___ Lehrerin.",
+            "payload": {
+              "options": ["bist", "bin", "ist", "seid"],
+              "answer": "ist"
+            }
+          },
+          {
+            "type": "reorder",
+            "prompt": "Put the words in order: \"I am from Germany\"",
+            "payload": {
+              "tokens": ["Ich", "komme", "aus", "Deutschland"],
+              "answer": ["Ich", "komme", "aus", "Deutschland"]
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "Du _____ nett.",
+            "payload": { "answer": "bist", "accepted": ["bist"] }
+          }
+        ]
+      },
+      {
+        "slug": "polite-sie",
+        "title": "du and Sie",
+        "canDo": "I can choose du or Sie when I greet someone.",
+        "summary": "Informal du vs polite Sie.",
+        "skillTags": ["grammar", "phrases"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "Two ways to say you",
+            "body": "du is for friends, family, and young people. Sie (always capital S) is polite for adults you do not know well, shops, and offices. With Sie, verbs look like plural: Wie heißen Sie? / Wie geht es Ihnen?",
+            "examples": [
+              { "de": "Wie heißt du?", "en": "What is your name? (informal)" },
+              { "de": "Wie heißen Sie?", "en": "What is your name? (polite)" }
+            ]
+          },
+          {
+            "type": "phrases",
+            "title": "Polite starters",
+            "items": [
+              { "de": "Guten Tag, Frau Müller.", "en": "Good day, Mrs Müller." },
+              { "de": "Wie heißen Sie?", "en": "What is your name?" },
+              { "de": "Freut mich.", "en": "Nice to meet you." }
+            ]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "mcq",
+            "prompt": "You meet a shop assistant. Which is more polite?",
+            "payload": {
+              "options": ["Wie heißt du?", "Wie heißen Sie?", "Was machst du?", "Tschüss!"],
+              "answer": "Wie heißen Sie?"
+            }
+          },
+          {
+            "type": "match",
+            "prompt": "Match informal and polite",
+            "payload": {
+              "pairs": [
+                { "left": "Wie heißt du?", "right": "informal" },
+                { "left": "Wie heißen Sie?", "right": "polite" },
+                { "left": "Tschüss", "right": "informal goodbye" },
+                { "left": "Auf Wiedersehen", "right": "polite goodbye" }
+              ]
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Ask a stranger their name politely.",
+            "payload": {
+              "modelText": "Wie heißen Sie?",
+              "hint": "Use Sie, not du."
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

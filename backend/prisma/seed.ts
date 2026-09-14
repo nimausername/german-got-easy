@@ -14,10 +14,15 @@ type ExerciseSeed = {
   payload: Prisma.InputJsonValue;
 };
 
+type TeachBlockSeed = Prisma.InputJsonValue;
+
 type LessonSeed = {
   slug: string;
   title: string;
+  canDo: string;
+  summary?: string;
   skillTags: string[];
+  teachBlocks: TeachBlockSeed[];
   exercises: ExerciseSeed[];
 };
 
@@ -72,6 +77,23 @@ type WordSeed = {
 const isImmediatelyReleasedBatch = (fileName: string): boolean =>
   fileName === "a1-batch-01.json";
 
+const loadLessonUnitFiles = (): UnitSeed[] => {
+  const dir = resolve(process.cwd(), "content/lessons");
+  const files = readdirSync(dir)
+    .filter((name) => name.startsWith("a1-unit-") && name.endsWith(".json"))
+    .sort();
+
+  const units: UnitSeed[] = [];
+  for (const fileName of files) {
+    const parsed = JSON.parse(readFileSync(resolve(dir, fileName), "utf8")) as UnitSeed[];
+    if (!Array.isArray(parsed)) {
+      throw new Error(`Lesson file ${fileName} must be a JSON array of units.`);
+    }
+    units.push(...parsed);
+  }
+  return units;
+};
+
 const loadWordbankFiles = (): Array<{ fileName: string; words: WordSeed[] }> => {
   const dir = resolve(process.cwd(), "content/wordbank");
   const files = readdirSync(dir)
@@ -103,9 +125,8 @@ const seed = async () => {
     update: {},
   });
 
-  const units = JSON.parse(
-    readFileSync(resolve(process.cwd(), "content/lessons/a1-unit-1.json"), "utf8"),
-  ) as UnitSeed[];
+  const units = loadLessonUnitFiles();
+  const seededUnitSlugs = units.map((unit) => unit.slug);
 
   for (const [unitIndex, unitSeed] of units.entries()) {
     const unit = await prisma.unit.upsert({
@@ -124,6 +145,8 @@ const seed = async () => {
       },
     });
 
+    const seededLessonSlugs = unitSeed.lessons.map((lesson) => lesson.slug);
+
     for (const [lessonIndex, lessonSeed] of unitSeed.lessons.entries()) {
       const lesson = await prisma.lesson.upsert({
         where: { unitId_slug: { unitId: unit.id, slug: lessonSeed.slug } },
@@ -131,12 +154,18 @@ const seed = async () => {
           unitId: unit.id,
           slug: lessonSeed.slug,
           title: lessonSeed.title,
+          canDo: lessonSeed.canDo,
+          summary: lessonSeed.summary ?? null,
           skillTags: lessonSeed.skillTags,
+          teachBlocks: lessonSeed.teachBlocks,
           sortOrder: lessonIndex + 1,
         },
         update: {
           title: lessonSeed.title,
+          canDo: lessonSeed.canDo,
+          summary: lessonSeed.summary ?? null,
           skillTags: lessonSeed.skillTags,
+          teachBlocks: lessonSeed.teachBlocks,
           sortOrder: lessonIndex + 1,
         },
       });
@@ -152,9 +181,23 @@ const seed = async () => {
         })),
       });
     }
+
+    await prisma.lesson.deleteMany({
+      where: {
+        unitId: unit.id,
+        slug: { notIn: seededLessonSlugs },
+      },
+    });
   }
 
-  console.log("Seeded A1 Unit 1 content.");
+  await prisma.unit.deleteMany({
+    where: {
+      levelId: level.id,
+      slug: { notIn: seededUnitSlugs },
+    },
+  });
+
+  console.log(`Seeded ${units.length} A1 lesson unit(s).`);
 
   const batches = loadWordbankFiles();
   let seededCount = 0;

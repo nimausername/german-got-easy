@@ -1,0 +1,186 @@
+[
+  {
+    "slug": "hobbies",
+    "title": "Hobbies & free time",
+    "description": "Talk about free time, sports, and hobbies.",
+    "lessons": [
+      {
+        "slug": "freizeit-words",
+        "title": "Free-time words",
+        "canDo": "I can name common hobbies.",
+        "summary": "lesen, Sport, Musik, Freunde treffen.",
+        "skillTags": ["vocabulary", "phrases"],
+        "teachBlocks": [
+          {
+            "type": "phrases",
+            "title": "Hobby list",
+            "items": [
+              { "de": "die Freizeit", "en": "free time" },
+              { "de": "lesen", "en": "to read" },
+              { "de": "Musik hören", "en": "to listen to music" },
+              { "de": "Sport machen", "en": "to do sport" },
+              { "de": "Freunde treffen", "en": "to meet friends" },
+              { "de": "fernsehen", "en": "to watch TV" }
+            ]
+          },
+          {
+            "type": "explain",
+            "title": "In my free time…",
+            "body": "A simple opener: In meiner Freizeit… Then add a verb: In meiner Freizeit lese ich. Or: Ich spiele gern Fußball.",
+            "examples": [
+              { "de": "In meiner Freizeit lese ich.", "en": "In my free time I read." },
+              { "de": "Ich spiele gern Tennis.", "en": "I like playing tennis." }
+            ]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "match",
+            "prompt": "Match the hobbies",
+            "payload": {
+              "pairs": [
+                { "left": "lesen", "right": "read" },
+                { "left": "fernsehen", "right": "watch TV" },
+                { "left": "Sport machen", "right": "do sport" },
+                { "left": "Freunde treffen", "right": "meet friends" }
+              ]
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "In meiner _____ lese ich. (free time)",
+            "payload": { "answer": "Freizeit", "accepted": ["Freizeit"] }
+          },
+          {
+            "type": "mcq",
+            "prompt": "What does \"Musik hören\" mean?",
+            "payload": {
+              "options": ["play music", "listen to music", "buy music", "teach music"],
+              "answer": "listen to music"
+            }
+          }
+        ]
+      },
+      {
+        "slug": "spielen-gern",
+        "title": "spielen and gern",
+        "canDo": "I can say what sports or games I like.",
+        "summary": "Ich spiele gern… / Ich spiele nicht gern…",
+        "skillTags": ["grammar", "speaking"],
+        "teachBlocks": [
+          {
+            "type": "pattern",
+            "title": "I like playing …",
+            "template": "Ich spiele gern ____.",
+            "meaning": "I like playing ____.",
+            "examples": ["Ich spiele gern Fußball.", "Ich spiele gern Klavier."]
+          },
+          {
+            "type": "dialogue",
+            "title": "Hobbies chat",
+            "lines": [
+              { "speaker": "A", "de": "Was machst du in deiner Freizeit?", "en": "What do you do in your free time?" },
+              { "speaker": "B", "de": "Ich spiele gern Fußball und ich lese.", "en": "I like playing football and I read." },
+              { "speaker": "A", "de": "Cool!", "en": "Cool!" }
+            ]
+          },
+          {
+            "type": "speak_model",
+            "title": "Say it",
+            "prompt": "Say one hobby with gern.",
+            "modelText": "Ich spiele gern Fußball.",
+            "hint": "spielen + gern"
+          }
+        ],
+        "exercises": [
+          {
+            "type": "cloze",
+            "prompt": "Ich spiele _____ Tennis.",
+            "payload": { "answer": "gern", "accepted": ["gern"] }
+          },
+          {
+            "type": "reorder",
+            "prompt": "Order: \"What do you do in your free time?\"",
+            "payload": {
+              "tokens": ["Was", "machst", "du", "in", "deiner", "Freizeit"],
+              "answer": ["Was", "machst", "du", "in", "deiner", "Freizeit"]
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Say a hobby you like.",
+            "payload": {
+              "modelText": "Ich spiele gern Fußball.",
+              "hint": "Or: Ich lese gern."
+            }
+          },
+          {
+            "type": "short_write",
+            "prompt": "Write: I like listening to music.",
+            "payload": {
+              "answer": "Ich höre gern Musik.",
+              "accepted": ["Ich höre gern Musik.", "Ich höre gern Musik", "Ich hoere gern Musik.", "Ich hoere gern Musik"]
+            }
+          }
+        ]
+      },
+      {
+        "slug": "weekend",
+        "title": "Am Wochenende",
+        "canDo": "I can say what I do on the weekend.",
+        "summary": "am Wochenende + simple plans.",
+        "skillTags": ["phrases", "listening", "reading"],
+        "teachBlocks": [
+          {
+            "type": "phrases",
+            "title": "Weekend chunks",
+            "items": [
+              { "de": "am Wochenende", "en": "on the weekend" },
+              { "de": "ausschlafen", "en": "to sleep in" },
+              { "de": "ins Kino gehen", "en": "to go to the cinema" },
+              { "de": "spazieren gehen", "en": "to go for a walk" }
+            ]
+          },
+          {
+            "type": "listen_model",
+            "title": "Listen",
+            "text": "Am Wochenende gehe ich ins Kino.",
+            "hint": "am Wochenende first."
+          }
+        ],
+        "exercises": [
+          {
+            "type": "cloze",
+            "prompt": "___ Wochenende schlafe ich aus.",
+            "payload": { "answer": "Am", "accepted": ["Am", "am"] }
+          },
+          {
+            "type": "listen_mcq",
+            "prompt": "Listen. What does the person do?",
+            "payload": {
+              "speakText": "Am Wochenende gehe ich ins Kino.",
+              "options": ["sleep in", "go to the cinema", "work", "study German"],
+              "answer": "go to the cinema"
+            }
+          },
+          {
+            "type": "mcq",
+            "prompt": "\"spazieren gehen\" means…",
+            "payload": {
+              "options": ["go shopping", "go for a walk", "go to bed", "go to work"],
+              "answer": "go for a walk"
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Say one weekend plan.",
+            "payload": {
+              "modelText": "Am Wochenende gehe ich spazieren.",
+              "hint": "Start with Am Wochenende."
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

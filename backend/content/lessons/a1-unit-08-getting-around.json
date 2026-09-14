@@ -1,0 +1,226 @@
+[
+  {
+    "slug": "getting-around",
+    "title": "Getting around",
+    "description": "Ask for help and understand simple directions.",
+    "lessons": [
+      {
+        "slug": "ask-help",
+        "title": "Asking for help",
+        "canDo": "I can politely ask for help or information.",
+        "summary": "Entschuldigung, können Sie mir helfen?",
+        "skillTags": ["phrases", "speaking", "listening"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "Start soft with Entschuldigung",
+            "body": "Entschuldigung gets attention politely. Then ask: Können Sie mir helfen? (Can you help me?) or Wo ist …? (Where is …?). Add bitte. Thank people with Danke schön.",
+            "examples": [
+              { "de": "Entschuldigung, können Sie mir helfen?", "en": "Excuse me, can you help me?" },
+              { "de": "Wo ist der Bahnhof, bitte?", "en": "Where is the station, please?" }
+            ]
+          },
+          {
+            "type": "phrases",
+            "title": "Help phrases",
+            "items": [
+              { "de": "Entschuldigung", "en": "Excuse me" },
+              { "de": "Können Sie mir helfen?", "en": "Can you help me?" },
+              { "de": "Wo ist …?", "en": "Where is …?" },
+              { "de": "Ich verstehe nicht.", "en": "I do not understand." },
+              { "de": "Sprechen Sie Englisch?", "en": "Do you speak English?" },
+              { "de": "Danke schön", "en": "Thank you very much" }
+            ]
+          },
+          {
+            "type": "speak_model",
+            "title": "Say it",
+            "prompt": "Ask for help politely.",
+            "modelText": "Entschuldigung, können Sie mir helfen?",
+            "hint": "Slow and clear."
+          }
+        ],
+        "exercises": [
+          {
+            "type": "match",
+            "prompt": "Match the help phrases",
+            "payload": {
+              "pairs": [
+                { "left": "Entschuldigung", "right": "Excuse me" },
+                { "left": "Ich verstehe nicht.", "right": "I do not understand." },
+                { "left": "Danke schön", "right": "Thank you" },
+                { "left": "Wo ist …?", "right": "Where is …?" }
+              ]
+            }
+          },
+          {
+            "type": "listen_mcq",
+            "prompt": "Listen. What is the person saying?",
+            "payload": {
+              "speakText": "Entschuldigung",
+              "options": ["Thank you", "Excuse me", "Goodbye", "Water"],
+              "answer": "Excuse me"
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Ask where the station is.",
+            "payload": {
+              "modelText": "Wo ist der Bahnhof, bitte?",
+              "hint": "Wo ist + place + bitte"
+            }
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which sentence asks for help?",
+            "payload": {
+              "options": [
+                "Ich bin müde.",
+                "Können Sie mir helfen?",
+                "Das ist ein Apfel.",
+                "Guten Appetit!"
+              ],
+              "answer": "Können Sie mir helfen?"
+            }
+          }
+        ]
+      },
+      {
+        "slug": "directions",
+        "title": "Simple directions",
+        "canDo": "I can understand left, right, straight ahead.",
+        "summary": "links, rechts, geradeaus.",
+        "skillTags": ["vocabulary", "listening", "reading"],
+        "teachBlocks": [
+          {
+            "type": "phrases",
+            "title": "Direction words",
+            "items": [
+              { "de": "links", "en": "left" },
+              { "de": "rechts", "en": "right" },
+              { "de": "geradeaus", "en": "straight ahead" },
+              { "de": "hier", "en": "here" },
+              { "de": "dort", "en": "there" },
+              { "de": "die Straße", "en": "street" }
+            ]
+          },
+          {
+            "type": "explain",
+            "title": "Short direction answers",
+            "body": "People often answer with one word or a short line: Links. / Gehen Sie geradeaus. / Es ist dort. You do not need long paragraphs at A1.",
+            "examples": [
+              { "de": "Gehen Sie links.", "en": "Go left." },
+              { "de": "Es ist geradeaus.", "en": "It is straight ahead." }
+            ]
+          },
+          {
+            "type": "listen_model",
+            "title": "Listen",
+            "text": "Gehen Sie geradeaus und dann rechts.",
+            "hint": "geradeaus, then rechts"
+          }
+        ],
+        "exercises": [
+          {
+            "type": "match",
+            "prompt": "Match directions",
+            "payload": {
+              "pairs": [
+                { "left": "links", "right": "left" },
+                { "left": "rechts", "right": "right" },
+                { "left": "geradeaus", "right": "straight ahead" },
+                { "left": "dort", "right": "there" }
+              ]
+            }
+          },
+          {
+            "type": "listen_mcq",
+            "prompt": "Listen. Which way?",
+            "payload": {
+              "speakText": "links",
+              "options": ["left", "right", "straight", "here"],
+              "answer": "left"
+            }
+          },
+          {
+            "type": "mcq",
+            "prompt": "\"Gehen Sie geradeaus\" means…",
+            "payload": {
+              "options": ["Go left", "Go right", "Go straight ahead", "Stop here"],
+              "answer": "Go straight ahead"
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "Gehen Sie _____. (right)",
+            "payload": { "answer": "rechts", "accepted": ["rechts"] }
+          }
+        ]
+      },
+      {
+        "slug": "travel-mini",
+        "title": "Ticket & stop",
+        "canDo": "I can use a few travel survival phrases.",
+        "summary": "Ticket, stop, and one more question.",
+        "skillTags": ["phrases", "speaking"],
+        "teachBlocks": [
+          {
+            "type": "phrases",
+            "title": "Travel survival",
+            "items": [
+              { "de": "Eine Fahrkarte, bitte.", "en": "One ticket, please." },
+              { "de": "Wo ist die Haltestelle?", "en": "Where is the stop?" },
+              { "de": "Wann fährt der Bus?", "en": "When does the bus leave?" },
+              { "de": "Ich möchte nach …", "en": "I would like to go to …" }
+            ]
+          },
+          {
+            "type": "dialogue",
+            "title": "At the counter",
+            "lines": [
+              { "speaker": "You", "de": "Eine Fahrkarte nach Berlin, bitte.", "en": "One ticket to Berlin, please." },
+              { "speaker": "Clerk", "de": "Natürlich. Das macht zwanzig Euro.", "en": "Of course. That is twenty euros." },
+              { "speaker": "You", "de": "Danke schön.", "en": "Thank you very much." }
+            ]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "mcq",
+            "prompt": "How do you ask for a ticket?",
+            "payload": {
+              "options": [
+                "Eine Fahrkarte, bitte.",
+                "Ich bin Fahrkarte.",
+                "Wo schläfst du?",
+                "Guten Appetit!"
+              ],
+              "answer": "Eine Fahrkarte, bitte."
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "Wo ist die _____? (stop / station stop)",
+            "payload": { "answer": "Haltestelle", "accepted": ["Haltestelle"] }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Ask for one ticket politely.",
+            "payload": {
+              "modelText": "Eine Fahrkarte, bitte.",
+              "hint": "Short and polite."
+            }
+          },
+          {
+            "type": "reorder",
+            "prompt": "Order: \"When does the bus leave?\"",
+            "payload": {
+              "tokens": ["Wann", "fährt", "der", "Bus"],
+              "answer": ["Wann", "fährt", "der", "Bus"]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

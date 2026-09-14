@@ -1,0 +1,241 @@
+[
+  {
+    "slug": "accusative",
+    "title": "Accusative & mine",
+    "description": "Use Akkusativ articles and mein / meine.",
+    "lessons": [
+      {
+        "slug": "akkusativ-den",
+        "title": "den and einen",
+        "canDo": "I can use den / einen for masculine objects.",
+        "summary": "After many verbs, der → den and ein → einen.",
+        "skillTags": ["grammar", "writing"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "When the noun is the object",
+            "body": "In Ich sehe den Tisch, Tisch is the object. Masculine changes: der → den, ein → einen. Feminine and neuter stay die/eine and das/ein in this simple A1 pattern.",
+            "examples": [
+              { "de": "Ich sehe den Mann.", "en": "I see the man." },
+              { "de": "Ich kaufe einen Apfel.", "en": "I buy an apple." },
+              { "de": "Ich lese das Buch.", "en": "I read the book." }
+            ]
+          },
+          {
+            "type": "pattern",
+            "title": "I buy …",
+            "template": "Ich kaufe den / einen ____.",
+            "meaning": "I buy the / a ____ (masculine).",
+            "examples": ["Ich kaufe den Stuhl.", "Ich kaufe einen Kaffee."]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "mcq",
+            "prompt": "Ich sehe ___ Tisch. (masculine)",
+            "payload": {
+              "options": ["der", "den", "dem", "des"],
+              "answer": "den"
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "Ich kaufe _____ Apfel. (a, masculine)",
+            "payload": { "answer": "einen", "accepted": ["einen"] }
+          },
+          {
+            "type": "mcq",
+            "prompt": "Ich lese ___ Buch. (neuter)",
+            "payload": {
+              "options": ["den", "die", "das", "dem"],
+              "answer": "das"
+            }
+          },
+          {
+            "type": "short_write",
+            "prompt": "Write: I see the man.",
+            "payload": {
+              "answer": "Ich sehe den Mann.",
+              "accepted": ["Ich sehe den Mann.", "Ich sehe den Mann"]
+            }
+          }
+        ]
+      },
+      {
+        "slug": "mein-meine",
+        "title": "mein and meine",
+        "canDo": "I can say my with mein / meine.",
+        "summary": "mein for der/das words; meine for die words.",
+        "skillTags": ["grammar", "phrases"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "My = mein / meine",
+            "body": "Use mein with masculine and neuter: mein Vater, mein Buch. Use meine with feminine and plural: meine Mutter, meine Eltern. Later you will meet meinen in Akkusativ; learn the base forms first.",
+            "examples": [
+              { "de": "Das ist mein Bruder.", "en": "That is my brother." },
+              { "de": "Das ist meine Schwester.", "en": "That is my sister." }
+            ]
+          },
+          {
+            "type": "phrases",
+            "title": "Mine words",
+            "items": [
+              { "de": "mein Name", "en": "my name" },
+              { "de": "meine Adresse", "en": "my address" },
+              { "de": "mein Handy", "en": "my phone" },
+              { "de": "meine Freunde", "en": "my friends" }
+            ]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "cloze",
+            "prompt": "Das ist _____ Mutter.",
+            "payload": { "answer": "meine", "accepted": ["meine"] }
+          },
+          {
+            "type": "mcq",
+            "prompt": "Das ist ___ Vater.",
+            "payload": {
+              "options": ["meine", "mein", "meinen", "meiner"],
+              "answer": "mein"
+            }
+          },
+          {
+            "type": "match",
+            "prompt": "Match mein / meine",
+            "payload": {
+              "pairs": [
+                { "left": "mein Bruder", "right": "my brother" },
+                { "left": "meine Schwester", "right": "my sister" },
+                { "left": "mein Buch", "right": "my book" },
+                { "left": "meine Freunde", "right": "my friends" }
+              ]
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Say: That is my phone.",
+            "payload": {
+              "modelText": "Das ist mein Handy.",
+              "hint": "mein + Handy"
+            }
+          }
+        ]
+      },
+      {
+        "slug": "haben",
+        "title": "Verb: haben",
+        "canDo": "I can use habe / hast / hat to say what I have.",
+        "summary": "ich habe, du hast, er/sie hat.",
+        "skillTags": ["grammar", "writing"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "haben — to have",
+            "body": "Learn: ich habe, du hast, er/sie/es hat, wir haben. Often followed by Akkusativ: Ich habe einen Bruder. Ich habe keine Zeit.",
+            "examples": [
+              { "de": "Ich habe Hunger.", "en": "I am hungry. (I have hunger)" },
+              { "de": "Hast du Zeit?", "en": "Do you have time?" }
+            ]
+          },
+          {
+            "type": "pattern",
+            "title": "I have …",
+            "template": "Ich habe ____.",
+            "meaning": "I have ____.",
+            "examples": ["Ich habe eine Frage.", "Ich habe einen Hund."]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "cloze",
+            "prompt": "Ich _____ Hunger.",
+            "payload": { "answer": "habe", "accepted": ["habe"] }
+          },
+          {
+            "type": "mcq",
+            "prompt": "Du ___ Zeit.",
+            "payload": {
+              "options": ["habe", "hast", "hat", "haben"],
+              "answer": "hast"
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "Sie (she) _____ einen Bruder.",
+            "payload": { "answer": "hat", "accepted": ["hat"] }
+          },
+          {
+            "type": "reorder",
+            "prompt": "Order: \"Do you have time?\"",
+            "payload": {
+              "tokens": ["Hast", "du", "Zeit"],
+              "answer": ["Hast", "du", "Zeit"]
+            }
+          }
+        ]
+      },
+      {
+        "slug": "akkusativ-practice",
+        "title": "Object practice",
+        "canDo": "I can build short sentences with objects.",
+        "summary": "Mix sehen, kaufen, haben + Akkusativ.",
+        "skillTags": ["grammar", "reading", "speaking"],
+        "teachBlocks": [
+          {
+            "type": "dialogue",
+            "title": "Shopping talk",
+            "lines": [
+              { "speaker": "A", "de": "Was kaufst du?", "en": "What are you buying?" },
+              { "speaker": "B", "de": "Ich kaufe einen Apfel und das Brot.", "en": "I am buying an apple and the bread." },
+              { "speaker": "A", "de": "Ich habe keine Tüte.", "en": "I do not have a bag." }
+            ]
+          },
+          {
+            "type": "listen_model",
+            "title": "Listen",
+            "text": "Ich kaufe einen Kaffee.",
+            "hint": "Hear einen."
+          }
+        ],
+        "exercises": [
+          {
+            "type": "mcq",
+            "prompt": "Ich kaufe ___ Kaffee.",
+            "payload": {
+              "options": ["ein", "eine", "einen", "einer"],
+              "answer": "einen"
+            }
+          },
+          {
+            "type": "listen_mcq",
+            "prompt": "Listen. What is bought?",
+            "payload": {
+              "speakText": "Ich kaufe einen Apfel.",
+              "options": ["coffee", "apple", "bread", "bag"],
+              "answer": "apple"
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Say you are buying a coffee.",
+            "payload": {
+              "modelText": "Ich kaufe einen Kaffee.",
+              "hint": "einen + Kaffee"
+            }
+          },
+          {
+            "type": "short_write",
+            "prompt": "Write: I have no time.",
+            "payload": {
+              "answer": "Ich habe keine Zeit.",
+              "accepted": ["Ich habe keine Zeit.", "Ich habe keine Zeit"]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

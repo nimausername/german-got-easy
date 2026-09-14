@@ -1,6 +1,6 @@
 # German Got Easy
 
-Open-source platform to learn German: CEFR lesson path, a curated flashcard word bank (600 seeded lemmas; ~109 live at first boot, then **20 new words per UTC day** until the queue is empty), and spaced repetition.
+Open-source platform to learn German: a CEFR **Learn** path (theme units with teach → practice lessons), a curated flashcard word bank (600 seeded lemmas; ~109 live at first boot, then **20 new words per UTC day** until the queue is empty), and spaced repetition.
 
 Flashcards use spaced repetition plus German-specific prompts: recognition (DE→EN), production (EN→DE), article/gender, cloze, and plural. Learners pick a life topic (Food, Travel, Essentials…) to learn related words together, and can run a separate “review due” session across all topics. Failed cards requeue later in the same session.
 
@@ -29,6 +29,8 @@ Guides live in [`docs/`](./docs/README.md). Start there if you are self-hosting 
 | [Keycloak](./docs/keycloak.md) | Realm and confidential client this app expects |
 | [Contributing](./CONTRIBUTING.md) | Local setup, PR guidelines, licenses |
 | [Future plans](./docs/future-plans.md) | Backlog of features to add next |
+| [Curriculum](./docs/curriculum.md) | Learn path pedagogy and A1 unit map |
+| [Lesson authoring](./docs/lesson-authoring.md) | How to add teach → practice lesson JSON |
 | [Vocabulary book](./docs/vocabulary-book.md) | What Vocabulary Book v1 shipped |
 | [Image attribution](./docs/image-attribution.md) | Free Commons images for concrete nouns |
 

@@ -65,7 +65,7 @@ export const VocabularyWordStudy = ({ word }: VocabularyWordStudyProps) => {
   };
 
   return (
-    <article className="mt-6 space-y-8" aria-labelledby="vocab-headword">
+    <article className="space-y-8" aria-labelledby="vocab-headword">
       <section
         className={cn(
           "overflow-hidden rounded-2xl border border-border/80 bg-gradient-to-b shadow-sm",

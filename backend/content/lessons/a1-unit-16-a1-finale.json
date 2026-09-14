@@ -1,0 +1,302 @@
+[
+  {
+    "slug": "a1-finale",
+    "title": "Past lite & A1 check",
+    "description": "Separable verbs, simple Perfekt, and a final A1 can-do review.",
+    "lessons": [
+      {
+        "slug": "separable-verbs",
+        "title": "Separable verbs",
+        "canDo": "I can use simple separable verbs like aufstehen and anrufen.",
+        "summary": "Prefix goes to the end in the present: Ich stehe auf.",
+        "skillTags": ["grammar", "writing"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "The little prefix moves",
+            "body": "Some verbs split: aufstehen → Ich stehe um sieben Uhr auf. anrufen → Ich rufe dich an. einkaufen → Ich kaufe heute ein. Learn the whole verb, then remember: prefix to the end in present statements.",
+            "examples": [
+              { "de": "Ich stehe früh auf.", "en": "I get up early." },
+              { "de": "Rufst du mich an?", "en": "Are you calling me?" },
+              { "de": "Wir kaufen im Supermarkt ein.", "en": "We shop at the supermarket." }
+            ]
+          },
+          {
+            "type": "pattern",
+            "title": "Split pattern",
+            "template": "Ich ____ … ____.",
+            "meaning": "stem … prefix",
+            "examples": ["Ich stehe … auf.", "Ich rufe … an."]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "cloze",
+            "prompt": "Ich stehe um sieben Uhr _____.",
+            "payload": { "answer": "auf", "accepted": ["auf"] }
+          },
+          {
+            "type": "mcq",
+            "prompt": "Correct form: Ich ___ dich ___. (anrufen)",
+            "payload": {
+              "options": [
+                "anrufe / —",
+                "rufe / an",
+                "an / rufe",
+                "rufst / anrufen"
+              ],
+              "answer": "rufe / an"
+            }
+          },
+          {
+            "type": "reorder",
+            "prompt": "Order: \"I get up early\"",
+            "payload": {
+              "tokens": ["Ich", "stehe", "früh", "auf"],
+              "answer": ["Ich", "stehe", "früh", "auf"]
+            }
+          },
+          {
+            "type": "short_write",
+            "prompt": "Write: We shop today. (einkaufen)",
+            "payload": {
+              "answer": "Wir kaufen heute ein.",
+              "accepted": ["Wir kaufen heute ein.", "Wir kaufen heute ein"]
+            }
+          }
+        ]
+      },
+      {
+        "slug": "perfekt-lite",
+        "title": "Perfekt lite",
+        "canDo": "I can say a few things I did with haben + ge-.",
+        "summary": "Ich habe … gemacht / gelernt / gekauft.",
+        "skillTags": ["grammar", "phrases"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "Talk about yesterday in a tiny way",
+            "body": "A1 often uses Perfekt for the past: ich habe + ge- form. Examples: Ich habe gearbeitet. Ich habe Deutsch gelernt. Ich habe Brot gekauft. haben stays in position 2; the ge- verb goes to the end.",
+            "examples": [
+              { "de": "Gestern habe ich gearbeitet.", "en": "Yesterday I worked." },
+              { "de": "Ich habe Anna angerufen.", "en": "I called Anna." }
+            ]
+          },
+          {
+            "type": "pattern",
+            "title": "Yesterday I …",
+            "template": "Gestern habe ich ____.",
+            "meaning": "Yesterday I ____.",
+            "examples": ["Gestern habe ich gelernt.", "Gestern habe ich gekocht."]
+          },
+          {
+            "type": "listen_model",
+            "title": "Listen",
+            "text": "Gestern habe ich Deutsch gelernt.",
+            "hint": "habe … gelernt"
+          }
+        ],
+        "exercises": [
+          {
+            "type": "cloze",
+            "prompt": "Gestern _____ ich gearbeitet.",
+            "payload": { "answer": "habe", "accepted": ["habe"] }
+          },
+          {
+            "type": "mcq",
+            "prompt": "Ich habe Deutsch _____.",
+            "payload": {
+              "options": ["lernen", "gelernt", "lerne", "lernt"],
+              "answer": "gelernt"
+            }
+          },
+          {
+            "type": "reorder",
+            "prompt": "Order: \"Yesterday I bought bread\"",
+            "payload": {
+              "tokens": ["Gestern", "habe", "ich", "Brot", "gekauft"],
+              "answer": ["Gestern", "habe", "ich", "Brot", "gekauft"]
+            }
+          },
+          {
+            "type": "listen_mcq",
+            "prompt": "Listen. What did the person do?",
+            "payload": {
+              "speakText": "Gestern habe ich Deutsch gelernt.",
+              "options": ["worked", "learned German", "slept", "shopped"],
+              "answer": "learned German"
+            }
+          }
+        ]
+      },
+      {
+        "slug": "reading-day",
+        "title": "A short A1 text",
+        "canDo": "I can understand a short personal text.",
+        "summary": "Read a mini profile and answer questions.",
+        "skillTags": ["reading", "vocabulary"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "Read once for meaning",
+            "body": "Read the text slowly. You do not need every word. Look for name, city, job, and free time.",
+            "examples": []
+          },
+          {
+            "type": "dialogue",
+            "title": "Text: Lea",
+            "lines": [
+              {
+                "speaker": "Text",
+                "de": "Hallo, ich heiße Lea. Ich komme aus Österreich und wohne in München.",
+                "en": "Hello, my name is Lea. I come from Austria and live in Munich."
+              },
+              {
+                "speaker": "Text",
+                "de": "Ich bin Studentin und lerne Deutsch. Am Wochenende treffe ich Freunde oder ich gehe spazieren.",
+                "en": "I am a student and learn German. On the weekend I meet friends or I go for a walk."
+              },
+              {
+                "speaker": "Text",
+                "de": "Gestern habe ich im Café einen Kaffee getrunken. Es war schön!",
+                "en": "Yesterday I drank a coffee in the café. It was nice!"
+              }
+            ]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "mcq",
+            "prompt": "Where does Lea live?",
+            "payload": {
+              "options": ["Berlin", "München", "Wien", "Hamburg"],
+              "answer": "München"
+            }
+          },
+          {
+            "type": "mcq",
+            "prompt": "What is Lea?",
+            "payload": {
+              "options": ["Lehrerin", "Ärztin", "Studentin", "Köchin"],
+              "answer": "Studentin"
+            }
+          },
+          {
+            "type": "mcq",
+            "prompt": "What did Lea do yesterday?",
+            "payload": {
+              "options": [
+                "She worked in a hospital",
+                "She drank a coffee in a café",
+                "She bought a car",
+                "She flew to Spain"
+              ],
+              "answer": "She drank a coffee in a café"
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "Lea kommt aus _____.",
+            "payload": { "answer": "Österreich", "accepted": ["Österreich", "Oesterreich"] }
+          }
+        ]
+      },
+      {
+        "slug": "a1-checkpoint",
+        "title": "A1 checkpoint",
+        "canDo": "I can use my A1 skills in mixed survival tasks.",
+        "summary": "Final mixed practice across the A1 path.",
+        "skillTags": ["phrases", "grammar", "speaking", "listening"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "You made it to the A1 check",
+            "body": "This lesson mixes greetings, shopping, plans, and modals. If something feels hard, reopen that unit. A1 means: simple real-life German, not perfect German.",
+            "examples": [
+              { "de": "Ich heiße… und komme aus…", "en": "My name is… and I come from…" },
+              { "de": "Ich hätte gern… / Das kostet…", "en": "I would like… / That costs…" },
+              { "de": "Kannst du…? / Ich muss…", "en": "Can you…? / I must…" }
+            ]
+          },
+          {
+            "type": "phrases",
+            "title": "Survival kit",
+            "items": [
+              { "de": "Wie bitte?", "en": "Pardon? / Could you repeat?" },
+              { "de": "Ich verstehe nicht.", "en": "I do not understand." },
+              { "de": "Sprechen Sie langsamer, bitte.", "en": "Please speak more slowly." },
+              { "de": "Danke schön!", "en": "Thank you very much!" }
+            ]
+          },
+          {
+            "type": "speak_model",
+            "title": "Introduce yourself fully",
+            "prompt": "Name, origin, and one hobby.",
+            "modelText": "Ich heiße Max. Ich komme aus Spanien. Ich spiele gern Fußball.",
+            "hint": "Three short sentences."
+          }
+        ],
+        "exercises": [
+          {
+            "type": "mcq",
+            "prompt": "Polite shop request:",
+            "payload": {
+              "options": [
+                "Gib Brot!",
+                "Ich hätte gern das Brot, bitte.",
+                "Du bist Brot.",
+                "Brot ich will jetzt."
+              ],
+              "answer": "Ich hätte gern das Brot, bitte."
+            }
+          },
+          {
+            "type": "cloze",
+            "prompt": "Ich kaufe _____ Apfel. (a, masculine)",
+            "payload": { "answer": "einen", "accepted": ["einen"] }
+          },
+          {
+            "type": "listen_mcq",
+            "prompt": "Listen. What does the person need to do?",
+            "payload": {
+              "speakText": "Ich muss jetzt gehen.",
+              "options": ["want coffee", "must go now", "can swim", "buy bread"],
+              "answer": "must go now"
+            }
+          },
+          {
+            "type": "match",
+            "prompt": "Match survival phrases",
+            "payload": {
+              "pairs": [
+                { "left": "Wie bitte?", "right": "Pardon?" },
+                { "left": "Ich verstehe nicht.", "right": "I do not understand." },
+                { "left": "Leider nicht.", "right": "Unfortunately not." },
+                { "left": "Bis bald!", "right": "See you soon!" }
+              ]
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Introduce yourself: name, where from, one hobby.",
+            "payload": {
+              "modelText": "Ich heiße Anna. Ich komme aus Italien. Ich lese gern.",
+              "hint": "Three sentences is enough."
+            }
+          },
+          {
+            "type": "short_write",
+            "prompt": "Write: Yesterday I learned German.",
+            "payload": {
+              "answer": "Gestern habe ich Deutsch gelernt.",
+              "accepted": [
+                "Gestern habe ich Deutsch gelernt.",
+                "Gestern habe ich Deutsch gelernt"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

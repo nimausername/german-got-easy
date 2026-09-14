@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { Search } from "lucide-react";
+import { ListFilter, Search } from "lucide-react";
 import {
   Autocomplete,
   AutocompleteContent,
@@ -10,21 +10,17 @@ import {
   AutocompleteList,
   AutocompleteStatus,
 } from "@/components/reui/autocomplete";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { IconPlaceholder } from "@/app/(create)/components/icon-placeholder";
 import {
   VOCAB_CEFR_BANDS,
   VOCAB_STATUS_FILTERS,
   VOCAB_TOPICS,
 } from "@/lib/vocabulary";
+import { cn } from "@/lib/utils";
 
 type SuggestionItem = {
   readonly id: string;
@@ -51,10 +47,10 @@ type VocabularyFiltersProps = {
 };
 
 const selectClassName =
-  "flex h-11 w-full min-w-0 rounded-lg border border-input bg-transparent px-3 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
+  "flex h-10 w-full min-w-0 rounded-lg border border-input bg-transparent px-3 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 /**
- * Vocabulary find controls: Autocomplete search + lightweight native selects.
+ * Compact vocabulary find bar: search always visible; topic/level/status on demand.
  */
 export const VocabularyFilters = ({
   query,
@@ -74,8 +70,10 @@ export const VocabularyFilters = ({
   onWordSelect,
 }: VocabularyFiltersProps) => {
   const [desktopAutofocus, setDesktopAutofocus] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const hasActiveFilters = Boolean(query) || Boolean(topic || cefrBand || status);
+  const activeFilterCount = [topic, cefrBand, status].filter(Boolean).length;
+  const hasActiveFilters = Boolean(query) || activeFilterCount > 0;
   const trimmedQuery = query.trim();
   const shouldShowSuggestions = trimmedQuery.length > 0;
 
@@ -110,22 +108,44 @@ export const VocabularyFilters = ({
     suggestionStatus = `${suggestions.length} suggestion${suggestions.length === 1 ? "" : "s"}`;
   }
 
+  const countLabel = loading
+    ? "Loading…"
+    : totalInBank === null
+      ? `Showing ${loadedCount} word${loadedCount === 1 ? "" : "s"}`
+      : `${loadedCount} shown · ${totalInBank} in bank`;
+
   return (
-    <Card className="mt-6 sm:mt-8">
-      <CardHeader>
-        <CardTitle>Find a word</CardTitle>
-        <CardDescription>
-          Search German or English, then narrow with topic, level, and learning status.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4 sm:space-y-5">
-        <section
-          role="search"
-          aria-label="Vocabulary search and filters"
-          className="space-y-4 sm:space-y-5"
-        >
-          <Field>
-            <FieldLabel htmlFor="vocab-search">Search</FieldLabel>
+    <Card className="mt-4" size="sm">
+      <CardContent className="space-y-3 pt-(--card-spacing)">
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-sm font-medium text-foreground">Find a word</p>
+          <Button
+            type="button"
+            variant={filtersOpen || activeFilterCount > 0 ? "secondary" : "outline"}
+            size="sm"
+            className="shrink-0 touch-manipulation"
+            aria-expanded={filtersOpen}
+            aria-controls="vocab-filter-panel"
+            onClick={() => setFiltersOpen((open) => !open)}
+          >
+            <ListFilter data-icon="inline-start" />
+            Filters
+            {activeFilterCount > 0 ? (
+              <Badge
+                variant="secondary"
+                className="ml-1 h-5 min-w-5 justify-center bg-background px-1 tabular-nums"
+              >
+                {activeFilterCount}
+              </Badge>
+            ) : null}
+          </Button>
+        </div>
+
+        <section role="search" aria-label="Vocabulary search and filters" className="space-y-3">
+          <Field className="gap-0">
+            <FieldLabel htmlFor="vocab-search" className="sr-only">
+              Search
+            </FieldLabel>
             <Autocomplete
               items={shouldShowSuggestions ? suggestions : []}
               value={query}
@@ -141,13 +161,13 @@ export const VocabularyFilters = ({
                 />
                 <AutocompleteInput
                   id="vocab-search"
-                  placeholder="e.g. Haus or house"
+                  placeholder="Search German or English…"
                   aria-label="Search vocabulary"
                   autoComplete="off"
                   autoFocus={desktopAutofocus}
                   showClear
                   size="lg"
-                  className="ps-8"
+                  className="h-10 ps-8"
                 />
               </div>
               {shouldShowSuggestions ? (
@@ -175,8 +195,15 @@ export const VocabularyFilters = ({
             </Autocomplete>
           </Field>
 
-          <div className="grid gap-3 sm:grid-cols-3">
-            <Field>
+          <div
+            id="vocab-filter-panel"
+            hidden={!filtersOpen}
+            className={cn(
+              "grid gap-2.5 sm:grid-cols-3 sm:gap-3",
+              filtersOpen ? "grid" : "hidden",
+            )}
+          >
+            <Field className="gap-1.5">
               <FieldLabel htmlFor="vocab-topic">Topic</FieldLabel>
               <select
                 id="vocab-topic"
@@ -193,7 +220,7 @@ export const VocabularyFilters = ({
                 ))}
               </select>
             </Field>
-            <Field>
+            <Field className="gap-1.5">
               <FieldLabel htmlFor="vocab-cefr">CEFR</FieldLabel>
               <select
                 id="vocab-cefr"
@@ -210,7 +237,7 @@ export const VocabularyFilters = ({
                 ))}
               </select>
             </Field>
-            <Field>
+            <Field className="gap-1.5">
               <FieldLabel htmlFor="vocab-status">Status</FieldLabel>
               <select
                 id="vocab-status"
@@ -229,20 +256,23 @@ export const VocabularyFilters = ({
             </Field>
           </div>
 
-          {hasActiveFilters ? (
-            <Button type="button" variant="ghost" size="sm" onClick={onClearAll}>
-              Clear all
-            </Button>
-          ) : null}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-xs text-muted-foreground sm:text-sm" aria-live="polite">
+              {countLabel}
+            </p>
+            {hasActiveFilters ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-8 touch-manipulation px-2"
+                onClick={onClearAll}
+              >
+                Clear
+              </Button>
+            ) : null}
+          </div>
         </section>
-
-        <p className="text-sm text-muted-foreground" aria-live="polite">
-          {loading
-            ? "Loading…"
-            : totalInBank === null
-              ? `Showing ${loadedCount} word${loadedCount === 1 ? "" : "s"}`
-              : `Showing ${loadedCount} word${loadedCount === 1 ? "" : "s"} · ${totalInBank} in the word bank`}
-        </p>
       </CardContent>
     </Card>
   );

@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useClearSessionQueries } from "@/hooks/use-me";
 import { apiFetch } from "@/lib/api";
 
 export type UserNavUser = {
@@ -47,17 +48,17 @@ const getInitials = (user: UserNavUser) => {
  */
 export const UserNav = ({ user }: UserNavProps) => {
   const router = useRouter();
+  const clearSessionQueries = useClearSessionQueries();
   const label = getDisplayLabel(user);
   const email = user.email?.trim() || null;
 
   const handleLogout = async () => {
-    const { clearMeCache } = await import("@/hooks/use-me");
     try {
       await apiFetch("/v1/auth/logout", { method: "POST" });
     } catch {
       // Clear remote session best-effort; local navigation still proceeds.
     }
-    clearMeCache();
+    clearSessionQueries();
     router.push("/login");
   };
 

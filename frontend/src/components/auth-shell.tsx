@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { BrandLink } from "@/components/brand-link";
 import { GuestGate } from "@/components/guest-gate";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ScrollFade } from "@/components/ui/scroll-fade";
 import { cn } from "@/lib/utils";
 
 type AuthShellProps = {
@@ -18,7 +19,7 @@ type AuthShellProps = {
  */
 export const AuthShell = ({ children }: AuthShellProps) => (
   <GuestGate>
-    <div className="h-dvh max-h-dvh w-full overflow-y-auto overscroll-y-contain">
+    <ScrollFade className="h-dvh max-h-dvh w-full">
       <main
         className={cn(
           "mx-auto flex min-h-full w-full max-w-md flex-col",
@@ -35,6 +36,6 @@ export const AuthShell = ({ children }: AuthShellProps) => (
           {children}
         </div>
       </main>
-    </div>
+    </ScrollFade>
   </GuestGate>
 );

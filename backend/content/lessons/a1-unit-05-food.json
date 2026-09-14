@@ -1,0 +1,190 @@
+[
+  {
+    "slug": "food-drink",
+    "title": "Food & drink",
+    "description": "Order food and say what you like.",
+    "lessons": [
+      {
+        "slug": "food-words",
+        "title": "Food words",
+        "canDo": "I can name basic foods and drinks.",
+        "summary": "Bread, water, coffee, apple, and more.",
+        "skillTags": ["vocabulary", "phrases"],
+        "teachBlocks": [
+          {
+            "type": "phrases",
+            "title": "Eat and drink",
+            "items": [
+              { "de": "das Brot", "en": "bread" },
+              { "de": "das Wasser", "en": "water" },
+              { "de": "der Kaffee", "en": "coffee" },
+              { "de": "der Tee", "en": "tea" },
+              { "de": "der Apfel", "en": "apple" },
+              { "de": "die Milch", "en": "milk" }
+            ]
+          },
+          {
+            "type": "listen_model",
+            "title": "Listen",
+            "text": "Ich möchte Wasser und Brot.",
+            "hint": "Food words often stay bare after möchte."
+          }
+        ],
+        "exercises": [
+          {
+            "type": "match",
+            "prompt": "Match food and drink",
+            "payload": {
+              "pairs": [
+                { "left": "Brot", "right": "bread" },
+                { "left": "Kaffee", "right": "coffee" },
+                { "left": "Milch", "right": "milk" },
+                { "left": "Apfel", "right": "apple" }
+              ]
+            }
+          },
+          {
+            "type": "mcq",
+            "prompt": "What is \"das Wasser\"?",
+            "payload": {
+              "options": ["wine", "water", "juice", "soup"],
+              "answer": "water"
+            }
+          },
+          {
+            "type": "listen_mcq",
+            "prompt": "Listen. What drink?",
+            "payload": {
+              "speakText": "Kaffee",
+              "options": ["tea", "milk", "coffee", "water"],
+              "answer": "coffee"
+            }
+          }
+        ]
+      },
+      {
+        "slug": "moechte",
+        "title": "Ich möchte…",
+        "canDo": "I can politely order with Ich möchte…",
+        "summary": "The polite way to say I would like…",
+        "skillTags": ["phrases", "grammar", "speaking"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "möchte is soft and polite",
+            "body": "Ich möchte… means I would like…. It is perfect in cafés. Put what you want after it: Ich möchte einen Kaffee. Please is bitte. Thank you is danke.",
+            "examples": [
+              { "de": "Ich möchte einen Tee, bitte.", "en": "I would like a tea, please." },
+              { "de": "Ich möchte Wasser.", "en": "I would like water." }
+            ]
+          },
+          {
+            "type": "pattern",
+            "title": "Order something",
+            "template": "Ich möchte ____, bitte.",
+            "meaning": "I would like ____, please.",
+            "examples": ["Ich möchte einen Kaffee, bitte.", "Ich möchte ein Wasser, bitte."]
+          },
+          {
+            "type": "dialogue",
+            "title": "In a café",
+            "lines": [
+              { "speaker": "Waiter", "de": "Bitte?", "en": "Yes please? / Can I help you?" },
+              { "speaker": "You", "de": "Ich möchte einen Kaffee, bitte.", "en": "I would like a coffee, please." },
+              { "speaker": "Waiter", "de": "Natürlich.", "en": "Of course." }
+            ]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "cloze",
+            "prompt": "Ich _____ einen Tee, bitte.",
+            "payload": { "answer": "möchte", "accepted": ["möchte", "moechte"] }
+          },
+          {
+            "type": "reorder",
+            "prompt": "Order: \"I would like water, please\"",
+            "payload": {
+              "tokens": ["Ich", "möchte", "Wasser", "bitte"],
+              "answer": ["Ich", "möchte", "Wasser", "bitte"]
+            }
+          },
+          {
+            "type": "speak_prompt",
+            "prompt": "Order a coffee politely.",
+            "payload": {
+              "modelText": "Ich möchte einen Kaffee, bitte.",
+              "hint": "End with bitte."
+            }
+          },
+          {
+            "type": "mcq",
+            "prompt": "Which sentence is polite in a café?",
+            "payload": {
+              "options": [
+                "Gib Kaffee!",
+                "Ich möchte einen Kaffee, bitte.",
+                "Du bist Kaffee.",
+                "Kaffee ich."
+              ],
+              "answer": "Ich möchte einen Kaffee, bitte."
+            }
+          }
+        ]
+      },
+      {
+        "slug": "gern",
+        "title": "Likes with gern",
+        "canDo": "I can say what I like with gern.",
+        "summary": "Ich trinke gern Tee.",
+        "skillTags": ["grammar", "phrases"],
+        "teachBlocks": [
+          {
+            "type": "explain",
+            "title": "gern = gladly / like to",
+            "body": "Put gern after the verb to say you like doing something: Ich trinke gern Kaffee. Ich esse gern Brot. For dislike, use nicht gern.",
+            "examples": [
+              { "de": "Ich trinke gern Tee.", "en": "I like drinking tea." },
+              { "de": "Ich esse nicht gern Fisch.", "en": "I do not like eating fish." }
+            ]
+          },
+          {
+            "type": "pattern",
+            "title": "I like to …",
+            "template": "Ich ____ gern ____.",
+            "meaning": "I like to ____ ____.",
+            "examples": ["Ich trinke gern Wasser.", "Ich esse gern Äpfel."]
+          }
+        ],
+        "exercises": [
+          {
+            "type": "cloze",
+            "prompt": "Ich trinke _____ Kaffee.",
+            "payload": { "answer": "gern", "accepted": ["gern"] }
+          },
+          {
+            "type": "mcq",
+            "prompt": "\"Ich esse nicht gern Pizza\" means…",
+            "payload": {
+              "options": [
+                "I love pizza",
+                "I do not like eating pizza",
+                "I never see pizza",
+                "Pizza is expensive"
+              ],
+              "answer": "I do not like eating pizza"
+            }
+          },
+          {
+            "type": "short_write",
+            "prompt": "Write: I like drinking tea.",
+            "payload": {
+              "answer": "Ich trinke gern Tee.",
+              "accepted": ["Ich trinke gern Tee.", "Ich trinke gern Tee"]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
