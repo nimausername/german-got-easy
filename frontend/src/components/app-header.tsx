@@ -64,7 +64,10 @@ export const AppHeader = ({
       )}
     >
       <div className="mx-auto flex h-14 w-full max-w-5xl items-center gap-2 px-4 sm:gap-3 sm:px-6">
-        <BrandLink className="min-w-0 truncate text-lg sm:text-xl" />
+        <BrandLink
+          href="/dashboard"
+          className="min-w-0 truncate text-lg sm:text-xl"
+        />
         <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
           {nav ?? defaultNav}
           <ThemeToggle />

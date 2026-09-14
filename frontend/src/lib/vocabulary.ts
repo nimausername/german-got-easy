@@ -110,6 +110,30 @@ export const articleGenderTextClass = (article: string | null) => {
   return "text-brand-ink";
 };
 
+const NOMINATIVE_ARTICLE_SPLIT = /(\b(?:[Dd]er|[Dd]ie|[Dd]as)\b)/g;
+
+/**
+ * Splits German text so nominative articles can be rendered with gender colors.
+ */
+export const splitGermanArticles = (
+  text: string,
+): ReadonlyArray<{ readonly value: string; readonly article: GermanArticle | null }> => {
+  if (!text) return [];
+
+  const parts: Array<{ value: string; article: GermanArticle | null }> = [];
+
+  for (const part of text.split(NOMINATIVE_ARTICLE_SPLIT)) {
+    if (!part) continue;
+    const normalized = normalizeGermanArticle(part.toLowerCase());
+    parts.push({
+      value: part,
+      article: normalized,
+    });
+  }
+
+  return parts;
+};
+
 /**
  * Soft gender wash for the study hero atmosphere.
  */

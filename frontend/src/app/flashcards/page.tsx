@@ -2,10 +2,16 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { AuthenticatedShell } from "@/components/authenticated-shell";
 import { BackLink } from "@/components/back-link";
 import { ErrorAlert } from "@/components/error-alert";
+import {
+  FlashcardRatingBar,
+  RATING_SHORTCUT_MAP,
+  type FlashcardRating,
+} from "@/components/flashcard-rating-bar";
+import { FlashcardStudyCard } from "@/components/flashcard-study-card";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -16,8 +22,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Field, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import {
+  Progress,
+  ProgressLabel,
+  ProgressValue,
+} from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiFetch, ApiRequestError } from "@/lib/api";
 import { cn } from "@/lib/utils";
@@ -77,10 +86,6 @@ const PROMPT_LABEL: Record<PromptType, string> = {
 };
 
 const REQUEUE_OFFSET = 3;
-const GENDER_OPTIONS = ["der", "die", "das"] as const;
-
-const germanForm = (article: string | null, lemma: string) =>
-  article ? `${article} ${lemma}` : lemma;
 
 const insertRequeue = (cards: CardItem[], fromIndex: number, card: CardItem) => {
   const next = [...cards];
@@ -194,74 +199,86 @@ const FlashcardsPageContent = () => {
     })();
   };
 
-  const advance = (requeue: boolean, sourceCard: CardItem) => {
-    const working = requeue ? insertRequeue(cards, index, sourceCard) : cards;
-    const isLast = index >= working.length - 1;
+  const advance = useCallback(
+    (requeue: boolean, sourceCard: CardItem) => {
+      const working = requeue ? insertRequeue(cards, index, sourceCard) : cards;
+      const isLast = index >= working.length - 1;
 
-    if (isLast && !requeue) {
-      setDone(true);
+      if (isLast && !requeue) {
+        setDone(true);
+        resetCardState();
+        return;
+      }
+
+      setCards(working);
+      setIndex((value) => value + 1);
       resetCardState();
-      return;
-    }
+    },
+    [cards, index, resetCardState],
+  );
 
-    setCards(working);
-    setIndex((value) => value + 1);
-    resetCardState();
-  };
+  const submitAnswer = useCallback(
+    async (payload: {
+      rating?: "again" | "hard" | "good" | "easy";
+      answer?: string;
+    }) => {
+      if (!current || busy) return;
+      setBusy(true);
+      try {
+        const response = await apiFetch<AnswerResponse>(
+          `/v1/flashcards/${current.wordId}/answer`,
+          {
+            method: "POST",
+            body: JSON.stringify({
+              promptType: current.promptType,
+              ...payload,
+            }),
+          },
+        );
 
-  const submitAnswer = async (payload: {
-    rating?: "again" | "hard" | "good" | "easy";
-    answer?: string;
-  }) => {
-    if (!current || busy) return;
-    setBusy(true);
-    try {
-      const response = await apiFetch<AnswerResponse>(`/v1/flashcards/${current.wordId}/answer`, {
-        method: "POST",
-        body: JSON.stringify({
-          promptType: current.promptType,
-          ...payload,
-        }),
-      });
+        const result = response.data;
+        if (current.promptType === "recognize") {
+          advance(result.requeueInSession, current);
+          return;
+        }
 
-      const result = response.data;
-      if (current.promptType === "recognize") {
-        advance(result.requeueInSession, current);
-        return;
-      }
+        if (result.correct === false) {
+          setFeedback(result);
+          setPhase("grade");
+          return;
+        }
 
-      if (result.correct === false) {
+        if (payload.rating) {
+          advance(false, current);
+          return;
+        }
+
         setFeedback(result);
-        setPhase("grade");
-        return;
+        setPhase("correct");
+      } catch {
+        setError("Could not save your answer. Try again.");
+      } finally {
+        setBusy(false);
       }
-
-      if (payload.rating) {
-        advance(false, current);
-        return;
-      }
-
-      setFeedback(result);
-      setPhase("correct");
-    } catch {
-      setError("Could not save your answer. Try again.");
-    } finally {
-      setBusy(false);
-    }
-  };
+    },
+    [advance, busy, current],
+  );
 
   const handleContinueAfterFail = () => {
     if (!current || !feedback) return;
     advance(feedback.requeueInSession, current);
   };
 
-  const handleRate = (rating: "again" | "hard" | "good" | "easy") => {
-    if (current?.promptType === "recognize") {
-      void submitAnswer({ rating });
-      return;
-    }
-    void submitAnswer({ rating, answer: typedAnswer });
-  };
+  const handleRate = useCallback(
+    (rating: FlashcardRating) => {
+      if (current?.promptType === "recognize") {
+        void submitAnswer({ rating });
+        return;
+      }
+      void submitAnswer({ rating, answer: typedAnswer });
+    },
+    [current, submitAnswer, typedAnswer],
+  );
 
   const handleCheck = () => {
     if (!typedAnswer.trim()) return;
@@ -272,6 +289,70 @@ const FlashcardsPageContent = () => {
     setTypedAnswer(article);
     void submitAnswer({ answer: article });
   };
+
+  const handleFlip = useCallback(() => {
+    setFlipped((value) => !value);
+  }, []);
+
+  const showSelfRate = Boolean(
+    current &&
+      (current.promptType === "recognize" ? flipped : phase === "correct"),
+  );
+
+  const keyboardRef = useRef({
+    current,
+    showSelfRate,
+    busy,
+    handleFlip,
+    handleRate,
+  });
+
+  useEffect(() => {
+    keyboardRef.current = {
+      current,
+      showSelfRate,
+      busy,
+      handleFlip,
+      handleRate,
+    };
+  }, [current, showSelfRate, busy, handleFlip, handleRate]);
+
+  useEffect(() => {
+    if (!study || done) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (target?.closest("input, textarea, select, [contenteditable=true]")) {
+        return;
+      }
+
+      const state = keyboardRef.current;
+      const card = state.current;
+      if (!card) return;
+
+      if (
+        card.promptType === "recognize" &&
+        (event.key === " " || event.key === "Enter") &&
+        !target?.closest("button, a")
+      ) {
+        event.preventDefault();
+        state.handleFlip();
+        return;
+      }
+
+      if (!state.showSelfRate || state.busy) return;
+
+      const rating = RATING_SHORTCUT_MAP[event.key];
+      if (!rating) return;
+      if (rating === "again" && card.promptType !== "recognize") return;
+
+      event.preventDefault();
+      state.handleRate(rating);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [study, done]);
 
   if (error && !study) {
     return (
@@ -437,272 +518,97 @@ const FlashcardsPageContent = () => {
     );
   }
 
-  const showSelfRate = current.promptType === "recognize" ? flipped : phase === "correct";
+  const progressValue = cards.length > 0 ? ((index + 1) / cards.length) * 100 : 0;
 
   return (
-    <AuthenticatedShell width="md" className="pt-6 sm:pt-8">
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        className="-ml-2 min-h-10 w-fit touch-manipulation text-muted-foreground"
-        onClick={handleBackToTopics}
-      >
-        ← Topics
-      </Button>
+    <AuthenticatedShell
+      width="2xl"
+      className={cn(
+        // Header is outside main — size to the remaining viewport so ratings
+        // never force a page scroll. Side padding on the card stage is the
+        // bloom room; keep overflow hidden only on this shell.
+        "flex min-h-0 flex-col overflow-hidden py-0 pt-2 sm:pt-3",
+        "h-[calc(100dvh-3.5rem)] max-h-[calc(100dvh-3.5rem)]",
+        "pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-6",
+      )}
+    >
+      <div className="mx-auto flex w-full max-w-lg shrink-0 items-start justify-between gap-3">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="-ml-2 min-h-10 w-fit touch-manipulation text-muted-foreground"
+          onClick={handleBackToTopics}
+        >
+          ← Topics
+        </Button>
+        <p className="pt-2 text-right text-xs text-muted-foreground sm:text-sm">
+          <span className="hidden sm:inline">Space to flip · </span>
+          {index + 1} of {cards.length}
+        </p>
+      </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2 sm:mt-6">
-        <Badge variant="secondary">{study.title}</Badge>
-        <Badge variant="outline">{current.mode === "new" ? "New word" : "Review"}</Badge>
-        <Badge variant="outline">{PROMPT_LABEL[current.promptType]}</Badge>
-        <span className="text-sm text-muted-foreground">
-          {index + 1}/{cards.length}
-        </span>
+      <div className="mx-auto mt-2 w-full max-w-lg shrink-0 space-y-2 sm:mt-3">
+        <Progress value={progressValue} className="w-full gap-2">
+          <ProgressLabel className="truncate text-xs sm:text-sm">{study.title}</ProgressLabel>
+          <ProgressValue className="text-xs sm:text-sm">
+            {() => `${index + 1}/${cards.length}`}
+          </ProgressValue>
+        </Progress>
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge variant="secondary">{current.mode === "new" ? "New word" : "Review"}</Badge>
+          <Badge variant="outline">{PROMPT_LABEL[current.promptType]}</Badge>
+        </div>
       </div>
 
       {error ? (
-        <div className="mt-4">
+        <div className="mx-auto mt-2 w-full max-w-lg shrink-0">
           <ErrorAlert message={error} />
         </div>
       ) : null}
 
-      <Card className="mt-4">
-        <CardHeader>
-          <CardDescription>{current.prompt}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {current.promptType === "recognize" ? (
-            <button
-              type="button"
-              onClick={() => setFlipped((value) => !value)}
-              className="w-full rounded-lg text-left outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-              aria-label={flipped ? "Hide translation" : "Reveal translation"}
-            >
-              <p className="font-display text-3xl break-words text-brand-ink sm:text-4xl">
-                {germanForm(current.article, current.lemma)}
-              </p>
-              {flipped ? (
-                <div className="mt-6 space-y-3">
-                  <p className="text-lg font-semibold break-words sm:text-xl">
-                    {current.translation}
-                  </p>
-                  {current.plural ? (
-                    <p className="text-sm font-medium">Plural: die {current.plural}</p>
-                  ) : null}
-                  <p>{current.exampleDe}</p>
-                  <p className="text-muted-foreground">{current.exampleEn}</p>
-                  {current.usageNote ? (
-                    <p className="text-sm text-muted-foreground">{current.usageNote}</p>
-                  ) : null}
-                </div>
-              ) : (
-                <p className="mt-6 text-sm text-muted-foreground">
-                  Tap to reveal translation and example
-                </p>
-              )}
-            </button>
-          ) : null}
-
-          {current.promptType === "produce" && phase === "prompt" ? (
-            <div className="space-y-4">
-              <p className="font-display text-3xl break-words text-brand-ink sm:text-4xl">
-                {current.translation}
-              </p>
-              {current.hint ? <p className="text-sm text-muted-foreground">{current.hint}</p> : null}
-              <Field>
-                <FieldLabel htmlFor="produce-answer" className="sr-only">
-                  German answer
-                </FieldLabel>
-                <Input
-                  id="produce-answer"
-                  className="min-h-11 text-base"
-                  value={typedAnswer}
-                  onChange={(event) => setTypedAnswer(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") handleCheck();
-                  }}
-                  placeholder="e.g. das Haus"
-                  autoComplete="off"
-                  aria-label="Type the German word"
-                />
-              </Field>
-              <Button
-                type="button"
-                className="min-h-11 w-full touch-manipulation sm:w-auto"
-                disabled={busy || !typedAnswer.trim()}
-                onClick={handleCheck}
-              >
-                Check
-              </Button>
-            </div>
-          ) : null}
-
-          {current.promptType === "gender" && phase === "prompt" ? (
-            <div className="space-y-4">
-              <p className="font-display text-3xl break-words text-brand-ink sm:text-4xl">
-                {current.lemma}
-              </p>
-              {current.hint ? <p className="text-sm text-muted-foreground">{current.hint}</p> : null}
-              <div className="grid grid-cols-3 gap-2">
-                {GENDER_OPTIONS.map((article) => (
-                  <Button
-                    key={article}
-                    type="button"
-                    variant="outline"
-                    className="min-h-12 touch-manipulation text-base"
-                    disabled={busy}
-                    onClick={() => handleGender(article)}
-                    aria-label={`Choose article ${article}`}
-                  >
-                    {article}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          ) : null}
-
-          {current.promptType === "cloze" && phase === "prompt" ? (
-            <div className="space-y-4">
-              <p className="font-display text-xl break-words text-brand-ink sm:text-2xl">
-                {current.clozeSentence}
-              </p>
-              {current.hint ? (
-                <p className="text-sm text-muted-foreground">Hint: {current.hint}</p>
-              ) : null}
-              <Field>
-                <FieldLabel htmlFor="cloze-answer" className="sr-only">
-                  Missing word
-                </FieldLabel>
-                <Input
-                  id="cloze-answer"
-                  className="min-h-11 text-base"
-                  value={typedAnswer}
-                  onChange={(event) => setTypedAnswer(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") handleCheck();
-                  }}
-                  placeholder="Type the missing word"
-                  autoComplete="off"
-                  aria-label="Type the missing German word"
-                />
-              </Field>
-              <Button
-                type="button"
-                className="min-h-11 w-full touch-manipulation sm:w-auto"
-                disabled={busy || !typedAnswer.trim()}
-                onClick={handleCheck}
-              >
-                Check
-              </Button>
-            </div>
-          ) : null}
-
-          {current.promptType === "plural" && phase === "prompt" ? (
-            <div className="space-y-4">
-              <p className="font-display text-3xl break-words text-brand-ink sm:text-4xl">
-                {germanForm(current.article, current.lemma)}
-              </p>
-              {current.hint ? <p className="text-sm text-muted-foreground">{current.hint}</p> : null}
-              <Field>
-                <FieldLabel htmlFor="plural-answer" className="sr-only">
-                  Plural form
-                </FieldLabel>
-                <Input
-                  id="plural-answer"
-                  className="min-h-11 text-base"
-                  value={typedAnswer}
-                  onChange={(event) => setTypedAnswer(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") handleCheck();
-                  }}
-                  placeholder="e.g. Häuser"
-                  autoComplete="off"
-                  aria-label="Type the plural form"
-                />
-              </Field>
-              <Button
-                type="button"
-                className="min-h-11 w-full touch-manipulation sm:w-auto"
-                disabled={busy || !typedAnswer.trim()}
-                onClick={handleCheck}
-              >
-                Check
-              </Button>
-            </div>
-          ) : null}
-
-          {phase === "grade" && feedback?.expected ? (
-            <div className="mt-2 space-y-3 rounded-lg bg-destructive/5 p-4 ring-1 ring-destructive/20">
-              <p className="text-sm font-semibold text-destructive">Not quite</p>
-              <p className="text-lg font-semibold break-words text-brand-ink sm:text-xl">
-                {germanForm(feedback.expected.article, feedback.expected.lemma)}
-                {feedback.expected.plural ? ` · die ${feedback.expected.plural}` : ""}
-              </p>
-              <p>{feedback.expected.translation}</p>
-              <p className="text-muted-foreground">{feedback.expected.exampleDe}</p>
-              <Link
-                href={`/vocabulary/${current.wordId}`}
-                className={cn(buttonVariants({ variant: "link" }), "h-auto px-0")}
-              >
-                Open vocabulary entry
-              </Link>
-              <Button
-                type="button"
-                className="min-h-11 w-full touch-manipulation sm:w-auto"
-                onClick={handleContinueAfterFail}
-              >
-                Continue
-              </Button>
-            </div>
-          ) : null}
-
-          {phase === "correct" ? (
-            <div className="mt-2 space-y-2 rounded-lg bg-accent p-4 ring-1 ring-primary/15">
-              <p className="text-sm font-semibold text-accent-foreground">Correct</p>
-              <p className="text-lg font-semibold break-words text-brand-ink sm:text-xl">
-                {germanForm(current.article, current.lemma)}
-                {current.plural ? ` · die ${current.plural}` : ""}
-              </p>
-              <p className="text-muted-foreground">{current.exampleDe}</p>
-              <Link
-                href={`/vocabulary/${current.wordId}`}
-                className={cn(buttonVariants({ variant: "link" }), "h-auto px-0")}
-              >
-                Open vocabulary entry
-              </Link>
-            </div>
-          ) : null}
-        </CardContent>
-      </Card>
-
-      {showSelfRate ? (
-        <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {(
-            [
-              ["again", "Again"],
-              ["hard", "Hard"],
-              ["good", "Good"],
-              ["easy", "Easy"],
-            ] as const
-          )
-            .filter(([value]) => current.promptType === "recognize" || value !== "again")
-            .map(([value, label]) => (
-              <Button
-                key={value}
-                type="button"
-                variant="outline"
-                disabled={busy}
-                onClick={() => handleRate(value)}
-                className={cn(
-                  "min-h-12 touch-manipulation",
-                  value === "good" && "border-primary/40",
-                )}
-              >
-                {label}
-              </Button>
-            ))}
+      {/*
+        Full-width stage with large horizontal padding so pulse-outside blur
+        can bloom left/right without hitting overflow-hidden on the shell.
+      */}
+      <div className="flex min-h-0 w-full flex-1 items-center justify-center overflow-hidden px-10 sm:px-16 md:px-24">
+        <div
+          key={`${current.wordId}-${current.promptType}-${index}`}
+          className="w-full max-w-lg animate-in fade-in-0 duration-300"
+        >
+          <FlashcardStudyCard
+            card={current}
+            flipped={flipped}
+            onFlip={handleFlip}
+            phase={phase}
+            feedback={feedback}
+            typedAnswer={typedAnswer}
+            onTypedAnswerChange={setTypedAnswer}
+            onCheck={handleCheck}
+            onGender={handleGender}
+            onContinueAfterFail={handleContinueAfterFail}
+            busy={busy}
+          />
         </div>
-      ) : null}
+      </div>
+
+      <div
+        className={cn(
+          "mx-auto w-full max-w-lg shrink-0 px-1 md:px-0",
+          "min-h-14 sm:min-h-12",
+        )}
+      >
+        <div
+          className={cn(!showSelfRate && "invisible pointer-events-none")}
+          aria-hidden={!showSelfRate}
+        >
+          <FlashcardRatingBar
+            busy={busy || !showSelfRate}
+            includeAgain={current.promptType === "recognize"}
+            onRate={handleRate}
+          />
+        </div>
+      </div>
     </AuthenticatedShell>
   );
 };
