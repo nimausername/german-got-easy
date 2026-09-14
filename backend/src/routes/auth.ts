@@ -4,6 +4,7 @@ import { clearAuthCookies, REFRESH_COOKIE, setAuthCookies } from "../lib/cookies
 import { sendError } from "../lib/errors.js";
 import {
   createKeycloakUser,
+  deleteKeycloakUser,
   passwordGrant,
   refreshGrant,
   revokeRefreshToken,
@@ -61,8 +62,9 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     const { email, password } = parsed.data;
     const username = parsed.data.username ?? email.split("@")[0]!;
 
+    let keycloakUserId: string | undefined;
     try {
-      await createKeycloakUser({ username, email, password });
+      keycloakUserId = await createKeycloakUser({ username, email, password });
       const tokens = await passwordGrant(username, password);
       const payload = await verifyAccessToken(tokens.accessToken);
       const user = await prisma.user.upsert({
@@ -84,6 +86,16 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
       });
     } catch (error) {
       const err = error as Error & { statusCode?: number };
+      if (keycloakUserId) {
+        try {
+          await deleteKeycloakUser(keycloakUserId);
+        } catch (rollbackError) {
+          request.log.error(
+            { err: rollbackError, keycloakUserId },
+            "Failed to roll back Keycloak user after registration error",
+          );
+        }
+      }
       if (err.statusCode === 409) {
         return sendError(
           reply,

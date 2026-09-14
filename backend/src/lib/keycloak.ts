@@ -133,6 +133,11 @@ export const clientCredentialsGrant = async (): Promise<KeycloakTokenSet> => {
   return parseTokenResponse(response);
 };
 
+/**
+ * Creates a realm user via the Admin API.
+ * Marks email as verified because this app has no email-verification flow;
+ * leaving it unverified can attach VERIFY_EMAIL and block password grants.
+ */
 export const createKeycloakUser = async (input: {
   username: string;
   email: string;
@@ -150,7 +155,8 @@ export const createKeycloakUser = async (input: {
       username: input.username,
       email: input.email,
       enabled: true,
-      emailVerified: false,
+      emailVerified: true,
+      requiredActions: [],
       credentials: [
         {
           type: "password",
@@ -166,6 +172,11 @@ export const createKeycloakUser = async (input: {
     if (location) {
       return location.split("/").pop() as string;
     }
+    const error = new Error("Keycloak created user but returned no Location header") as Error & {
+      statusCode?: number;
+    };
+    error.statusCode = 500;
+    throw error;
   }
 
   if (createResponse.status === 409) {
@@ -178,6 +189,29 @@ export const createKeycloakUser = async (input: {
   const error = new Error(text || "Failed to create user") as Error & { statusCode?: number };
   error.statusCode = 400;
   throw error;
+};
+
+/**
+ * Deletes a Keycloak user by id. Used to roll back a partial registration.
+ */
+export const deleteKeycloakUser = async (userId: string): Promise<void> => {
+  const admin = await clientCredentialsGrant();
+  const response = await fetch(`${adminUsersUrl}/${encodeURIComponent(userId)}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${admin.accessToken}`,
+      "User-Agent": KC_UA,
+    },
+  });
+
+  if (!response.ok && response.status !== 404) {
+    const text = await response.text();
+    const error = new Error(text || "Failed to delete Keycloak user") as Error & {
+      statusCode?: number;
+    };
+    error.statusCode = response.status;
+    throw error;
+  }
 };
 
 export const verifyAccessToken = async (token: string): Promise<VerifiedAccessToken> => {
