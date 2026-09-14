@@ -14,6 +14,7 @@ type PasswordInputProps = Omit<
   "type"
 > & {
   readonly invalid?: boolean;
+  readonly groupClassName?: string;
 };
 
 /**
@@ -23,6 +24,8 @@ type PasswordInputProps = Omit<
 export const PasswordInput = ({
   invalid = false,
   id,
+  className,
+  groupClassName,
   ...props
 }: PasswordInputProps) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -32,7 +35,7 @@ export const PasswordInput = ({
   };
 
   return (
-    <InputGroup>
+    <InputGroup className={groupClassName}>
       <InputGroupAddon align="inline-start">
         <Lock className="size-4 text-muted-foreground" aria-hidden />
       </InputGroupAddon>
@@ -40,13 +43,15 @@ export const PasswordInput = ({
         id={id}
         type={showPassword ? "text" : "password"}
         aria-invalid={invalid || undefined}
+        className={className}
         {...props}
       />
       <InputGroupAddon align="inline-end">
         <InputGroupButton
           type="button"
           variant="ghost"
-          size="icon-xs"
+          size="icon-sm"
+          className="touch-manipulation"
           onClick={handleToggleVisibility}
           aria-label={showPassword ? "Hide password" : "Show password"}
           aria-controls={id}

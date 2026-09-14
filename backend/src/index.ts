@@ -45,6 +45,11 @@ const buildServer = async () => {
 
   registerErrorHandler(app);
 
+  app.get("/", async () => ({
+    data: { service: "api", health: "/health", product: env.PRODUCT_NAME },
+    meta: {},
+  }));
+
   app.get("/health", async (_request, reply) => {
     try {
       await prisma.$queryRaw`SELECT 1`;

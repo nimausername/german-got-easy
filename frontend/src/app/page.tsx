@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BrandLink } from "@/components/brand-link";
 import { GuestGate } from "@/components/guest-gate";
+import { LegalFooterLinks } from "@/components/legal-footer-links";
 import { ThemeToggleCorner } from "@/components/theme-toggle-corner";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -43,6 +44,7 @@ export default function HomePage() {
               Log in
             </Link>
           </div>
+          <LegalFooterLinks className="mt-10 justify-start sm:mt-12" />
         </div>
       </main>
     </GuestGate>

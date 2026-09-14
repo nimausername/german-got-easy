@@ -1,7 +1,13 @@
-# Optional Postgres for local or hosts that do not already have a database.
-# Coolify: leave this file unused and set DATABASE_URL instead.
+# Optional Postgres + published ports for a laptop.
+# Coolify: do not use this file. Set DATABASE_URL on docker-compose.yml instead.
 #
-# docker compose -f docker-compose.yml -f docker-compose.postgres.yml up --build
+#   export SERVICE_PASSWORD_64_POSTGRES=choose-a-long-password
+#   export KEYCLOAK_URL=https://auth.example.com
+#   export KEYCLOAK_BACKEND_CLIENT_SECRET=your-client-secret
+#   export CORS_ORIGIN=http://localhost:3000
+#   docker compose -f docker-compose.yml -f docker-compose.postgres.yml up --build
+#
+# Web: http://localhost:3000  API: http://localhost:4000/health
 
 services:
   postgres:
@@ -21,11 +27,18 @@ services:
       start_period: 10s
 
   backend:
+    ports:
+      - "4000:4000"
     environment:
       DATABASE_URL: postgres://${SERVICE_USER_POSTGRES:-german}:${SERVICE_PASSWORD_64_POSTGRES}@postgres:5432/german
+      COOKIE_SECURE: "false"
     depends_on:
       postgres:
         condition: service_healthy
+
+  frontend:
+    ports:
+      - "3000:3000"
 
 volumes:
   postgres-data:

@@ -1,12 +1,20 @@
 # Keycloak (external)
 
-German Got Easy does **not** run Keycloak. The API only calls a Keycloak server you host: register/login use the password grant, and registration uses the Admin API.
+German Got Easy does **not** run Keycloak. The API calls a Keycloak server you host: register/login use the password grant, and registration uses the Admin API.
 
-You must deploy Keycloak yourself (Coolify service, Docker, Kubernetes, or a managed realm) **before** this app can authenticate users.
+Deploy Keycloak first (Coolify, Docker, Kubernetes, or a managed realm). Then create the realm and client below, or set `KEYCLOAK_BOOTSTRAP=true` so the API creates them on an already running server.
 
-## Required realm
+## Minimum setup
 
-Create a realm (default name `german`) with:
+1. Create a realm named `german` (or set `KEYCLOAK_REALM` to match).
+2. Create confidential client `german-backend` with **Direct access grants** and a **service account**.
+3. Give the service account `realm-management` roles `manage-users`, `view-users`, and `query-users`.
+4. Copy the client secret into `KEYCLOAK_BACKEND_CLIENT_SECRET`.
+5. Set `KEYCLOAK_URL` to the public Keycloak origin (no trailing slash), for example `https://auth.example.com`.
+
+Never put the client secret in the frontend.
+
+## Realm settings
 
 | Setting | Value |
 | --- | --- |
@@ -14,7 +22,7 @@ Create a realm (default name `german`) with:
 | Login with email | On |
 | Duplicate emails | Off |
 
-## Required client `german-backend`
+## Client `german-backend`
 
 Create a **confidential** OpenID client:
 
@@ -32,13 +40,11 @@ Assign the service account these `realm-management` roles:
 - `view-users`
 - `query-users`
 
-Copy the client secret into `KEYCLOAK_BACKEND_CLIENT_SECRET`. Never put it in the frontend.
-
 ## App environment
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
-| `KEYCLOAK_URL` | Yes | Public Keycloak origin. Must match the JWT `iss` (the hostname browsers and tokens use). |
+| `KEYCLOAK_URL` | Yes | Public Keycloak origin. Must match the JWT `iss` hostname. |
 | `KEYCLOAK_INTERNAL_URL` | No | In-network origin for token/admin calls when the API cannot hairpin through the public hostname. |
 | `KEYCLOAK_REALM` | No | Defaults to `german`. |
 | `KEYCLOAK_BACKEND_CLIENT_ID` | No | Defaults to `german-backend`. |
@@ -67,3 +73,5 @@ Set `KEYCLOAK_BOOTSTRAP=true` plus Keycloak master-realm admin credentials (`KEY
 1. Deploy Keycloak as its **own** Coolify resource. Do not attach `auth.example.com` to the German Got Easy compose app.
 2. Enable **Connect To Predefined Network** on both resources if the API must reach Keycloak by container name.
 3. Set `KEYCLOAK_URL` to the public Keycloak URL and `KEYCLOAK_INTERNAL_URL` to `http://<keycloak-container>:8080`.
+
+Production compose and domain notes are in [Self-host (Coolify / Docker Compose)](./coolify.md).
