@@ -88,6 +88,36 @@ export const refreshGrant = async (refreshToken: string): Promise<KeycloakTokenS
   return parseTokenResponse(response);
 };
 
+const logoutUrl = `${realmBase}/protocol/openid-connect/logout`;
+
+/**
+ * Revokes a refresh token / ends the Keycloak session when possible.
+ * Failures are ignored by callers after local cookies are cleared.
+ */
+export const revokeRefreshToken = async (refreshToken: string): Promise<void> => {
+  const response = await fetch(logoutUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "User-Agent": KC_UA,
+    },
+    body: formBody({
+      client_id: env.KEYCLOAK_BACKEND_CLIENT_ID,
+      client_secret: env.KEYCLOAK_BACKEND_CLIENT_SECRET,
+      refresh_token: refreshToken,
+    }),
+  });
+
+  if (!response.ok && response.status !== 204) {
+    const text = await response.text();
+    const error = new Error(text || "Keycloak logout failed") as Error & {
+      statusCode?: number;
+    };
+    error.statusCode = response.status;
+    throw error;
+  }
+};
+
 export const clientCredentialsGrant = async (): Promise<KeycloakTokenSet> => {
   const response = await fetch(tokenUrl, {
     method: "POST",
@@ -121,7 +151,7 @@ export const createKeycloakUser = async (input: {
       username: input.username,
       email: input.email,
       enabled: true,
-      emailVerified: true,
+      emailVerified: false,
       credentials: [
         {
           type: "password",
@@ -162,8 +192,11 @@ export const verifyAccessToken = async (token: string): Promise<VerifiedAccessTo
     throw error;
   }
 
-  if (payload.azp && payload.azp !== env.KEYCLOAK_BACKEND_CLIENT_ID) {
-    const error = new Error("Unexpected token audience client") as Error & { statusCode?: number };
+  // Keycloak access tokens typically identify the client via `azp`.
+  if (payload.azp !== env.KEYCLOAK_BACKEND_CLIENT_ID) {
+    const error = new Error("Unexpected token authorized party") as Error & {
+      statusCode?: number;
+    };
     error.statusCode = 401;
     throw error;
   }

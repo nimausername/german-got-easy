@@ -1,14 +1,15 @@
 import type { FastifyPluginAsync } from "fastify";
 import { z } from "zod";
-import { clearAuthCookies, setAuthCookies } from "../lib/cookies.js";
+import { clearAuthCookies, REFRESH_COOKIE, setAuthCookies } from "../lib/cookies.js";
 import { sendError } from "../lib/errors.js";
 import {
   createKeycloakUser,
   passwordGrant,
   refreshGrant,
+  revokeRefreshToken,
+  verifyAccessToken,
 } from "../lib/keycloak.js";
 import { prisma } from "../lib/prisma.js";
-import { verifyAccessToken } from "../lib/keycloak.js";
 
 const registerSchema = z.object({
   email: z.string().email(),
@@ -22,12 +23,33 @@ const registerSchema = z.object({
 });
 
 const loginSchema = z.object({
-  usernameOrEmail: z.string().min(1),
-  password: z.string().min(1),
+  usernameOrEmail: z.string().min(1).max(254),
+  password: z.string().min(1).max(128),
+});
+
+const authRateLimit = {
+  config: {
+    rateLimit: {
+      max: 10,
+      timeWindow: "1 minute",
+    },
+  },
+} as const;
+
+const userPublicFields = (user: {
+  id: string;
+  email: string | null;
+  username: string | null;
+  displayName: string | null;
+}) => ({
+  id: user.id,
+  email: user.email,
+  username: user.username,
+  displayName: user.displayName,
 });
 
 export const authRoutes: FastifyPluginAsync = async (app) => {
-  app.post("/v1/auth/register", async (request, reply) => {
+  app.post("/v1/auth/register", authRateLimit, async (request, reply) => {
     const parsed = registerSchema.safeParse(request.body);
     if (!parsed.success) {
       return sendError(reply, 400, "VALIDATION_ERROR", "Invalid registration payload.", [
@@ -55,26 +77,26 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
       setAuthCookies(reply, tokens);
       return reply.status(201).send({
         data: {
-          accessToken: tokens.accessToken,
-          user: {
-            id: user.id,
-            email: user.email,
-            username: user.username,
-            displayName: user.displayName,
-          },
+          user: userPublicFields(user),
         },
         meta: { requestId: request.id },
       });
     } catch (error) {
       const err = error as Error & { statusCode?: number };
       if (err.statusCode === 409) {
-        return sendError(reply, 409, "USER_EXISTS", "An account with this email or username already exists.");
+        return sendError(
+          reply,
+          409,
+          "USER_EXISTS",
+          "An account with this email or username already exists.",
+        );
       }
-      return sendError(reply, err.statusCode ?? 400, "REGISTER_FAILED", err.message || "Registration failed.");
+      request.log.warn({ err: err.message, statusCode: err.statusCode }, "Registration failed");
+      return sendError(reply, 400, "REGISTER_FAILED", "Registration failed.");
     }
   });
 
-  app.post("/v1/auth/login", async (request, reply) => {
+  app.post("/v1/auth/login", authRateLimit, async (request, reply) => {
     const parsed = loginSchema.safeParse(request.body);
     if (!parsed.success) {
       return sendError(reply, 400, "VALIDATION_ERROR", "Invalid login payload.");
@@ -109,13 +131,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
       setAuthCookies(reply, tokens);
       return {
         data: {
-          accessToken: tokens.accessToken,
-          user: {
-            id: user.id,
-            email: user.email,
-            username: user.username,
-            displayName: user.displayName,
-          },
+          user: userPublicFields(user),
         },
         meta: { requestId: request.id },
       };
@@ -129,8 +145,8 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     }
   });
 
-  app.post("/v1/auth/refresh", async (request, reply) => {
-    const refreshToken = request.cookies?.gge_refresh;
+  app.post("/v1/auth/refresh", authRateLimit, async (request, reply) => {
+    const refreshToken = request.cookies?.[REFRESH_COOKIE];
     if (!refreshToken) {
       return sendError(reply, 401, "UNAUTHORIZED", "Missing refresh token.");
     }
@@ -146,6 +162,14 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.post("/v1/auth/logout", async (request, reply) => {
+    const refreshToken = request.cookies?.[REFRESH_COOKIE];
+    if (refreshToken) {
+      try {
+        await revokeRefreshToken(refreshToken);
+      } catch (error) {
+        request.log.warn({ err: error }, "Keycloak logout revoke failed");
+      }
+    }
     clearAuthCookies(reply);
     return { data: { ok: true }, meta: { requestId: request.id } };
   });

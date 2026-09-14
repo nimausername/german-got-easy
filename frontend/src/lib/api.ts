@@ -20,36 +20,55 @@ export class ApiRequestError extends Error {
   }
 }
 
-const TOKEN_KEY = "gge_access_token";
+let refreshInFlight: Promise<boolean> | null = null;
 
-export const setAccessToken = (token: string | null) => {
-  if (typeof window === "undefined") return;
-  if (!token) {
-    sessionStorage.removeItem(TOKEN_KEY);
-    return;
+const isAuthPath = (path: string) => path.startsWith("/v1/auth/");
+
+/**
+ * Attempts a silent cookie refresh. Deduplicates concurrent callers.
+ */
+const tryRefreshSession = async (): Promise<boolean> => {
+  if (!refreshInFlight) {
+    refreshInFlight = (async () => {
+      const response = await fetch(`${API_URL}/v1/auth/refresh`, {
+        method: "POST",
+        credentials: "include",
+      });
+      return response.ok;
+    })().finally(() => {
+      refreshInFlight = null;
+    });
   }
-  sessionStorage.setItem(TOKEN_KEY, token);
+  return refreshInFlight;
 };
 
-export const getAccessToken = () => {
-  if (typeof window === "undefined") return null;
-  return sessionStorage.getItem(TOKEN_KEY);
-};
-
+/**
+ * Authenticated API helper. Relies on httpOnly cookies only (no JS token store).
+ */
 export const apiFetch = async <T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> => {
-  const token = getAccessToken();
-  const response = await fetch(`${API_URL}${path}`, {
-    ...init,
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(init?.headers ?? {}),
-    },
-  });
+  const headers = new Headers(init?.headers);
+  if (init?.body && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
+  const doFetch = () =>
+    fetch(`${API_URL}${path}`, {
+      ...init,
+      credentials: "include",
+      headers,
+    });
+
+  let response = await doFetch();
+
+  if (response.status === 401 && !isAuthPath(path)) {
+    const refreshed = await tryRefreshSession();
+    if (refreshed) {
+      response = await doFetch();
+    }
+  }
 
   const body = (await response.json()) as T | ApiError;
   if (!response.ok) {

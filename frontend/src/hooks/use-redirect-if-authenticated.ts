@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { apiFetch, getAccessToken } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 
 type UseRedirectIfAuthenticatedResult = {
   /** True while session status is unknown or a redirect is in flight. */
@@ -22,11 +22,6 @@ export const useRedirectIfAuthenticated = (
     let cancelled = false;
 
     const check = async () => {
-      if (getAccessToken()) {
-        router.replace(destination);
-        return;
-      }
-
       try {
         await apiFetch("/v1/me");
         if (!cancelled) {

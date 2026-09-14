@@ -18,17 +18,20 @@ const buildServer = async () => {
   const app = Fastify({
     logger: true,
     genReqId: () => randomUUID(),
+    bodyLimit: 100_000,
   });
 
-  await app.register(helmet);
+  await app.register(helmet, {
+    contentSecurityPolicy: false,
+  });
   await app.register(cors, {
-    origin: env.CORS_ORIGIN.split(",").map((v) => v.trim()),
+    origin: env.CORS_ORIGIN.split(",").map((v) => v.trim()).filter(Boolean),
     credentials: true,
   });
   await app.register(cookie);
   await app.register(rateLimit, {
     global: true,
-    max: 200,
+    max: 120,
     timeWindow: "1 minute",
   });
 

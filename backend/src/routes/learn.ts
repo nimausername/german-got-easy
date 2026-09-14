@@ -1,14 +1,17 @@
 import type { FastifyPluginAsync } from "fastify";
 import { z } from "zod";
+import { gradeMatchAnswer, toClientExercisePayload } from "../lib/client-payload.js";
 import { sendError } from "../lib/errors.js";
 import { prisma } from "../lib/prisma.js";
+
+const PASS_SCORE = 0.7;
 
 const isAnswerCorrect = (
   type: string,
   payload: Record<string, unknown>,
   answer: unknown,
 ): boolean => {
-  if (type === "mcq" || type === "cloze") {
+  if (type === "mcq" || type === "cloze" || type === "short_write") {
     const expected = payload.answer;
     const accepted = Array.isArray(payload.accepted) ? payload.accepted : [expected];
     return accepted.map(String).some((value) => String(answer).trim() === value);
@@ -20,7 +23,7 @@ const isAnswerCorrect = (
   }
 
   if (type === "match") {
-    return Boolean(answer);
+    return gradeMatchAnswer(payload, answer);
   }
 
   return false;
@@ -102,7 +105,10 @@ export const learnRoutes: FastifyPluginAsync = async (app) => {
             id: exercise.id,
             type: exercise.type,
             prompt: exercise.prompt,
-            payload: exercise.payload,
+            payload: toClientExercisePayload(
+              exercise.type,
+              exercise.payload as Record<string, unknown>,
+            ),
           })),
         },
       },
@@ -118,12 +124,14 @@ export const learnRoutes: FastifyPluginAsync = async (app) => {
 
     const { id } = request.params as { id: string };
     const bodySchema = z.object({
-      answers: z.array(
-        z.object({
-          exerciseId: z.string(),
-          answer: z.unknown(),
-        }),
-      ),
+      answers: z
+        .array(
+          z.object({
+            exerciseId: z.string().min(1).max(64),
+            answer: z.unknown(),
+          }),
+        )
+        .max(200),
     });
     const parsed = bodySchema.safeParse(request.body);
     if (!parsed.success) {
@@ -153,20 +161,22 @@ export const learnRoutes: FastifyPluginAsync = async (app) => {
     const score = lesson.exercises.length
       ? correctCount / lesson.exercises.length
       : 0;
+    const passed = score >= PASS_SCORE;
+    const progressStatus = passed ? "COMPLETED" : "IN_PROGRESS";
 
     await prisma.userLessonProgress.upsert({
       where: { userId_lessonId: { userId: user.id, lessonId: lesson.id } },
       create: {
         userId: user.id,
         lessonId: lesson.id,
-        status: "COMPLETED",
+        status: progressStatus,
         score,
-        completedAt: new Date(),
+        completedAt: passed ? new Date() : null,
       },
       update: {
-        status: "COMPLETED",
+        status: progressStatus,
         score,
-        completedAt: new Date(),
+        completedAt: passed ? new Date() : null,
       },
     });
 
@@ -198,22 +208,24 @@ export const learnRoutes: FastifyPluginAsync = async (app) => {
       });
     }
 
-    const unitLessons = await prisma.lesson.findMany({
-      where: { unitId: lesson.unitId },
-      include: { progress: { where: { userId: user.id } } },
-    });
-    const unitDone = unitLessons.every((item) => item.progress[0]?.status === "COMPLETED");
-    if (unitDone) {
-      await prisma.userUnitProgress.upsert({
-        where: { userId_unitId: { userId: user.id, unitId: lesson.unitId } },
-        create: {
-          userId: user.id,
-          unitId: lesson.unitId,
-          status: "COMPLETED",
-          completedAt: new Date(),
-        },
-        update: { status: "COMPLETED", completedAt: new Date() },
+    if (passed) {
+      const unitLessons = await prisma.lesson.findMany({
+        where: { unitId: lesson.unitId },
+        include: { progress: { where: { userId: user.id } } },
       });
+      const unitDone = unitLessons.every((item) => item.progress[0]?.status === "COMPLETED");
+      if (unitDone) {
+        await prisma.userUnitProgress.upsert({
+          where: { userId_unitId: { userId: user.id, unitId: lesson.unitId } },
+          create: {
+            userId: user.id,
+            unitId: lesson.unitId,
+            status: "COMPLETED",
+            completedAt: new Date(),
+          },
+          update: { status: "COMPLETED", completedAt: new Date() },
+        });
+      }
     }
 
     return {
@@ -221,6 +233,7 @@ export const learnRoutes: FastifyPluginAsync = async (app) => {
         score,
         correctCount,
         total: lesson.exercises.length,
+        passed,
         results,
       },
       meta: { requestId: request.id },

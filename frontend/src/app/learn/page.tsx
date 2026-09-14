@@ -52,7 +52,6 @@ type NextPathResponse = {
 
 export default function LessonPlayerPage() {
   const router = useRouter();
-  const [lessonId, setLessonId] = useState<string | null>(null);
   const [lesson, setLesson] = useState<LessonResponse["data"]["lesson"] | null>(null);
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, unknown>>({});
@@ -67,7 +66,6 @@ export default function LessonPlayerPage() {
           setError(next.data.message ?? "All current lessons completed.");
           return;
         }
-        setLessonId(next.data.lesson.id);
         const full = await apiFetch<LessonResponse>(`/v1/lessons/${next.data.lesson.id}`);
         setLesson(full.data.lesson);
       } catch (err) {
@@ -94,7 +92,7 @@ export default function LessonPlayerPage() {
 
     try {
       const response = await apiFetch<{
-        data: { score: number; correctCount: number; total: number };
+        data: { score: number; correctCount: number; total: number; passed: boolean };
       }>(`/v1/lessons/${lesson.id}/submit`, {
         method: "POST",
         body: JSON.stringify({
@@ -104,8 +102,11 @@ export default function LessonPlayerPage() {
           })),
         }),
       });
+      const pct = Math.round(response.data.score * 100);
       setResult(
-        `Score ${Math.round(response.data.score * 100)}% (${response.data.correctCount}/${response.data.total})`,
+        response.data.passed
+          ? `Score ${pct}% — lesson complete.`
+          : `Score ${pct}% — need 70% to complete. Review and try again.`,
       );
     } catch (err) {
       setError(err instanceof Error ? err.message : "Submit failed");
@@ -113,7 +114,6 @@ export default function LessonPlayerPage() {
   };
 
   const handleNextLesson = async () => {
-    setLessonId(null);
     setLesson(null);
     setIndex(0);
     setAnswers({});
@@ -123,7 +123,6 @@ export default function LessonPlayerPage() {
       setError(next.data.message ?? "All current lessons completed.");
       return;
     }
-    setLessonId(next.data.lesson.id);
     const full = await apiFetch<LessonResponse>(`/v1/lessons/${next.data.lesson.id}`);
     setLesson(full.data.lesson);
   };
@@ -253,31 +252,74 @@ export default function LessonPlayerPage() {
               </Field>
             )}
 
-            {current.type === "match" && (
-              <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                <span>Mark as reviewed for now (full match UI comes next).</span>
-                <Button
-                  type="button"
-                  variant="link"
-                  className="h-auto px-0"
-                  onClick={() => handleAnswer(true)}
-                >
-                  Mark done
-                </Button>
-              </div>
-            )}
+            {current.type === "match" &&
+              Array.isArray(current.payload.lefts) &&
+              Array.isArray(current.payload.rights) && (
+                <div className="space-y-3">
+                  {(current.payload.lefts as string[]).map((left) => {
+                    const selected =
+                      answers[current.id] &&
+                      typeof answers[current.id] === "object" &&
+                      !Array.isArray(answers[current.id])
+                        ? String(
+                            (answers[current.id] as Record<string, string>)[left] ?? "",
+                          )
+                        : "";
+                    return (
+                      <Field key={left}>
+                        <FieldLabel htmlFor={`match-${current.id}-${left}`}>
+                          {left}
+                        </FieldLabel>
+                        <select
+                          id={`match-${current.id}-${left}`}
+                          className="flex h-11 w-full rounded-lg border border-input bg-transparent px-3 text-base outline-none"
+                          value={selected}
+                          aria-label={`Match for ${left}`}
+                          onChange={(e) => {
+                            const prev =
+                              answers[current.id] &&
+                              typeof answers[current.id] === "object" &&
+                              !Array.isArray(answers[current.id])
+                                ? {
+                                    ...(answers[current.id] as Record<string, string>),
+                                  }
+                                : {};
+                            handleAnswer({ ...prev, [left]: e.target.value });
+                          }}
+                        >
+                          <option value="">Choose…</option>
+                          {(current.payload.rights as string[]).map((right) => (
+                            <option key={right} value={right}>
+                              {right}
+                            </option>
+                          ))}
+                        </select>
+                      </Field>
+                    );
+                  })}
+                </div>
+              )}
           </CardContent>
           <CardFooter>
             <Button
               type="button"
               size="lg"
               className="min-h-11 w-full touch-manipulation sm:w-auto"
-              disabled={answers[current.id] === undefined}
+              disabled={
+                answers[current.id] === undefined ||
+                (current.type === "match" &&
+                  Array.isArray(current.payload.lefts) &&
+                  (!(answers[current.id] && typeof answers[current.id] === "object") ||
+                    Object.keys(answers[current.id] as object).length <
+                      (current.payload.lefts as string[]).length ||
+                    Object.values(answers[current.id] as Record<string, string>).some(
+                      (value) => !value,
+                    )))
+              }
               onClick={() => void handleNext()}
             >
               {index < lesson.exercises.length - 1 ? "Next" : "Submit lesson"}
             </Button>
-            {lessonId ? null : null}
           </CardFooter>
         </Card>
       )}

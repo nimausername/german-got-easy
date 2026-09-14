@@ -62,15 +62,13 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      const result = await apiFetch<{ data: { accessToken: string } }>("/v1/auth/login", {
+      await apiFetch("/v1/auth/login", {
         method: "POST",
         body: JSON.stringify({
           usernameOrEmail: usernameOrEmail.trim(),
           password,
         }),
       });
-      const { setAccessToken } = await import("@/lib/api");
-      setAccessToken(result.data.accessToken);
       router.push("/dashboard");
     } catch (err) {
       if (err instanceof ApiRequestError) {

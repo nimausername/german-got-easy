@@ -51,13 +51,11 @@ export const UserNav = ({ user }: UserNavProps) => {
   const email = user.email?.trim() || null;
 
   const handleLogout = async () => {
-    const { setAccessToken } = await import("@/lib/api");
     try {
       await apiFetch("/v1/auth/logout", { method: "POST" });
     } catch {
-      // Clear local session even if the API call fails.
+      // Clear remote session best-effort; local navigation still proceeds.
     }
-    setAccessToken(null);
     router.push("/login");
   };
 

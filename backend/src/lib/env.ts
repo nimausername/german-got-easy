@@ -18,9 +18,16 @@ const envSchema = z.object({
     .string()
     .optional()
     .transform((v) => v === "true"),
+  COOKIE_SAME_SITE: z.enum(["lax", "strict", "none"]).default("lax"),
   PRODUCT_NAME: z.string().default("German Got Easy"),
 });
 
-export const env = envSchema.parse(process.env);
+const parsed = envSchema.parse(process.env);
+
+if (parsed.COOKIE_SAME_SITE === "none" && !parsed.COOKIE_SECURE) {
+  throw new Error("COOKIE_SAME_SITE=none requires COOKIE_SECURE=true");
+}
+
+export const env = parsed;
 
 export const keycloakIssuer = `${env.KEYCLOAK_URL.replace(/\/$/, "")}/realms/${env.KEYCLOAK_REALM}`;

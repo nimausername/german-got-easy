@@ -44,6 +44,11 @@ const authPluginImpl: FastifyPluginAsync = async (app) => {
       return sendError(reply, 401, "UNAUTHORIZED", "Authentication required.");
     }
 
+    // Reject absurdly large tokens early (DoS / junk cookies).
+    if (token.length > 8192) {
+      return sendError(reply, 401, "UNAUTHORIZED", "Invalid or expired token.");
+    }
+
     try {
       const payload = await verifyAccessToken(token);
       const user = await prisma.user.upsert({

@@ -73,7 +73,7 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      const result = await apiFetch<{ data: { accessToken: string } }>("/v1/auth/register", {
+      await apiFetch("/v1/auth/register", {
         method: "POST",
         body: JSON.stringify({
           email: email.trim(),
@@ -81,8 +81,6 @@ export default function RegisterPage() {
           password,
         }),
       });
-      const { setAccessToken } = await import("@/lib/api");
-      setAccessToken(result.data.accessToken);
       router.push("/dashboard");
     } catch (err) {
       if (err instanceof ApiRequestError) {
