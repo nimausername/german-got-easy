@@ -15,6 +15,7 @@ type LessonStepNavProps = {
 
 /**
  * Balanced previous/next controls using ButtonGroup (ReUI pagination pattern).
+ * Bottom clearance for the mobile tab bar lives on AppShell — keep this compact.
  */
 export const LessonStepNav = ({
   backLabel = "Back",
@@ -25,7 +26,7 @@ export const LessonStepNav = ({
   onNext,
 }: LessonStepNavProps) => (
   <div
-    className="shrink-0 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:pb-2"
+    className="shrink-0 border-t border-border/60 bg-background pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pt-3 md:pb-2"
     role="navigation"
     aria-label="Lesson step navigation"
   >

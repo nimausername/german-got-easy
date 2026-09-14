@@ -32,12 +32,12 @@ const ListenButton = ({ label, text, audioUrl }: ListenButtonProps) => {
       type="button"
       variant="outline"
       size="sm"
-      className="min-h-10 touch-manipulation"
+      className="min-h-9 shrink-0 touch-manipulation px-2.5 sm:min-h-10 sm:px-3"
       aria-label={label}
       onClick={() => playGerman(text, audioUrl)}
     >
       <Volume2 data-icon="inline-start" />
-      Listen
+      <span className="hidden sm:inline">Listen</span>
     </Button>
   );
 };
@@ -52,16 +52,16 @@ export const TeachBlockView = ({ block }: TeachBlockViewProps) => {
   if (block.type === "explain") {
     return (
       <div className="space-y-4">
-        <h2 className="font-display text-xl text-brand-ink sm:text-2xl">{block.title}</h2>
+        <h2 className="font-display text-lg text-brand-ink sm:text-2xl">{block.title}</h2>
         <p className="text-base leading-relaxed text-foreground/90">{block.body}</p>
         {block.examples?.length ? (
-          <ul className="space-y-2 border-l-2 border-primary/30 pl-4">
+          <ul className="space-y-2 border-l-2 border-primary/30 pl-3 sm:pl-4">
             {block.examples.map((example) => (
               <li
                 key={`${example.de}-${example.en}`}
-                className="flex flex-wrap items-center justify-between gap-2"
+                className="flex items-start justify-between gap-3"
               >
-                <div>
+                <div className="min-w-0">
                   <p className="font-medium text-brand-ink">{example.de}</p>
                   <p className="text-sm text-muted-foreground">{example.en}</p>
                 </div>
@@ -81,14 +81,14 @@ export const TeachBlockView = ({ block }: TeachBlockViewProps) => {
   if (block.type === "phrases") {
     return (
       <div className="space-y-4">
-        <h2 className="font-display text-xl text-brand-ink sm:text-2xl">{block.title}</h2>
+        <h2 className="font-display text-lg text-brand-ink sm:text-2xl">{block.title}</h2>
         <ul className="divide-y divide-border/70">
           {block.items.map((item) => (
             <li
               key={`${item.de}-${item.en}`}
-              className="flex flex-wrap items-center justify-between gap-2 py-3"
+              className="flex items-start justify-between gap-3 py-2.5 sm:py-3"
             >
-              <div>
+              <div className="min-w-0">
                 <p className="font-medium text-brand-ink">{item.de}</p>
                 <p className="text-sm text-muted-foreground">{item.en}</p>
               </div>
@@ -103,7 +103,7 @@ export const TeachBlockView = ({ block }: TeachBlockViewProps) => {
   if (block.type === "pattern") {
     return (
       <div className="space-y-4">
-        <h2 className="font-display text-xl text-brand-ink sm:text-2xl">{block.title}</h2>
+        <h2 className="font-display text-lg text-brand-ink sm:text-2xl">{block.title}</h2>
         <p className="rounded-lg bg-muted/60 px-4 py-3 font-display text-lg text-brand-ink">
           {block.template}
         </p>
@@ -113,9 +113,9 @@ export const TeachBlockView = ({ block }: TeachBlockViewProps) => {
             {block.examples.map((example, index) => (
               <li
                 key={example}
-                className="flex flex-wrap items-center justify-between gap-2 text-sm"
+                className="flex items-start justify-between gap-3 text-sm"
               >
-                <span>{example}</span>
+                <span className="min-w-0">{example}</span>
                 <ListenButton
                   label={`Play ${example}`}
                   text={example}
@@ -132,14 +132,14 @@ export const TeachBlockView = ({ block }: TeachBlockViewProps) => {
   if (block.type === "dialogue") {
     return (
       <div className="space-y-4">
-        <h2 className="font-display text-xl text-brand-ink sm:text-2xl">{block.title}</h2>
+        <h2 className="font-display text-lg text-brand-ink sm:text-2xl">{block.title}</h2>
         <div className="space-y-3">
           {block.lines.map((line, index) => (
             <div
               key={`${line.speaker}-${index}`}
-              className="flex flex-wrap items-start justify-between gap-2 rounded-lg bg-muted/50 px-4 py-3"
+              className="flex items-start justify-between gap-3 rounded-lg bg-muted/50 px-3 py-3 sm:px-4"
             >
-              <div>
+              <div className="min-w-0">
                 <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
                   {line.speaker}
                 </p>
@@ -158,7 +158,7 @@ export const TeachBlockView = ({ block }: TeachBlockViewProps) => {
     const canPlay = canPlayGerman(block.audioUrl) || browserTts;
     return (
       <div className="space-y-4">
-        <h2 className="font-display text-xl text-brand-ink sm:text-2xl">{block.title}</h2>
+        <h2 className="font-display text-lg text-brand-ink sm:text-2xl">{block.title}</h2>
         <p className="font-display text-lg text-brand-ink">{block.text}</p>
         {block.hint ? <p className="text-sm text-muted-foreground">{block.hint}</p> : null}
         {canPlay ? (
@@ -184,7 +184,7 @@ export const TeachBlockView = ({ block }: TeachBlockViewProps) => {
 
   return (
     <div className="space-y-4">
-      <h2 className="font-display text-xl text-brand-ink sm:text-2xl">{block.title}</h2>
+      <h2 className="font-display text-lg text-brand-ink sm:text-2xl">{block.title}</h2>
       <p className="text-base text-foreground/90">{block.prompt}</p>
       {block.hint ? <p className="text-sm text-muted-foreground">{block.hint}</p> : null}
 

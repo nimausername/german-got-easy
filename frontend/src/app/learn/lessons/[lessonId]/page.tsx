@@ -42,7 +42,11 @@ type Phase = "teach" | "practice" | "result";
 
 /**
  * Comfort-first lesson player: teach → practice → celebrate.
+ * Mobile chrome stays compact so the teach/practice card keeps usable height.
+ * Bottom tab bar is hidden on this route; AppShell’s tab clearance is overridden.
  */
+const LESSON_SHELL_CLASS = "py-0 pt-2 pb-2 sm:pt-3 md:pb-6";
+
 export default function LessonPlayerPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -187,7 +191,7 @@ export default function LessonPlayerPage() {
     return (
       <AuthenticatedShell
         width={APP_CONTENT_WIDTH}
-        className="pt-4 sm:pt-6"
+        className={LESSON_SHELL_CLASS}
         user={shellUser.user}
         loading={shellUser.loading}
       >
@@ -257,34 +261,43 @@ export default function LessonPlayerPage() {
   return (
     <AuthenticatedShell
       width={APP_CONTENT_WIDTH}
-      className="py-4 sm:py-6 md:pb-8"
+      className={LESSON_SHELL_CLASS}
       user={shellUser.user}
       loading={shellUser.loading}
     >
       <PageFrame
         className={STUDY_CONTENT_CLASS}
         header={
-          <div className="space-y-4">
+          <div className="space-y-2.5 sm:space-y-4">
             <BackLink href={`/learn/units/${lesson.unitId}`} label={lesson.unitTitle} />
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
               <Badge variant="secondary">{lesson.levelCode}</Badge>
-              <Badge variant="outline">{lesson.unitTitle}</Badge>
+              <Badge variant="outline" className="hidden sm:inline-flex">
+                {lesson.unitTitle}
+              </Badge>
               {lesson.skillTags.slice(0, 2).map((tag) => (
                 <Badge key={tag} variant="outline" className="font-normal">
                   {skillLabel(tag)}
                 </Badge>
               ))}
             </div>
-            <h1 className="text-2xl font-semibold tracking-tight break-words sm:text-3xl">
-              {lesson.title}
-            </h1>
-            <p className="mt-1.5 text-sm text-muted-foreground">{lesson.canDo}</p>
+            <div>
+              <h1 className="text-xl font-semibold tracking-tight break-words sm:text-3xl">
+                {lesson.title}
+              </h1>
+              <p className="mt-1 line-clamp-2 text-xs text-muted-foreground sm:mt-1.5 sm:line-clamp-none sm:text-sm">
+                {lesson.canDo}
+              </p>
+            </div>
             <LessonPhaseNav
               phase={phase}
               teachCount={teachCount}
               practiceCount={practiceCount}
             />
-            <Progress value={progressValue} className="gap-2 [&_[data-slot=progress-track]]:h-2">
+            <Progress
+              value={progressValue}
+              className="gap-1.5 sm:gap-2 [&_[data-slot=progress-label]]:text-xs sm:[&_[data-slot=progress-label]]:text-sm [&_[data-slot=progress-track]]:h-2 [&_[data-slot=progress-value]]:text-xs sm:[&_[data-slot=progress-value]]:text-sm"
+            >
               <ProgressLabel>{stepLabel}</ProgressLabel>
               <ProgressValue />
             </Progress>
@@ -292,7 +305,8 @@ export default function LessonPlayerPage() {
           </div>
         }
         footer={stepFooter}
-        contentClassName="pb-4"
+        headerClassName="pb-0.5"
+        contentClassName="pb-2 sm:pb-4"
       >
         {phase === "result" ? (
           <Card className="animate-in fade-in-0 zoom-in-95 duration-300">
@@ -354,7 +368,7 @@ export default function LessonPlayerPage() {
 
         {phase === "teach" && currentTeach ? (
           <Card key={`teach-${teachIndex}`} className="animate-in fade-in-0 duration-200">
-            <CardHeader>
+            <CardHeader className="pb-0 sm:pb-0">
               <CardDescription>Teach · Step {teachIndex + 1}</CardDescription>
               <CardTitle className="sr-only">{currentTeach.title}</CardTitle>
             </CardHeader>

@@ -48,9 +48,10 @@ export const PageFrame = ({
       ref={contentRef}
       className={cn(
         "min-h-0 flex-1 basis-0 overflow-x-hidden",
-        header ? "mt-4 sm:mt-5" : null,
+        header ? "mt-2.5 sm:mt-5" : null,
         contentClassName,
       )}
+      fadeSize={24}
     >
       {children}
     </ScrollFade>

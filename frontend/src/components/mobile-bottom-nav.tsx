@@ -7,6 +7,9 @@ import { cn } from "@/lib/utils";
 
 const HIDDEN_PREFIXES = ["/", "/login", "/register"] as const;
 
+/** Focused study surfaces that already have their own step controls. */
+const HIDDEN_STUDY_PREFIXES = ["/learn/lessons/"] as const;
+
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
   { href: "/learn", label: "Learn", icon: BookOpen },
@@ -15,7 +18,8 @@ const NAV_ITEMS = [
 ] as const;
 
 const shouldHideNav = (pathname: string) =>
-  HIDDEN_PREFIXES.some((path) => pathname === path);
+  HIDDEN_PREFIXES.some((path) => pathname === path) ||
+  HIDDEN_STUDY_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 
 /**
  * Thumb-friendly primary navigation for phones and small tablets.

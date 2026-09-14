@@ -241,18 +241,18 @@ export const LessonPlayerPageSkeleton = () => (
     aria-busy="true"
     aria-label="Loading lesson"
   >
-    <div className="shrink-0 space-y-4">
+    <div className="shrink-0 space-y-2.5 sm:space-y-4">
       <BackLinkSkeleton />
       <BadgeRowSkeleton count={3} />
-      <div className="space-y-2">
-        <Skeleton className="h-8 w-56 max-w-full sm:h-9 sm:w-72" />
-        <Skeleton className="h-4 w-64 max-w-full" />
+      <div className="space-y-1.5 sm:space-y-2">
+        <Skeleton className="h-7 w-48 max-w-full sm:h-9 sm:w-72" />
+        <Skeleton className="h-3.5 w-56 max-w-full sm:h-4 sm:w-64" />
       </div>
-      <div className="flex gap-2">
-        <Skeleton className="h-8 w-20 rounded-md" />
-        <Skeleton className="h-8 w-24 rounded-md" />
+      <div className="flex gap-1.5 sm:gap-2">
+        <Skeleton className="h-11 flex-1 rounded-lg sm:h-14 sm:rounded-xl" />
+        <Skeleton className="h-11 flex-1 rounded-lg sm:h-14 sm:rounded-xl" />
       </div>
-      <div className="space-y-2">
+      <div className="space-y-1.5 sm:space-y-2">
         <div className="flex justify-between">
           <Skeleton className="h-3.5 w-28" />
           <Skeleton className="h-3.5 w-10" />
@@ -260,7 +260,7 @@ export const LessonPlayerPageSkeleton = () => (
         <Skeleton className="h-2 w-full rounded-full" />
       </div>
     </div>
-    <div className="mt-4 min-h-0 flex-1 sm:mt-5">
+    <div className="mt-2.5 min-h-0 flex-1 sm:mt-5">
       <Card size="default" className="h-full min-h-56" aria-hidden>
         <CardHeader>
           <Skeleton className="h-3.5 w-28" />
@@ -274,7 +274,7 @@ export const LessonPlayerPageSkeleton = () => (
         </CardContent>
       </Card>
     </div>
-    <div className="mt-4 flex shrink-0 gap-2 sm:mt-5">
+    <div className="mt-2 flex shrink-0 gap-2 border-t border-border/60 pt-2 sm:mt-3 sm:pt-3">
       <Skeleton className="h-11 w-24 rounded-md" />
       <Skeleton className="h-11 flex-1 rounded-md sm:flex-none sm:w-36" />
     </div>

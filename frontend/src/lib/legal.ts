@@ -7,6 +7,8 @@ export const LEGAL = {
   siteHost: "german.nimakhabbazi.de",
   siteUrl: "https://german.nimakhabbazi.de",
   controllerName: "Nima Khabbazi",
+  /** Public GitHub repository for this open-source project. */
+  githubUrl: "https://github.com/nimausername/german-got-easy",
   /** Town only until a full street address is added for Impressum completeness. */
   locality: "Rielasingen-Worblingen",
   country: "Germany",
