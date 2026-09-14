@@ -45,7 +45,14 @@ type LessonResponse = {
 
 type NextPathResponse = {
   data: {
-    lesson: { id: string; title: string } | null;
+    lesson: {
+      id: string;
+      title: string;
+      skillTags?: string[];
+      unitTitle?: string;
+      levelCode?: string;
+      exercises?: Exercise[];
+    } | null;
     message?: string;
   };
 };
@@ -61,13 +68,21 @@ export default function LessonPlayerPage() {
   useEffect(() => {
     const load = async () => {
       try {
-        const next = await apiFetch<NextPathResponse>("/v1/path/next");
-        if (!next.data.lesson) {
+        const next = await apiFetch<NextPathResponse>(
+          "/v1/path/next?includeExercises=true",
+        );
+        if (!next.data.lesson?.exercises) {
           setError(next.data.message ?? "All current lessons completed.");
           return;
         }
-        const full = await apiFetch<LessonResponse>(`/v1/lessons/${next.data.lesson.id}`);
-        setLesson(full.data.lesson);
+        setLesson({
+          id: next.data.lesson.id,
+          title: next.data.lesson.title,
+          skillTags: next.data.lesson.skillTags ?? [],
+          unitTitle: next.data.lesson.unitTitle ?? "",
+          levelCode: next.data.lesson.levelCode ?? "",
+          exercises: next.data.lesson.exercises,
+        });
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load lesson");
         router.replace("/login");
@@ -118,13 +133,21 @@ export default function LessonPlayerPage() {
     setIndex(0);
     setAnswers({});
     setResult(null);
-    const next = await apiFetch<NextPathResponse>("/v1/path/next");
-    if (!next.data.lesson) {
+    const next = await apiFetch<NextPathResponse>(
+      "/v1/path/next?includeExercises=true",
+    );
+    if (!next.data.lesson?.exercises) {
       setError(next.data.message ?? "All current lessons completed.");
       return;
     }
-    const full = await apiFetch<LessonResponse>(`/v1/lessons/${next.data.lesson.id}`);
-    setLesson(full.data.lesson);
+    setLesson({
+      id: next.data.lesson.id,
+      title: next.data.lesson.title,
+      skillTags: next.data.lesson.skillTags ?? [],
+      unitTitle: next.data.lesson.unitTitle ?? "",
+      levelCode: next.data.lesson.levelCode ?? "",
+      exercises: next.data.lesson.exercises,
+    });
   };
 
   if (error && !lesson) {

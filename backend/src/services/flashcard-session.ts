@@ -9,6 +9,19 @@ import { TOPIC_CATALOG, type WordTopicId } from "./flashcard-topics.js";
 
 const SESSION_SIZE = 20;
 const DUE_CAP = 15;
+const TOPIC_TOTALS_TTL_MS = 5 * 60 * 1000;
+
+const promptWordSelect = {
+  id: true,
+  lemma: true,
+  article: true,
+  plural: true,
+  translation: true,
+  partOfSpeech: true,
+  exampleDe: true,
+  exampleEn: true,
+  usageNote: true,
+} as const;
 
 const toPromptWord = (word: {
   id: string;
@@ -29,6 +42,34 @@ const publicCard = (card: ReturnType<typeof buildSessionCard>) => {
 
 export type SessionMode = "topic" | "due";
 
+type TopicTotalsCache = {
+  at: number;
+  totals: Map<WordTopic, number>;
+};
+
+let topicTotalsCache: TopicTotalsCache | null = null;
+
+/**
+ * Returns cached per-topic word counts (content is effectively static between seeds).
+ */
+const getTopicTotals = async (): Promise<Map<WordTopic, number>> => {
+  if (topicTotalsCache && Date.now() - topicTotalsCache.at < TOPIC_TOTALS_TTL_MS) {
+    return topicTotalsCache.totals;
+  }
+
+  const grouped = await prisma.word.groupBy({
+    by: ["topic"],
+    _count: { _all: true },
+  });
+
+  const totals = new Map<WordTopic, number>();
+  for (const row of grouped) {
+    totals.set(row.topic, row._count._all);
+  }
+  topicTotalsCache = { at: Date.now(), totals };
+  return totals;
+};
+
 /**
  * Builds a study session: topic learning (due + new) or all-due review.
  */
@@ -46,7 +87,10 @@ export const buildFlashcardSession = async (input: {
       status: { in: ["LEARNING", "REVIEW", "KNOWN"] },
       ...(topicFilter ? { word: topicFilter } : {}),
     },
-    include: { word: true },
+    select: {
+      repetitions: true,
+      word: { select: promptWordSelect },
+    },
     orderBy: { dueAt: "asc" },
     take: DUE_CAP,
   });
@@ -66,20 +110,12 @@ export const buildFlashcardSession = async (input: {
     };
   }
 
-  const existingIds = new Set(
-    (
-      await prisma.userWordProgress.findMany({
-        where: { userId: input.userId },
-        select: { wordId: true },
-      })
-    ).map((row) => row.wordId),
-  );
-
   const newWords = await prisma.word.findMany({
     where: {
       ...(topicFilter ?? {}),
-      id: { notIn: [...existingIds] },
+      progress: { none: { userId: input.userId } },
     },
+    select: promptWordSelect,
     orderBy: { frequencyRank: "asc" },
     take: Math.max(0, SESSION_SIZE - due.length),
   });
@@ -103,10 +139,8 @@ export const buildFlashcardSession = async (input: {
  */
 export const listTopicProgress = async (userId: string) => {
   const now = new Date();
-  const [wordRows, progress] = await Promise.all([
-    prisma.word.findMany({
-      select: { topic: true },
-    }),
+  const [totalByTopic, progress] = await Promise.all([
+    getTopicTotals(),
     prisma.userWordProgress.findMany({
       where: { userId },
       select: {
@@ -116,11 +150,6 @@ export const listTopicProgress = async (userId: string) => {
       },
     }),
   ]);
-
-  const totalByTopic = new Map<WordTopic, number>();
-  for (const row of wordRows) {
-    totalByTopic.set(row.topic, (totalByTopic.get(row.topic) ?? 0) + 1);
-  }
 
   const stats = new Map<
     WordTopic,

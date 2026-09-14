@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Search } from "lucide-react";
 import {
   Autocomplete,
@@ -10,16 +10,6 @@ import {
   AutocompleteList,
   AutocompleteStatus,
 } from "@/components/reui/autocomplete";
-import { Filters } from "@/components/reui/filters/filters";
-import {
-  createFilterQuery,
-  createFilterRule,
-  flattenFilterConditions,
-} from "@/components/reui/filters/filters-query";
-import type {
-  FilterField,
-  FilterQuery,
-} from "@/components/reui/filters/filters-types";
 import {
   Card,
   CardContent,
@@ -30,14 +20,17 @@ import {
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { IconPlaceholder } from "@/app/(create)/components/icon-placeholder";
-import { apiFetch } from "@/lib/api";
 import {
-  formatGermanLemma,
   VOCAB_CEFR_BANDS,
   VOCAB_STATUS_FILTERS,
   VOCAB_TOPICS,
-  type VocabularyWord,
 } from "@/lib/vocabulary";
+
+type SuggestionItem = {
+  readonly id: string;
+  readonly label: string;
+  readonly translation: string;
+};
 
 type VocabularyFiltersProps = {
   readonly query: string;
@@ -47,6 +40,8 @@ type VocabularyFiltersProps = {
   readonly loadedCount: number;
   readonly totalInBank: number | null;
   readonly loading: boolean;
+  readonly suggestions: SuggestionItem[];
+  readonly suggestionsLoading: boolean;
   readonly onQueryChange: (value: string) => void;
   readonly onTopicChange: (value: string) => void;
   readonly onCefrBandChange: (value: string) => void;
@@ -55,135 +50,11 @@ type VocabularyFiltersProps = {
   readonly onWordSelect: (wordId: string) => void;
 };
 
-type WordsResponse = {
-  data: {
-    words: VocabularyWord[];
-    nextCursor: string | null;
-  };
-};
-
-type SuggestionItem = {
-  readonly id: string;
-  readonly label: string;
-  readonly translation: string;
-  readonly topic: string;
-};
-
-const SUGGESTION_LIMIT = 8;
-const SUGGESTION_DEBOUNCE_MS = 250;
-
-const FILTER_FIELDS: FilterField[] = [
-  {
-    id: "topic",
-    label: "Topic",
-    type: "select",
-    defaultOperator: "is",
-    options: VOCAB_TOPICS.map((topic) => ({
-      value: topic.id,
-      label: topic.title,
-    })),
-  },
-  {
-    id: "cefrBand",
-    label: "CEFR",
-    type: "select",
-    defaultOperator: "is",
-    options: VOCAB_CEFR_BANDS.map((band) => ({
-      value: band,
-      label: band,
-    })),
-  },
-  {
-    id: "status",
-    label: "Status",
-    type: "select",
-    defaultOperator: "is",
-    options: VOCAB_STATUS_FILTERS.map((item) => ({
-      value: item.id,
-      label: item.label,
-    })),
-  },
-];
-
-const buildFilterQuery = (
-  topic: string,
-  cefrBand: string,
-  status: string,
-): FilterQuery => {
-  const rules = [];
-  if (topic) {
-    rules.push(
-      createFilterRule({
-        id: "rule-topic",
-        path: ["topic"],
-        operator: "is",
-        value: topic,
-      }),
-    );
-  }
-  if (cefrBand) {
-    rules.push(
-      createFilterRule({
-        id: "rule-cefr",
-        path: ["cefrBand"],
-        operator: "is",
-        value: cefrBand,
-      }),
-    );
-  }
-  if (status) {
-    rules.push(
-      createFilterRule({
-        id: "rule-status",
-        path: ["status"],
-        operator: "is",
-        value: status,
-      }),
-    );
-  }
-  return createFilterQuery(rules);
-};
-
-const applyFilterQuery = (
-  next: FilterQuery,
-  handlers: {
-    onTopicChange: (value: string) => void;
-    onCefrBandChange: (value: string) => void;
-    onStatusChange: (value: string) => void;
-  },
-) => {
-  let topic = "";
-  let cefrBand = "";
-  let status = "";
-
-  for (const condition of flattenFilterConditions(next)) {
-    if (condition.negated) continue;
-    if (condition.operator !== "is" && condition.operator !== "is_any_of") {
-      continue;
-    }
-    const raw = condition.values[0];
-    if (raw === undefined || raw === null || raw === "") continue;
-    const value = String(raw);
-    const fieldId = condition.path[0];
-    if (fieldId === "topic") topic = value;
-    if (fieldId === "cefrBand") cefrBand = value;
-    if (fieldId === "status") status = value;
-  }
-
-  handlers.onTopicChange(topic);
-  handlers.onCefrBandChange(cefrBand);
-  handlers.onStatusChange(status);
-};
-
-const toSuggestion = (word: VocabularyWord): SuggestionItem => ({
-  id: word.id,
-  label: formatGermanLemma(word.article, word.lemma),
-  translation: word.translation,
-  topic: word.topic,
-});
+const selectClassName =
+  "flex h-11 w-full min-w-0 rounded-lg border border-input bg-transparent px-3 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 /**
- * Vocabulary find controls: ReUI Autocomplete search + Filters chip bar.
+ * Vocabulary find controls: Autocomplete search + lightweight native selects.
  */
 export const VocabularyFilters = ({
   query,
@@ -193,6 +64,8 @@ export const VocabularyFilters = ({
   loadedCount,
   totalInBank,
   loading,
+  suggestions,
+  suggestionsLoading,
   onQueryChange,
   onTopicChange,
   onCefrBandChange,
@@ -201,25 +74,10 @@ export const VocabularyFilters = ({
   onWordSelect,
 }: VocabularyFiltersProps) => {
   const [desktopAutofocus, setDesktopAutofocus] = useState(false);
-  // Own the chip tree locally. ReUI commits incomplete rules (field picked,
-  // operator/value still empty); deriving query only from API params wiped them.
-  const [filterQuery, setFilterQuery] = useState<FilterQuery>(() =>
-    buildFilterQuery(topic, cefrBand, status),
-  );
-  const [fetchedSuggestions, setFetchedSuggestions] = useState<SuggestionItem[]>(
-    [],
-  );
-  const [fetchLoading, setFetchLoading] = useState(false);
-  const [fetchError, setFetchError] = useState<string | null>(null);
 
-  const fields = useMemo(() => FILTER_FIELDS, []);
-  const hasActiveFilters =
-    Boolean(query) || Boolean(topic || cefrBand || status);
+  const hasActiveFilters = Boolean(query) || Boolean(topic || cefrBand || status);
   const trimmedQuery = query.trim();
   const shouldShowSuggestions = trimmedQuery.length > 0;
-  const suggestions = shouldShowSuggestions ? fetchedSuggestions : [];
-  const suggestionsLoading = shouldShowSuggestions && fetchLoading;
-  const suggestionsError = shouldShowSuggestions ? fetchError : null;
 
   useEffect(() => {
     const media = window.matchMedia("(min-width: 768px)");
@@ -228,59 +86,6 @@ export const VocabularyFilters = ({
     media.addEventListener("change", sync);
     return () => media.removeEventListener("change", sync);
   }, []);
-
-  useEffect(() => {
-    if (!trimmedQuery) return;
-
-    let ignore = false;
-    const timer = window.setTimeout(() => {
-      const params = new URLSearchParams();
-      params.set("q", trimmedQuery);
-      params.set("limit", String(SUGGESTION_LIMIT));
-      if (topic) params.set("topic", topic);
-      if (cefrBand) params.set("cefrBand", cefrBand);
-      if (status) params.set("status", status);
-
-      void (async () => {
-        if (ignore) return;
-        setFetchLoading(true);
-        setFetchError(null);
-        try {
-          const response = await apiFetch<WordsResponse>(`/v1/words?${params}`);
-          if (ignore) return;
-          setFetchedSuggestions(response.data.words.map(toSuggestion));
-        } catch {
-          if (ignore) return;
-          setFetchedSuggestions([]);
-          setFetchError("Could not load suggestions.");
-        } finally {
-          if (!ignore) setFetchLoading(false);
-        }
-      })();
-    }, SUGGESTION_DEBOUNCE_MS);
-
-    return () => {
-      ignore = true;
-      window.clearTimeout(timer);
-    };
-  }, [trimmedQuery, topic, cefrBand, status]);
-
-  const handleFilterQueryChange = (next: FilterQuery) => {
-    setFilterQuery(next);
-    applyFilterQuery(next, {
-      onTopicChange,
-      onCefrBandChange,
-      onStatusChange,
-    });
-  };
-
-  const handleClearAll = () => {
-    setFilterQuery(createFilterQuery());
-    setFetchedSuggestions([]);
-    setFetchError(null);
-    setFetchLoading(false);
-    onClearAll();
-  };
 
   const handleSelectSuggestion = (item: SuggestionItem) => {
     onQueryChange(item.label);
@@ -299,8 +104,6 @@ export const VocabularyFilters = ({
         Searching words…
       </div>
     );
-  } else if (suggestionsError) {
-    suggestionStatus = suggestionsError;
   } else if (suggestions.length === 0) {
     suggestionStatus = `No matches for “${trimmedQuery}”`;
   } else {
@@ -316,11 +119,15 @@ export const VocabularyFilters = ({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 sm:space-y-5">
-        <section role="search" aria-label="Vocabulary search and filters" className="space-y-4 sm:space-y-5">
+        <section
+          role="search"
+          aria-label="Vocabulary search and filters"
+          className="space-y-4 sm:space-y-5"
+        >
           <Field>
             <FieldLabel htmlFor="vocab-search">Search</FieldLabel>
             <Autocomplete
-              items={suggestions}
+              items={shouldShowSuggestions ? suggestions : []}
               value={query}
               onValueChange={onQueryChange}
               itemToStringValue={(item: unknown) => (item as SuggestionItem).label}
@@ -368,21 +175,62 @@ export const VocabularyFilters = ({
             </Autocomplete>
           </Field>
 
-          <div className="space-y-2">
-            <p className="text-sm font-medium">Filters</p>
-            <div className="min-w-0 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              <Filters
-                fields={fields}
-                query={filterQuery}
-                onQueryChange={handleFilterQueryChange}
-                size="sm"
-                className="min-w-0"
-              />
-            </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <Field>
+              <FieldLabel htmlFor="vocab-topic">Topic</FieldLabel>
+              <select
+                id="vocab-topic"
+                className={selectClassName}
+                value={topic}
+                aria-label="Filter by topic"
+                onChange={(e) => onTopicChange(e.target.value)}
+              >
+                <option value="">All topics</option>
+                {VOCAB_TOPICS.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.title}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="vocab-cefr">CEFR</FieldLabel>
+              <select
+                id="vocab-cefr"
+                className={selectClassName}
+                value={cefrBand}
+                aria-label="Filter by CEFR level"
+                onChange={(e) => onCefrBandChange(e.target.value)}
+              >
+                <option value="">All levels</option>
+                {VOCAB_CEFR_BANDS.map((band) => (
+                  <option key={band} value={band}>
+                    {band}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="vocab-status">Status</FieldLabel>
+              <select
+                id="vocab-status"
+                className={selectClassName}
+                value={status}
+                aria-label="Filter by learning status"
+                onChange={(e) => onStatusChange(e.target.value)}
+              >
+                <option value="">All statuses</option>
+                {VOCAB_STATUS_FILTERS.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+            </Field>
           </div>
 
           {hasActiveFilters ? (
-            <Button type="button" variant="ghost" size="sm" onClick={handleClearAll}>
+            <Button type="button" variant="ghost" size="sm" onClick={onClearAll}>
               Clear all
             </Button>
           ) : null}

@@ -29,6 +29,43 @@ const isAnswerCorrect = (
   return false;
 };
 
+const toClientLesson = (lesson: {
+  id: string;
+  title: string;
+  slug: string;
+  skillTags: string[];
+  unit: { title: string; level: { code: string } };
+  exercises: Array<{
+    id: string;
+    type: string;
+    prompt: string;
+    payload: unknown;
+  }>;
+}) => ({
+  id: lesson.id,
+  title: lesson.title,
+  slug: lesson.slug,
+  skillTags: lesson.skillTags,
+  unitTitle: lesson.unit.title,
+  levelCode: lesson.unit.level.code,
+  exercises: lesson.exercises.map((exercise) => ({
+    id: exercise.id,
+    type: exercise.type,
+    prompt: exercise.prompt,
+    payload: toClientExercisePayload(
+      exercise.type,
+      exercise.payload as Record<string, unknown>,
+    ),
+  })),
+});
+
+const nextPathQuerySchema = z.object({
+  includeExercises: z
+    .union([z.literal("1"), z.literal("true"), z.literal("0"), z.literal("false")])
+    .optional()
+    .transform((value) => value === "1" || value === "true"),
+});
+
 export const learnRoutes: FastifyPluginAsync = async (app) => {
   app.get("/v1/path/next", async (request, reply) => {
     const user = request.currentUser;
@@ -36,10 +73,28 @@ export const learnRoutes: FastifyPluginAsync = async (app) => {
       return sendError(reply, 401, "UNAUTHORIZED", "Authentication required.");
     }
 
-    const lessons = await prisma.lesson.findMany({
+    const parsed = nextPathQuerySchema.safeParse(request.query);
+    if (!parsed.success) {
+      return sendError(reply, 400, "VALIDATION_ERROR", "Invalid path query.");
+    }
+    const includeExercises = parsed.data.includeExercises ?? false;
+
+    const next = await prisma.lesson.findFirst({
+      where: {
+        OR: [
+          { progress: { none: { userId: user.id } } },
+          {
+            progress: {
+              some: { userId: user.id, status: { not: "COMPLETED" } },
+            },
+          },
+        ],
+      },
       include: {
         unit: { include: { level: true } },
-        progress: { where: { userId: user.id } },
+        ...(includeExercises
+          ? { exercises: { orderBy: { sortOrder: "asc" as const } } }
+          : {}),
       },
       orderBy: [
         { unit: { level: { sortOrder: "asc" } } },
@@ -48,14 +103,32 @@ export const learnRoutes: FastifyPluginAsync = async (app) => {
       ],
     });
 
-    const next = lessons.find((lesson) => lesson.progress[0]?.status !== "COMPLETED");
     if (!next) {
+      const lessonCount = await prisma.lesson.count();
       const message =
-        lessons.length === 0
+        lessonCount === 0
           ? "No lessons available. Seed content first."
           : "All current lessons completed.";
       return {
         data: { lesson: null, message },
+        meta: { requestId: request.id },
+      };
+    }
+
+    if (includeExercises && "exercises" in next) {
+      return {
+        data: {
+          lesson: toClientLesson(
+            next as typeof next & {
+              exercises: Array<{
+                id: string;
+                type: string;
+                prompt: string;
+                payload: unknown;
+              }>;
+            },
+          ),
+        },
         meta: { requestId: request.id },
       };
     }
@@ -94,24 +167,7 @@ export const learnRoutes: FastifyPluginAsync = async (app) => {
     }
 
     return {
-      data: {
-        lesson: {
-          id: lesson.id,
-          title: lesson.title,
-          skillTags: lesson.skillTags,
-          unitTitle: lesson.unit.title,
-          levelCode: lesson.unit.level.code,
-          exercises: lesson.exercises.map((exercise) => ({
-            id: exercise.id,
-            type: exercise.type,
-            prompt: exercise.prompt,
-            payload: toClientExercisePayload(
-              exercise.type,
-              exercise.payload as Record<string, unknown>,
-            ),
-          })),
-        },
-      },
+      data: { lesson: toClientLesson(lesson) },
       meta: { requestId: request.id },
     };
   });
@@ -164,22 +220,6 @@ export const learnRoutes: FastifyPluginAsync = async (app) => {
     const passed = score >= PASS_SCORE;
     const progressStatus = passed ? "COMPLETED" : "IN_PROGRESS";
 
-    await prisma.userLessonProgress.upsert({
-      where: { userId_lessonId: { userId: user.id, lessonId: lesson.id } },
-      create: {
-        userId: user.id,
-        lessonId: lesson.id,
-        status: progressStatus,
-        score,
-        completedAt: passed ? new Date() : null,
-      },
-      update: {
-        status: progressStatus,
-        score,
-        completedAt: passed ? new Date() : null,
-      },
-    });
-
     const linkedWordIds = lesson.exercises.map((item) => item.wordId).filter(Boolean) as string[];
     const hintWords = await prisma.word.findMany({
       where: {
@@ -188,30 +228,59 @@ export const learnRoutes: FastifyPluginAsync = async (app) => {
           { lemma: { in: failedWordHints, mode: "insensitive" } },
         ],
       },
+      select: { id: true },
       take: 20,
     });
 
-    for (const word of hintWords) {
-      await prisma.userWordProgress.upsert({
-        where: { userId_wordId: { userId: user.id, wordId: word.id } },
+    const now = new Date();
+    await prisma.$transaction(async (tx) => {
+      await tx.userLessonProgress.upsert({
+        where: { userId_lessonId: { userId: user.id, lessonId: lesson.id } },
         create: {
           userId: user.id,
-          wordId: word.id,
-          status: "LEARNING",
-          dueAt: new Date(),
-          timesSeen: 1,
+          lessonId: lesson.id,
+          status: progressStatus,
+          score,
+          completedAt: passed ? now : null,
         },
         update: {
-          status: "LEARNING",
-          dueAt: new Date(),
+          status: progressStatus,
+          score,
+          completedAt: passed ? now : null,
         },
       });
-    }
+
+      await Promise.all(
+        hintWords.map((word) =>
+          tx.userWordProgress.upsert({
+            where: { userId_wordId: { userId: user.id, wordId: word.id } },
+            create: {
+              userId: user.id,
+              wordId: word.id,
+              status: "LEARNING",
+              dueAt: now,
+              timesSeen: 1,
+            },
+            update: {
+              status: "LEARNING",
+              dueAt: now,
+            },
+          }),
+        ),
+      );
+    });
 
     if (passed) {
       const unitLessons = await prisma.lesson.findMany({
         where: { unitId: lesson.unitId },
-        include: { progress: { where: { userId: user.id } } },
+        select: {
+          id: true,
+          progress: {
+            where: { userId: user.id },
+            select: { status: true },
+            take: 1,
+          },
+        },
       });
       const unitDone = unitLessons.every((item) => item.progress[0]?.status === "COMPLETED");
       if (unitDone) {
@@ -221,9 +290,9 @@ export const learnRoutes: FastifyPluginAsync = async (app) => {
             userId: user.id,
             unitId: lesson.unitId,
             status: "COMPLETED",
-            completedAt: new Date(),
+            completedAt: now,
           },
-          update: { status: "COMPLETED", completedAt: new Date() },
+          update: { status: "COMPLETED", completedAt: now },
         });
       }
     }

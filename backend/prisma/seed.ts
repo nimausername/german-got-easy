@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 import { resolve } from "node:path";
 import { readFileSync } from "node:fs";
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 config({ path: resolve(process.cwd(), "../.env") });
 config();
@@ -11,7 +11,7 @@ const prisma = new PrismaClient();
 type ExerciseSeed = {
   type: string;
   prompt: string;
-  payload: Record<string, unknown>;
+  payload: Prisma.InputJsonValue;
 };
 
 type LessonSeed = {
@@ -188,6 +188,25 @@ const seed = async () => {
   }
 
   console.log(`Seeded ${words.length} words.`);
+
+  const { SAMPLE_EXAM_PACK } = await import("../src/content/exam-packs.js");
+  await prisma.examPack.upsert({
+    where: { slug: SAMPLE_EXAM_PACK.slug },
+    create: {
+      slug: SAMPLE_EXAM_PACK.slug,
+      title: SAMPLE_EXAM_PACK.title,
+      levelCode: SAMPLE_EXAM_PACK.levelCode,
+      timeLimitSec: SAMPLE_EXAM_PACK.timeLimitSec,
+      payload: SAMPLE_EXAM_PACK.payload,
+    },
+    update: {
+      title: SAMPLE_EXAM_PACK.title,
+      levelCode: SAMPLE_EXAM_PACK.levelCode,
+      timeLimitSec: SAMPLE_EXAM_PACK.timeLimitSec,
+      payload: SAMPLE_EXAM_PACK.payload,
+    },
+  });
+  console.log("Seeded sample exam pack.");
 };
 
 seed()

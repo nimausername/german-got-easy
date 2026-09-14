@@ -17,6 +17,8 @@ export type VocabularyListQuery = {
   status?: VocabStatusFilter;
   cursor?: string;
   limit?: number;
+  /** When false, skips expensive count queries (e.g. load-more pages). */
+  includeCounts?: boolean;
 };
 
 export type VocabularyImage = {
@@ -26,6 +28,7 @@ export type VocabularyImage = {
   sourceUrl: string;
 };
 
+/** Slim list row — examples/images belong on the detail endpoint. */
 export type VocabularyWordSummary = {
   id: string;
   lemma: string;
@@ -35,17 +38,17 @@ export type VocabularyWordSummary = {
   partOfSpeech: string;
   cefrBand: string;
   topic: string;
+  frequencyRank: number;
+  progressStatus: WordProgressStatus | null;
+};
+
+export type VocabularyWordDetail = VocabularyWordSummary & {
   exampleDe: string;
   exampleEn: string;
   examplePluralDe: string | null;
   examplePluralEn: string | null;
   usageNote: string | null;
-  frequencyRank: number;
-  progressStatus: WordProgressStatus | null;
   image: VocabularyImage | null;
-};
-
-export type VocabularyWordDetail = VocabularyWordSummary & {
   timesSeen: number;
   timesCorrect: number;
   dueAt: string | null;
@@ -184,7 +187,7 @@ const toImage = (word: {
   };
 };
 
-const toSummary = (word: {
+const toListSummary = (word: {
   id: string;
   lemma: string;
   article: string;
@@ -193,16 +196,7 @@ const toSummary = (word: {
   partOfSpeech: string;
   cefrBand: string;
   topic: string;
-  exampleDe: string;
-  exampleEn: string;
-  examplePluralDe: string | null;
-  examplePluralEn: string | null;
-  usageNote: string | null;
   frequencyRank: number;
-  imageUrl: string | null;
-  imageCredit: string | null;
-  imageLicense: string | null;
-  imageSourceUrl: string | null;
   progress: Array<{ status: WordProgressStatus }>;
 }): VocabularyWordSummary => ({
   id: word.id,
@@ -213,15 +207,21 @@ const toSummary = (word: {
   partOfSpeech: word.partOfSpeech,
   cefrBand: word.cefrBand,
   topic: word.topic,
-  exampleDe: word.exampleDe,
-  exampleEn: word.exampleEn,
-  examplePluralDe: word.examplePluralDe,
-  examplePluralEn: word.examplePluralEn,
-  usageNote: word.usageNote,
   frequencyRank: word.frequencyRank,
   progressStatus: word.progress[0]?.status ?? null,
-  image: toImage(word),
 });
+
+let totalInBankCache: { at: number; count: number } | null = null;
+const TOTAL_IN_BANK_TTL_MS = 5 * 60 * 1000;
+
+const getTotalInBank = async (): Promise<number> => {
+  if (totalInBankCache && Date.now() - totalInBankCache.at < TOTAL_IN_BANK_TTL_MS) {
+    return totalInBankCache.count;
+  }
+  const count = await prisma.word.count();
+  totalInBankCache = { at: Date.now(), count };
+  return count;
+};
 
 /**
  * Lists vocabulary words with search, filters, progress, and cursor pagination.
@@ -234,14 +234,17 @@ export const listVocabularyWords = async (input: {
   words: VocabularyWordSummary[];
   nextCursor: string | null;
   limit: number;
-  totalInBank: number;
-  matchedCount: number;
+  totalInBank: number | null;
+  matchedCount: number | null;
 }> => {
   const limit = Math.min(Math.max(input.query.limit ?? DEFAULT_LIMIT, 1), MAX_LIMIT);
   const cursor = input.query.cursor ? decodeVocabCursor(input.query.cursor) : null;
   if (input.query.cursor && !cursor) {
     throw Object.assign(new Error("Invalid cursor."), { statusCode: 400 });
   }
+
+  const includeCounts =
+    input.query.includeCounts ?? !input.query.cursor;
 
   const filterInput = {
     userId: input.userId,
@@ -253,21 +256,32 @@ export const listVocabularyWords = async (input: {
   const matchWhere = buildVocabularyWhere(filterInput);
   const pageWhere = buildVocabularyWhere({ ...filterInput, cursor });
 
-  const [rows, matchedCount, totalInBank] = await Promise.all([
-    prisma.word.findMany({
-      where: pageWhere,
-      orderBy: [{ frequencyRank: "asc" }, { id: "asc" }],
-      take: limit + 1,
-      include: {
-        progress: {
-          where: { userId: input.userId },
-          select: { status: true },
-          take: 1,
-        },
+  const rowsPromise = prisma.word.findMany({
+    where: pageWhere,
+    orderBy: [{ frequencyRank: "asc" }, { id: "asc" }],
+    take: limit + 1,
+    select: {
+      id: true,
+      lemma: true,
+      article: true,
+      plural: true,
+      translation: true,
+      partOfSpeech: true,
+      cefrBand: true,
+      topic: true,
+      frequencyRank: true,
+      progress: {
+        where: { userId: input.userId },
+        select: { status: true },
+        take: 1,
       },
-    }),
-    prisma.word.count({ where: matchWhere }),
-    prisma.word.count(),
+    },
+  });
+
+  const [rows, matchedCount, totalInBank] = await Promise.all([
+    rowsPromise,
+    includeCounts ? prisma.word.count({ where: matchWhere }) : Promise.resolve(null),
+    includeCounts ? getTotalInBank() : Promise.resolve(null),
   ]);
 
   const page = rows.slice(0, limit);
@@ -279,7 +293,7 @@ export const listVocabularyWords = async (input: {
       : null;
 
   return {
-    words: page.map(toSummary),
+    words: page.map(toListSummary),
     nextCursor,
     limit,
     totalInBank,
@@ -315,7 +329,13 @@ export const getVocabularyWord = async (input: {
 
   const progress = word.progress[0];
   return {
-    ...toSummary(word),
+    ...toListSummary(word),
+    exampleDe: word.exampleDe,
+    exampleEn: word.exampleEn,
+    examplePluralDe: word.examplePluralDe,
+    examplePluralEn: word.examplePluralEn,
+    usageNote: word.usageNote,
+    image: toImage(word),
     timesSeen: progress?.timesSeen ?? 0,
     timesCorrect: progress?.timesCorrect ?? 0,
     dueAt: progress?.dueAt?.toISOString() ?? null,
@@ -366,9 +386,20 @@ export const parseVocabularyListQuery = (
     limit = parsed;
   }
 
+  let includeCounts: boolean | undefined;
+  if (typeof raw.includeCounts === "string" && raw.includeCounts.length > 0) {
+    if (raw.includeCounts === "true" || raw.includeCounts === "1") {
+      includeCounts = true;
+    } else if (raw.includeCounts === "false" || raw.includeCounts === "0") {
+      includeCounts = false;
+    } else {
+      return { ok: false, message: "Invalid includeCounts." };
+    }
+  }
+
   return {
     ok: true,
-    data: { q, topic, cefrBand, status, cursor, limit },
+    data: { q, topic, cefrBand, status, cursor, limit, includeCounts },
   };
 };
 

@@ -79,7 +79,8 @@ export const VocabularyWordStudy = ({ word }: VocabularyWordStudyProps) => {
               src={word.image.url}
               alt={imageAlt}
               className="aspect-[4/3] h-auto max-h-56 w-full object-cover sm:aspect-[16/9] sm:max-h-52 md:aspect-[21/9]"
-              loading="eager"
+              loading="lazy"
+              decoding="async"
               referrerPolicy="no-referrer"
             />
             <figcaption className="px-3 py-2 text-[11px] leading-snug text-muted-foreground sm:px-6">

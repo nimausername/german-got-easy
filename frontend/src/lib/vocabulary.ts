@@ -45,6 +45,20 @@ export type VocabularyWord = {
   image: VocabularyImage | null;
 };
 
+/** List endpoint rows omit examples and images. */
+export type VocabularyWordListItem = {
+  id: string;
+  lemma: string;
+  article: string | null;
+  plural: string | null;
+  translation: string;
+  partOfSpeech: string;
+  cefrBand: string;
+  topic: string;
+  frequencyRank: number;
+  progressStatus: VocabularyWord["progressStatus"];
+};
+
 export type VocabularyWordDetail = VocabularyWord & {
   timesSeen: number;
   timesCorrect: number;

@@ -9,6 +9,7 @@ import {
   revokeRefreshToken,
   verifyAccessToken,
 } from "../lib/keycloak.js";
+import { extractAccessToken, resolveUserFromToken } from "../plugins/auth.js";
 import { prisma } from "../lib/prisma.js";
 
 const registerSchema = z.object({
@@ -172,5 +173,29 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     }
     clearAuthCookies(reply);
     return { data: { ok: true }, meta: { requestId: request.id } };
+  });
+
+  app.get("/v1/auth/session", async (request) => {
+    const token = extractAccessToken(request);
+    if (!token || token.length > 8192) {
+      return {
+        data: { authenticated: false },
+        meta: { requestId: request.id },
+      };
+    }
+
+    try {
+      const payload = await verifyAccessToken(token);
+      const user = await resolveUserFromToken(payload);
+      return {
+        data: { authenticated: true, userId: user.id },
+        meta: { requestId: request.id },
+      };
+    } catch {
+      return {
+        data: { authenticated: false },
+        meta: { requestId: request.id },
+      };
+    }
   });
 };

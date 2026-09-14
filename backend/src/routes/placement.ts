@@ -1,5 +1,6 @@
 import type { FastifyPluginAsync } from "fastify";
 import { z } from "zod";
+import { SAMPLE_EXAM_PACK } from "../content/exam-packs.js";
 import { toClientExamItem } from "../lib/client-payload.js";
 import { sendError } from "../lib/errors.js";
 import { prisma } from "../lib/prisma.js";
@@ -22,24 +23,6 @@ const PLACEMENT_ITEMS = [
   { id: "p4", prompt: "Perfect tense of gehen (ich):", answer: "bin gegangen", level: "A2" },
   { id: "p5", prompt: 'Conjunction for "although":', answer: "obwohl", level: "B1" },
 ];
-
-const SAMPLE_EXAM_PAYLOAD = {
-  items: [
-    {
-      id: "e1",
-      type: "mcq",
-      prompt: "Welche Formalität passt in einer E-Mail an Ihren Chef?",
-      options: ["Hallo Alter", "Sehr geehrte Damen und Herren", "Tschüss", "Yo"],
-      answer: "Sehr geehrte Damen und Herren",
-    },
-    {
-      id: "e2",
-      type: "cloze",
-      prompt: "Wenn ich Zeit ___, gehe ich spazieren.",
-      answer: "habe",
-    },
-  ],
-};
 
 export const placementRoutes: FastifyPluginAsync = async (app) => {
   app.get("/v1/placement", async (request) => {
@@ -85,17 +68,20 @@ export const placementRoutes: FastifyPluginAsync = async (app) => {
     const user = request.currentUser;
     if (!user) return sendError(reply, 401, "UNAUTHORIZED", "Authentication required.");
 
-    const pack = await prisma.examPack.upsert({
-      where: { slug: "goethe-b1-sample" },
-      create: {
-        slug: "goethe-b1-sample",
-        title: "Goethe B1 sample practice",
-        levelCode: "B1",
-        timeLimitSec: 900,
-        payload: SAMPLE_EXAM_PAYLOAD,
-      },
-      update: {},
+    let pack = await prisma.examPack.findUnique({
+      where: { slug: SAMPLE_EXAM_PACK.slug },
     });
+    if (!pack) {
+      pack = await prisma.examPack.create({
+        data: {
+          slug: SAMPLE_EXAM_PACK.slug,
+          title: SAMPLE_EXAM_PACK.title,
+          levelCode: SAMPLE_EXAM_PACK.levelCode,
+          timeLimitSec: SAMPLE_EXAM_PACK.timeLimitSec,
+          payload: SAMPLE_EXAM_PACK.payload,
+        },
+      });
+    }
 
     const rawPayload = pack.payload as { items?: Record<string, unknown>[] };
     const items = Array.isArray(rawPayload.items)

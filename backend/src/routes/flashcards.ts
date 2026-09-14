@@ -85,7 +85,24 @@ export const flashcardRoutes: FastifyPluginAsync = async (app) => {
       return sendError(reply, 400, "VALIDATION_ERROR", "Invalid answer payload.");
     }
 
-    const wordRow = await prisma.word.findUnique({ where: { id: wordId } });
+    const promptSelect = {
+      id: true,
+      lemma: true,
+      article: true,
+      plural: true,
+      translation: true,
+      partOfSpeech: true,
+      exampleDe: true,
+      exampleEn: true,
+      usageNote: true,
+    } as const;
+
+    const [wordRow, existing] = await Promise.all([
+      prisma.word.findUnique({ where: { id: wordId }, select: promptSelect }),
+      prisma.userWordProgress.findUnique({
+        where: { userId_wordId: { userId: user.id, wordId } },
+      }),
+    ]);
     if (!wordRow) return sendError(reply, 404, "NOT_FOUND", "Word not found.");
 
     const word = toPromptWord(wordRow);
@@ -119,10 +136,6 @@ export const flashcardRoutes: FastifyPluginAsync = async (app) => {
     if (!rating) {
       return sendError(reply, 400, "VALIDATION_ERROR", "Rating is required.");
     }
-
-    const existing = await prisma.userWordProgress.findUnique({
-      where: { userId_wordId: { userId: user.id, wordId } },
-    });
 
     const next = scheduleFlashcard({
       rating,

@@ -51,11 +51,13 @@ export const UserNav = ({ user }: UserNavProps) => {
   const email = user.email?.trim() || null;
 
   const handleLogout = async () => {
+    const { clearMeCache } = await import("@/hooks/use-me");
     try {
       await apiFetch("/v1/auth/logout", { method: "POST" });
     } catch {
       // Clear remote session best-effort; local navigation still proceeds.
     }
+    clearMeCache();
     router.push("/login");
   };
 

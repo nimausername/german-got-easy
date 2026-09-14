@@ -23,14 +23,16 @@ export const useRedirectIfAuthenticated = (
 
     const check = async () => {
       try {
-        await apiFetch("/v1/me");
-        if (!cancelled) {
+        const response = await apiFetch<{ data: { authenticated: boolean } }>(
+          "/v1/auth/session",
+        );
+        if (!cancelled && response.data.authenticated) {
           router.replace(destination);
+          return;
         }
+        if (!cancelled) setChecking(false);
       } catch {
-        if (!cancelled) {
-          setChecking(false);
-        }
+        if (!cancelled) setChecking(false);
       }
     };
 

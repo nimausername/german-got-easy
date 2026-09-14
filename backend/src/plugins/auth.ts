@@ -13,13 +13,37 @@ declare module "fastify" {
   }
 }
 
-const extractBearer = (request: FastifyRequest): string | undefined => {
+/**
+ * Reads a bearer token from Authorization or the httpOnly access cookie.
+ */
+export const extractAccessToken = (request: FastifyRequest): string | undefined => {
   const header = request.headers.authorization;
   if (header?.startsWith("Bearer ")) {
     return header.slice("Bearer ".length).trim();
   }
   const cookieToken = request.cookies?.[ACCESS_COOKIE];
   return cookieToken || undefined;
+};
+
+/**
+ * Resolves the local user for a verified token without writing on every request.
+ */
+export const resolveUserFromToken = async (
+  payload: VerifiedAccessToken,
+): Promise<User> => {
+  const existing = await prisma.user.findUnique({
+    where: { keycloakSub: payload.sub },
+  });
+  if (existing) return existing;
+
+  return prisma.user.create({
+    data: {
+      keycloakSub: payload.sub,
+      email: payload.email,
+      username: payload.preferred_username,
+      displayName: payload.preferred_username ?? payload.email ?? null,
+    },
+  });
 };
 
 const authPluginImpl: FastifyPluginAsync = async (app) => {
@@ -33,39 +57,26 @@ const authPluginImpl: FastifyPluginAsync = async (app) => {
       path === "/v1/auth/login" ||
       path === "/v1/auth/register" ||
       path === "/v1/auth/refresh" ||
-      path === "/v1/auth/logout";
+      path === "/v1/auth/logout" ||
+      path === "/v1/auth/session";
 
     if (isPublic || request.method === "OPTIONS" || !path.startsWith("/v1/")) {
       return;
     }
 
-    const token = extractBearer(request);
+    const token = extractAccessToken(request);
     if (!token) {
       return sendError(reply, 401, "UNAUTHORIZED", "Authentication required.");
     }
 
-    // Reject absurdly large tokens early (DoS / junk cookies).
     if (token.length > 8192) {
       return sendError(reply, 401, "UNAUTHORIZED", "Invalid or expired token.");
     }
 
     try {
       const payload = await verifyAccessToken(token);
-      const user = await prisma.user.upsert({
-        where: { keycloakSub: payload.sub },
-        create: {
-          keycloakSub: payload.sub,
-          email: payload.email,
-          username: payload.preferred_username,
-          displayName: payload.preferred_username ?? payload.email ?? null,
-        },
-        update: {
-          email: payload.email ?? undefined,
-          username: payload.preferred_username ?? undefined,
-        },
-      });
       request.authToken = payload;
-      request.currentUser = user;
+      request.currentUser = await resolveUserFromToken(payload);
     } catch {
       return sendError(reply, 401, "UNAUTHORIZED", "Invalid or expired token.");
     }
