@@ -65,7 +65,7 @@ export const VocabularyWordStudy = ({ word }: VocabularyWordStudyProps) => {
   };
 
   return (
-    <article className="space-y-8" aria-labelledby="vocab-headword">
+    <article className="space-y-5 sm:space-y-8" aria-labelledby="vocab-headword">
       <section
         className={cn(
           "overflow-hidden rounded-2xl border border-border/80 bg-gradient-to-b shadow-sm",
@@ -78,7 +78,7 @@ export const VocabularyWordStudy = ({ word }: VocabularyWordStudyProps) => {
             <img
               src={word.image.url}
               alt={imageAlt}
-              className="aspect-[4/3] h-auto max-h-56 w-full object-cover sm:aspect-[16/9] sm:max-h-52 md:aspect-[21/9]"
+              className="aspect-[4/3] h-auto max-h-44 w-full object-cover sm:aspect-[16/9] sm:max-h-52 md:aspect-[21/9]"
               loading="lazy"
               decoding="async"
               referrerPolicy="no-referrer"
@@ -97,14 +97,14 @@ export const VocabularyWordStudy = ({ word }: VocabularyWordStudyProps) => {
           </figure>
         ) : null}
 
-        <div className="space-y-5 px-4 py-5 sm:space-y-6 sm:px-7 sm:py-8">
+        <div className="space-y-4 px-4 py-4 sm:space-y-6 sm:px-7 sm:py-8">
           <div className="space-y-2">
             <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
               {frequencyCue(word.frequencyRank)}
             </p>
             <h1
               id="vocab-headword"
-              className="font-display text-3xl leading-[1.1] break-words text-brand-ink sm:text-4xl md:text-5xl"
+              className="font-display text-2xl leading-[1.1] break-words text-brand-ink sm:text-4xl md:text-5xl"
             >
               {hasArticle ? (
                 <>
@@ -263,7 +263,7 @@ export const VocabularyWordStudy = ({ word }: VocabularyWordStudyProps) => {
 
       <section
         aria-labelledby="vocab-progress-heading"
-        className="space-y-4 rounded-2xl border border-border/80 bg-card px-5 py-5 sm:px-6"
+        className="space-y-3 rounded-2xl border border-border/80 bg-card px-4 py-4 sm:space-y-4 sm:px-6 sm:py-5"
       >
         <div className="space-y-3">
           <div className="flex flex-wrap items-end justify-between gap-2">

@@ -41,19 +41,19 @@ export const UnitPathRow = ({
 
   return (
     <Card size="sm" className="h-full transition-colors hover:bg-accent/40">
-      <CardHeader>
+      <CardHeader className="gap-0.5">
         <CardDescription>
           Unit {index}
           {done ? " · Done" : inProgress ? " · In progress" : ""}
         </CardDescription>
-        <CardTitle>{title}</CardTitle>
+        <CardTitle className="leading-snug">{title}</CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-1 flex-col gap-3">
-        <p className="text-sm text-muted-foreground">
+      <CardContent className="flex flex-1 flex-col gap-2.5 sm:gap-3">
+        <p className="line-clamp-2 text-sm text-muted-foreground">
           {description ?? "Theme unit with teach and practice lessons."}
         </p>
         <div>
-          <div className="mb-1.5 flex items-center justify-between text-xs text-muted-foreground">
+          <div className="mb-1 flex items-center justify-between text-xs text-muted-foreground sm:mb-1.5">
             <span>
               {lessonsCompleted}/{lessonCount} lessons
             </span>

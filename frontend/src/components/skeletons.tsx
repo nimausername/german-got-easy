@@ -102,43 +102,48 @@ export const CardSkeleton = ({
  * Dashboard: welcome header + two action cards.
  */
 export const DashboardPageSkeleton = () => (
-  <div className="w-full space-y-4" aria-busy="true" aria-label="Loading dashboard">
-    <div className="space-y-3">
-      <Skeleton className="h-8 w-56 max-w-full sm:h-9 sm:w-72" />
-      <Skeleton className="h-4 w-48 sm:h-5 sm:w-56" />
-      <BadgeRowSkeleton />
+  <div
+    className="flex h-full min-h-0 flex-1 flex-col"
+    aria-busy="true"
+    aria-label="Loading dashboard"
+  >
+    <div className="shrink-0 space-y-2 sm:space-y-3">
+      <div className="flex flex-wrap items-end justify-between gap-2">
+        <Skeleton className="h-7 w-44 max-w-full sm:h-9 sm:w-64" />
+        <BadgeRowSkeleton className="mt-0" />
+      </div>
+      <Skeleton className="hidden h-4 w-56 sm:block sm:h-5" />
     </div>
-    <section className="grid items-stretch gap-3 sm:gap-4 sm:grid-cols-2">
-      <CardSkeleton
-        descriptionWidth="w-32"
-        titleWidth="w-36"
-        body={
-          <>
-            <Skeleton className="h-9 w-14 sm:h-10" />
-            <Skeleton className="h-4 w-28" />
-          </>
-        }
-        footer={<Skeleton className="h-11 w-full rounded-md sm:w-40" />}
-      />
-      <CardSkeleton
-        descriptionWidth="w-28"
-        titleWidth="w-32"
-        body={
-          <>
-            <Skeleton className="h-9 w-14 sm:h-10" />
-            <Skeleton className="h-4 w-44 max-w-full" />
-          </>
-        }
-        footer={
-          <div className="flex w-full flex-col gap-2 sm:flex-row">
-            <Skeleton className="h-11 w-full rounded-md sm:w-36" />
-            <Skeleton className="h-11 w-full rounded-md sm:w-40" />
-          </div>
-        }
-      />
-    </section>
-    <Skeleton className="my-5 h-px w-full sm:my-8" />
-    <Skeleton className="h-5 w-40" />
+    <div className="mt-2.5 min-h-0 flex-1 sm:mt-5">
+      <section className="grid items-stretch gap-2.5 sm:gap-4 sm:grid-cols-2">
+        <CardSkeleton
+          descriptionWidth="w-32"
+          titleWidth="w-36"
+          body={
+            <>
+              <Skeleton className="h-8 w-12 sm:h-10 sm:w-14" />
+              <Skeleton className="h-3.5 w-28" />
+            </>
+          }
+          footer={<Skeleton className="h-11 w-full rounded-md" />}
+        />
+        <CardSkeleton
+          descriptionWidth="w-28"
+          titleWidth="w-32"
+          body={
+            <>
+              <Skeleton className="h-8 w-12 sm:h-10 sm:w-14" />
+              <Skeleton className="h-3.5 w-40 max-w-full" />
+            </>
+          }
+          footer={<Skeleton className="h-11 w-full rounded-md" />}
+        />
+      </section>
+      <div className="mt-4 flex flex-col gap-2 sm:mt-6 sm:flex-row sm:gap-4">
+        <Skeleton className="h-11 w-44 rounded-md" />
+        <Skeleton className="h-11 w-40 rounded-md" />
+      </div>
+    </div>
   </div>
 );
 
@@ -146,51 +151,50 @@ export const DashboardPageSkeleton = () => (
  * Learn hub: path header, continue card, unit grid.
  */
 export const LearnHubPageSkeleton = () => (
-  <div className="w-full" aria-busy="true" aria-label="Loading learn path">
-    <div className="space-y-4">
-      <BackLinkSkeleton />
-      <BadgeRowSkeleton className="mt-4" />
-      <div className="mt-3 space-y-2">
-        <Skeleton className="h-8 w-44 sm:h-9 sm:w-56" />
-        <Skeleton className="h-4 w-full max-w-xl sm:h-5" />
-        <Skeleton className="h-4 w-full max-w-md sm:h-5" />
+  <div className="flex h-full min-h-0 flex-1 flex-col" aria-busy="true" aria-label="Loading learn path">
+    <div className="shrink-0 space-y-2.5 sm:space-y-4">
+      <BackLinkSkeleton className="hidden sm:flex" />
+      <div className="flex flex-wrap items-center gap-2">
+        <Skeleton className="h-7 w-36 sm:h-9 sm:w-56" />
+        <Skeleton className="h-5 w-10 rounded-full" />
       </div>
-      <ProgressBarSkeleton className="mt-5" />
+      <ProgressBarSkeleton />
+    </div>
+    <div className="mt-2.5 min-h-0 flex-1 space-y-4 sm:mt-5 sm:space-y-5">
       <CardSkeleton
-        className="mt-5"
         descriptionWidth="w-20"
         titleWidth="w-48"
-        body={<Skeleton className="h-4 w-56 max-w-full" />}
+        body={<Skeleton className="h-3.5 w-56 max-w-full" />}
         footer={<Skeleton className="h-11 w-full rounded-md sm:w-40" />}
       />
-    </div>
-    <section className="mt-4 sm:mt-5">
-      <Skeleton className="h-6 w-36 sm:h-7 sm:w-40" />
-      <Skeleton className="mt-1 h-4 w-64 max-w-full" />
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 3 }, (_, index) => (
-          <CardSkeleton
-            key={index}
-            descriptionWidth="w-20"
-            titleWidth="w-36"
-            body={
-              <>
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-48 max-w-full" />
-                <div className="space-y-1.5">
-                  <div className="flex justify-between">
-                    <Skeleton className="h-3 w-24" />
-                    <Skeleton className="h-3 w-8" />
+      <section>
+        <Skeleton className="h-5 w-28 sm:h-7 sm:w-40" />
+        <Skeleton className="mt-1 h-3.5 w-52 max-w-full sm:h-4 sm:w-64" />
+        <div className="mt-3 grid gap-2.5 sm:mt-4 sm:gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 3 }, (_, index) => (
+            <CardSkeleton
+              key={index}
+              descriptionWidth="w-20"
+              titleWidth="w-36"
+              body={
+                <>
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-48 max-w-full" />
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between">
+                      <Skeleton className="h-3 w-24" />
+                      <Skeleton className="h-3 w-8" />
+                    </div>
+                    <Skeleton className="h-1.5 w-full rounded-full" />
                   </div>
-                  <Skeleton className="h-1.5 w-full rounded-full" />
-                </div>
-              </>
-            }
-            footer={<Skeleton className="h-11 w-full rounded-md" />}
-          />
-        ))}
-      </div>
-    </section>
+                </>
+              }
+              footer={<Skeleton className="h-11 w-full rounded-md" />}
+            />
+          ))}
+        </div>
+      </section>
+    </div>
   </div>
 );
 
@@ -198,17 +202,17 @@ export const LearnHubPageSkeleton = () => (
  * Unit detail: header + lesson cards.
  */
 export const LearnUnitPageSkeleton = () => (
-  <div className="w-full" aria-busy="true" aria-label="Loading unit">
-    <div className="space-y-4">
+  <div className="flex h-full min-h-0 flex-1 flex-col" aria-busy="true" aria-label="Loading unit">
+    <div className="shrink-0 space-y-2.5 sm:space-y-4">
       <BackLinkSkeleton />
-      <BadgeRowSkeleton className="mt-4" />
-      <div className="mt-3 space-y-2">
-        <Skeleton className="h-8 w-52 max-w-full sm:h-9 sm:w-72" />
-        <Skeleton className="h-4 w-full max-w-xl sm:h-5" />
+      <BadgeRowSkeleton />
+      <div className="space-y-1.5 sm:space-y-2">
+        <Skeleton className="h-7 w-48 max-w-full sm:h-9 sm:w-72" />
+        <Skeleton className="h-3.5 w-full max-w-xl sm:h-5" />
       </div>
-      <ProgressBarSkeleton className="mt-6" />
+      <ProgressBarSkeleton />
     </div>
-    <div className="mt-4 space-y-3 sm:mt-5">
+    <div className="mt-2.5 space-y-2.5 sm:mt-5 sm:space-y-3">
       {Array.from({ length: 3 }, (_, index) => (
         <CardSkeleton
           key={index}
@@ -225,7 +229,7 @@ export const LearnUnitPageSkeleton = () => (
               </div>
             </>
           }
-          footer={<Skeleton className="h-11 w-full rounded-md sm:w-32" />}
+          footer={<Skeleton className="h-11 w-full rounded-md sm:w-36" />}
         />
       ))}
     </div>
@@ -319,12 +323,12 @@ export const VocabularyListSkeleton = ({ count = 6 }: { readonly count?: number 
 export const VocabularyDetailPageSkeleton = () => (
   <div className="w-full" aria-busy="true" aria-label="Loading word">
     <BackLinkSkeleton />
-    <article className="mt-4 space-y-8 sm:mt-5">
+    <article className="mt-3 space-y-5 sm:mt-5 sm:space-y-8">
       <section className="overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm">
-        <div className="space-y-5 px-4 py-5 sm:space-y-6 sm:px-7 sm:py-8">
+        <div className="space-y-4 px-4 py-4 sm:space-y-6 sm:px-7 sm:py-8">
           <div className="space-y-2">
             <Skeleton className="h-3 w-28" />
-            <Skeleton className="h-10 w-48 max-w-full sm:h-12 sm:w-72" />
+            <Skeleton className="h-8 w-44 max-w-full sm:h-12 sm:w-72" />
           </div>
           <div className="space-y-3">
             <Skeleton className="h-7 w-full max-w-lg" />
@@ -398,10 +402,10 @@ export const FlashcardsTopicsSkeleton = () => (
 export const FlashcardsPageSuspenseSkeleton = () => (
   <div className="w-full" aria-busy="true" aria-label="Loading flashcards">
     <PageTitleSkeleton
-      titleClassName="h-9 w-40 font-display sm:h-10 sm:w-48"
-      subtitleClassName="h-4 w-full max-w-xl sm:h-5"
+      titleClassName="h-7 w-36 font-display sm:h-10 sm:w-48"
+      subtitleClassName="hidden h-4 w-full max-w-xl sm:block sm:h-5"
     />
-    <div className="mt-4 sm:mt-5">
+    <div className="mt-2.5 sm:mt-5">
       <FlashcardsTopicsSkeleton />
     </div>
   </div>
@@ -416,12 +420,12 @@ export const FlashcardsSessionSkeleton = () => (
     aria-busy="true"
     aria-label="Loading flashcard session"
   >
-    <div className={cn(STUDY_CONTENT_CLASS, "flex shrink-0 items-start justify-between gap-3")}>
-      <Skeleton className="h-10 w-24 rounded-md" />
-      <Skeleton className="mt-2 h-4 w-20" />
+    <div className={cn(STUDY_CONTENT_CLASS, "flex shrink-0 items-center justify-between gap-3")}>
+      <Skeleton className="h-9 w-24 rounded-md sm:h-10" />
+      <Skeleton className="h-4 w-16 sm:w-20" />
     </div>
-    <div className={cn(STUDY_CONTENT_CLASS, "mt-2 shrink-0 space-y-2 sm:mt-3")}>
-      <div className="space-y-2">
+    <div className={cn(STUDY_CONTENT_CLASS, "mt-1.5 shrink-0 space-y-1.5 sm:mt-3 sm:space-y-2")}>
+      <div className="space-y-1.5 sm:space-y-2">
         <div className="flex justify-between gap-3">
           <Skeleton className="h-3.5 w-28" />
           <Skeleton className="h-3.5 w-12" />
@@ -430,8 +434,8 @@ export const FlashcardsSessionSkeleton = () => (
       </div>
       <BadgeRowSkeleton />
     </div>
-    <div className="flex min-h-0 w-full flex-1 items-center justify-center overflow-hidden px-10 sm:px-16 md:px-24">
-      <div className={STUDY_CONTENT_CLASS}>
+    <div className="flex min-h-0 w-full flex-1 justify-center overflow-hidden px-3 sm:px-12 md:px-24">
+      <div className={cn(STUDY_CONTENT_CLASS, "flex h-full min-h-0 w-full")}>
         <Skeleton
           className={cn(
             FLASHCARD_FACE_HEIGHT,
@@ -440,7 +444,7 @@ export const FlashcardsSessionSkeleton = () => (
         />
       </div>
     </div>
-    <div className={cn(STUDY_CONTENT_CLASS, "min-h-14 shrink-0 sm:min-h-12")}>
+    <div className={cn(STUDY_CONTENT_CLASS, "min-h-12 shrink-0 pt-1")}>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         <Skeleton className="h-11 w-full rounded-md" />
         <Skeleton className="h-11 w-full rounded-md" />
@@ -457,10 +461,10 @@ export const FlashcardsSessionSkeleton = () => (
 export const PlacementPageSkeleton = () => (
   <div className="w-full" aria-busy="true" aria-label="Loading placement">
     <PageTitleSkeleton
-      titleClassName="h-8 w-36 sm:h-9 sm:w-44"
-      subtitleClassName="h-4 w-64 max-w-full sm:h-5 sm:w-80"
+      titleClassName="h-7 w-32 sm:h-9 sm:w-44"
+      subtitleClassName="h-3.5 w-56 max-w-full sm:h-5 sm:w-80"
     />
-    <div className="mt-4 sm:mt-5">
+    <div className="mt-2.5 sm:mt-5">
       <Card size="default" aria-hidden>
         <CardHeader>
           <Skeleton className="h-5 w-28" />

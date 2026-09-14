@@ -15,60 +15,77 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { useMe } from "@/hooks/use-me";
-import { APP_CONTENT_WIDTH } from "@/lib/layout";
+import { APP_CONTENT_WIDTH, APP_SHELL_CLASS } from "@/lib/layout";
 import { cn } from "@/lib/utils";
 
+/**
+ * Home hub: streak/progress snapshot plus primary study destinations.
+ * Mobile keeps chrome light so the action cards stay fully reachable.
+ */
 export default function DashboardPage() {
   const { me, loading, error } = useMe();
 
   if (loading || !me) {
     return (
-      <AuthenticatedShell width={APP_CONTENT_WIDTH} user={null} loading>
+      <AuthenticatedShell
+        width={APP_CONTENT_WIDTH}
+        className={APP_SHELL_CLASS}
+        user={null}
+        loading
+      >
         <DashboardPageSkeleton />
         {error ? <p className="mt-4 text-sm text-muted-foreground">{error}</p> : null}
       </AuthenticatedShell>
     );
   }
 
+  const firstName = me.user.displayName?.trim().split(/\s+/)[0] ?? null;
+
   return (
-    <AuthenticatedShell width={APP_CONTENT_WIDTH} user={me.user} loading={false}>
+    <AuthenticatedShell
+      width={APP_CONTENT_WIDTH}
+      className={APP_SHELL_CLASS}
+      user={me.user}
+      loading={false}
+    >
       <PageFrame
         header={
-          <>
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-              Welcome{me.user.displayName ? `, ${me.user.displayName}` : ""}
-            </h1>
-            <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+          <div className="space-y-2 sm:space-y-3">
+            <div className="flex flex-wrap items-end justify-between gap-x-3 gap-y-2">
+              <h1 className="min-w-0 text-xl font-semibold tracking-tight sm:text-3xl">
+                Welcome{firstName ? `, ${firstName}` : ""}
+              </h1>
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                <Badge variant="secondary">Target {me.user.targetLevel}</Badge>
+                <Badge variant="outline">{me.progress.streakDays}-day streak</Badge>
+              </div>
+            </div>
+            <p className="hidden text-sm text-muted-foreground sm:block sm:text-base">
               Your personal learning dashboard.
             </p>
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              <Badge variant="secondary">Target {me.user.targetLevel}</Badge>
-              <Badge variant="outline">{me.progress.streakDays}-day streak</Badge>
-            </div>
-          </>
+          </div>
         }
         contentClassName="pb-2"
       >
-        <section className="grid items-stretch gap-3 sm:gap-4 sm:grid-cols-2">
+        <section className="grid items-stretch gap-2.5 sm:gap-4 sm:grid-cols-2">
           <Card className="h-full" size="sm">
-            <CardHeader>
+            <CardHeader className="gap-0.5">
               <CardDescription>Continue learning</CardDescription>
-              <CardTitle>Lessons completed</CardTitle>
+              <CardTitle className="leading-snug">Lessons completed</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-1 flex-col">
-              <p className="font-display text-3xl text-primary sm:text-4xl">
+            <CardContent className="flex flex-1 flex-col gap-1">
+              <p className="font-display text-3xl leading-none text-primary sm:text-4xl">
                 {me.progress.lessonsCompleted}
               </p>
-              <p className="mt-2 text-sm text-muted-foreground sm:mt-3">
+              <p className="text-xs text-muted-foreground sm:text-sm">
                 Target level {me.user.targetLevel}
               </p>
             </CardContent>
             <CardFooter>
               <Link
                 href="/learn"
-                className={cn(buttonVariants(), "min-h-11 w-full touch-manipulation sm:w-auto")}
+                className={cn(buttonVariants(), "min-h-11 w-full touch-manipulation")}
               >
                 <BookOpen data-icon="inline-start" />
                 Continue lesson
@@ -77,48 +94,51 @@ export default function DashboardPage() {
           </Card>
 
           <Card className="h-full" size="sm">
-            <CardHeader>
+            <CardHeader className="gap-0.5">
               <CardDescription>Flashcards due</CardDescription>
-              <CardTitle>Words to review</CardTitle>
+              <CardTitle className="leading-snug">Words to review</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-1 flex-col">
-              <p className="font-display text-3xl text-primary sm:text-4xl">
+            <CardContent className="flex flex-1 flex-col gap-1">
+              <p className="font-display text-3xl leading-none text-primary sm:text-4xl">
                 {me.progress.wordsDueToday}
               </p>
-              <p className="mt-2 text-sm text-muted-foreground sm:mt-3">
+              <p className="text-xs text-muted-foreground sm:text-sm">
                 Learning {me.progress.wordsLearning} · Known {me.progress.wordsKnown}
               </p>
             </CardContent>
-            <CardFooter className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+            <CardFooter>
               <Link
                 href="/flashcards"
-                className={cn(buttonVariants(), "min-h-11 w-full touch-manipulation sm:w-auto")}
+                className={cn(buttonVariants(), "min-h-11 w-full touch-manipulation")}
               >
                 <Layers data-icon="inline-start" />
                 Study flashcards
-              </Link>
-              <Link
-                href="/vocabulary"
-                className={cn(
-                  buttonVariants({ variant: "outline" }),
-                  "min-h-11 w-full touch-manipulation sm:w-auto",
-                )}
-              >
-                <BookText data-icon="inline-start" />
-                Browse vocabulary
               </Link>
             </CardFooter>
           </Card>
         </section>
 
-        <Separator className="my-5 sm:my-8" />
-
-        <Link
-          href="/placement"
-          className={cn(buttonVariants({ variant: "link" }), "h-auto min-h-11 px-0")}
-        >
-          Take placement check
-        </Link>
+        <div className="mt-4 flex flex-col gap-1 sm:mt-6 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-1">
+          <Link
+            href="/vocabulary"
+            className={cn(
+              buttonVariants({ variant: "ghost" }),
+              "h-auto min-h-11 justify-start px-2 touch-manipulation sm:px-3",
+            )}
+          >
+            <BookText data-icon="inline-start" />
+            Browse vocabulary
+          </Link>
+          <Link
+            href="/placement"
+            className={cn(
+              buttonVariants({ variant: "ghost" }),
+              "h-auto min-h-11 justify-start px-2 touch-manipulation text-muted-foreground sm:px-3",
+            )}
+          >
+            Take placement check
+          </Link>
+        </div>
       </PageFrame>
     </AuthenticatedShell>
   );

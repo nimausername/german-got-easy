@@ -12,7 +12,7 @@ import { VocabularyWordStudy } from "@/components/vocabulary-word-study";
 import { useShellUser } from "@/hooks/use-me";
 import { ApiRequestError } from "@/lib/api";
 import { fetchWord } from "@/lib/api-queries";
-import { APP_CONTENT_WIDTH } from "@/lib/layout";
+import { APP_CONTENT_WIDTH, APP_SHELL_CLASS } from "@/lib/layout";
 import { queryKeys } from "@/lib/query-keys";
 
 /**
@@ -52,7 +52,7 @@ export default function VocabularyDetailPage() {
     return (
       <AuthenticatedShell
         width={APP_CONTENT_WIDTH}
-        className="pt-6 sm:pt-8"
+        className={APP_SHELL_CLASS}
         user={shellUser.user}
         loading={shellUser.loading}
       >
@@ -78,7 +78,7 @@ export default function VocabularyDetailPage() {
   return (
     <AuthenticatedShell
       width={APP_CONTENT_WIDTH}
-      className="pt-6 sm:pt-8"
+      className={APP_SHELL_CLASS}
       user={shellUser.user}
       loading={shellUser.loading}
     >

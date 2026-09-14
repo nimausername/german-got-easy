@@ -30,17 +30,19 @@ export const LegalShell = ({ title, description, children }: LegalShellProps) =>
 
     <main
       className={cn(
-        "mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-12",
+        "mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 sm:py-12",
         "pb-[max(2rem,env(safe-area-inset-bottom))]",
       )}
     >
       <p className="text-xs text-muted-foreground">Last updated: {LEGAL.effectiveDate}</p>
-      <h1 className="mt-2 font-display text-3xl tracking-tight text-brand-ink sm:text-4xl">
+      <h1 className="mt-2 font-display text-2xl tracking-tight text-brand-ink sm:text-4xl">
         {title}
       </h1>
-      <p className="mt-3 max-w-2xl text-sm text-muted-foreground sm:text-base">{description}</p>
+      <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:mt-3 sm:text-base">
+        {description}
+      </p>
 
-      <article className="mt-8 space-y-8 text-sm leading-relaxed text-foreground sm:text-base">
+      <article className="mt-6 space-y-6 text-sm leading-relaxed text-foreground sm:mt-8 sm:space-y-8 sm:text-base">
         {children}
       </article>
 

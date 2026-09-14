@@ -6,7 +6,6 @@ import { FlashcardFlip, FLASHCARD_FACE_HEIGHT } from "@/components/flashcard-fli
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { ScrollFade } from "@/components/ui/scroll-fade";
 import {
   articleGenderTextClass,
   splitGermanArticles,
@@ -55,25 +54,34 @@ type FlashcardStudyCardProps = {
   readonly onGender: (article: string) => void;
   readonly onContinueAfterFail: () => void;
   readonly busy: boolean;
+  readonly className?: string;
 };
 
 const GENDER_OPTIONS = ["der", "die", "das"] as const;
 
+/**
+ * Card face layout: prompt content scrolls only if needed; primary action stays pinned.
+ */
 const CardFace = ({
   children,
+  footer,
   className,
 }: {
   readonly children: ReactNode;
+  readonly footer?: ReactNode;
   readonly className?: string;
 }) => (
-  <ScrollFade
+  <div
     className={cn(
-      "flex h-full flex-col justify-between gap-4 p-5 sm:gap-6 sm:p-7 md:p-8",
+      "flex h-full min-h-0 flex-col gap-3 p-4 sm:gap-5 sm:p-7 md:p-8",
       className,
     )}
   >
-    {children}
-  </ScrollFade>
+    <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain">
+      {children}
+    </div>
+    {footer ? <div className="shrink-0">{footer}</div> : null}
+  </div>
 );
 
 const PromptEyebrow = ({ children }: { readonly children: ReactNode }) => (
@@ -91,7 +99,7 @@ const Headword = ({
   readonly lemma: string;
   readonly trailing?: ReactNode;
 }) => (
-  <p className="font-display text-5xl leading-[1.05] break-words text-brand-ink sm:text-6xl md:text-7xl">
+  <p className="font-display text-3xl leading-[1.1] break-words text-brand-ink sm:text-5xl sm:leading-[1.05] md:text-6xl">
     {article ? (
       <>
         <span className={articleGenderTextClass(article)} title="German grammatical gender">
@@ -146,7 +154,7 @@ const StaticStudyShell = ({
 }) => (
   <div
     className={cn(
-      "flex w-full flex-col overflow-hidden rounded-2xl bg-card",
+      "flex h-full min-h-0 w-full flex-col overflow-hidden rounded-2xl bg-card",
       FLASHCARD_FACE_HEIGHT,
       "ring-1 ring-foreground/10",
       "shadow-[0_18px_50px_-28px_oklch(0.35_0.04_220/0.55)]",
@@ -173,54 +181,83 @@ export const FlashcardStudyCard = ({
   onGender,
   onContinueAfterFail,
   busy,
+  className,
 }: FlashcardStudyCardProps) => {
   if (card.promptType === "recognize") {
     return (
-      <FlashcardFlip
-        flipped={flipped}
-        onFlip={onFlip}
-        frontLabel="Reveal translation and example"
-        backLabel="Hide translation"
-        backClassName="bg-gradient-to-b from-card to-accent/40 dark:to-accent/25"
-        front={
-          <CardFace>
-            <div className="space-y-4">
-              <PromptEyebrow>{card.prompt}</PromptEyebrow>
-              <Headword article={card.article} lemma={card.lemma} />
-            </div>
-            <p className="text-xs text-muted-foreground sm:text-sm">
-              Tap to reveal — try to recall first
-            </p>
-          </CardFace>
-        }
-        back={
-          <CardFace>
-            <div className="space-y-3 sm:space-y-4">
-              <PromptEyebrow>Meaning</PromptEyebrow>
-              <p className="font-display text-3xl leading-snug break-words text-brand-ink sm:text-4xl">
-                {card.translation}
-              </p>
-              {card.plural ? <PluralLine plural={card.plural} /> : null}
-              <div className="space-y-1.5 border-t border-border/70 pt-3 sm:pt-4">
-                <GermanExample text={card.exampleDe} className="text-base sm:text-lg" />
-                <p className="text-sm leading-relaxed text-muted-foreground break-words">
-                  {card.exampleEn}
+      <div className={cn("h-full min-h-0 w-full", className)}>
+        <FlashcardFlip
+          flipped={flipped}
+          onFlip={onFlip}
+          frontLabel="Reveal translation and example"
+          backLabel="Hide translation"
+          backClassName="bg-gradient-to-b from-card to-accent/40 dark:to-accent/25"
+          front={
+            <CardFace
+              footer={
+                <p className="text-xs text-muted-foreground sm:text-sm">
+                  Tap to reveal — try to recall first
                 </p>
+              }
+            >
+              <div className="space-y-3 sm:space-y-4">
+                <PromptEyebrow>{card.prompt}</PromptEyebrow>
+                <Headword article={card.article} lemma={card.lemma} />
               </div>
-              {card.usageNote ? (
-                <p className="text-sm text-muted-foreground">{card.usageNote}</p>
-              ) : null}
-            </div>
-          </CardFace>
-        }
-      />
+            </CardFace>
+          }
+          back={
+            <CardFace>
+              <div className="space-y-3 sm:space-y-4">
+                <PromptEyebrow>Meaning</PromptEyebrow>
+                <p className="font-display text-2xl leading-snug break-words text-brand-ink sm:text-4xl">
+                  {card.translation}
+                </p>
+                {card.plural ? <PluralLine plural={card.plural} /> : null}
+                <div className="space-y-1.5 border-t border-border/70 pt-3 sm:pt-4">
+                  <GermanExample text={card.exampleDe} className="text-base sm:text-lg" />
+                  <p className="text-sm leading-relaxed text-muted-foreground break-words">
+                    {card.exampleEn}
+                  </p>
+                </div>
+                {card.usageNote ? (
+                  <p className="text-sm text-muted-foreground">{card.usageNote}</p>
+                ) : null}
+              </div>
+            </CardFace>
+          }
+        />
+      </div>
     );
   }
 
   if (phase === "grade" && feedback?.expected) {
     return (
-      <StaticStudyShell className="bg-gradient-to-b from-destructive/5 to-card">
-        <CardFace>
+      <StaticStudyShell
+        className={cn("bg-gradient-to-b from-destructive/5 to-card", className)}
+      >
+        <CardFace
+          footer={
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <Button
+                type="button"
+                className="min-h-12 w-full touch-manipulation sm:w-auto"
+                onClick={onContinueAfterFail}
+              >
+                Continue — see it again soon
+              </Button>
+              <Link
+                href={`/vocabulary/${card.wordId}`}
+                className={cn(
+                  buttonVariants({ variant: "ghost" }),
+                  "min-h-11 w-full touch-manipulation sm:w-auto",
+                )}
+              >
+                Open vocabulary
+              </Link>
+            </div>
+          }
+        >
           <div className="space-y-3">
             <PromptEyebrow>
               <span className="text-destructive">Not quite</span>
@@ -244,24 +281,6 @@ export const FlashcardStudyCard = ({
               className="text-muted-foreground"
             />
           </div>
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <Button
-              type="button"
-              className="min-h-12 w-full touch-manipulation sm:w-auto"
-              onClick={onContinueAfterFail}
-            >
-              Continue — see it again soon
-            </Button>
-            <Link
-              href={`/vocabulary/${card.wordId}`}
-              className={cn(
-                buttonVariants({ variant: "ghost" }),
-                "min-h-11 w-full touch-manipulation sm:w-auto",
-              )}
-            >
-              Open vocabulary
-            </Link>
-          </div>
         </CardFace>
       </StaticStudyShell>
     );
@@ -269,8 +288,19 @@ export const FlashcardStudyCard = ({
 
   if (phase === "correct") {
     return (
-      <StaticStudyShell className="bg-gradient-to-b from-accent/50 to-card dark:from-accent/30">
-        <CardFace>
+      <StaticStudyShell
+        className={cn(
+          "bg-gradient-to-b from-accent/50 to-card dark:from-accent/30",
+          className,
+        )}
+      >
+        <CardFace
+          footer={
+            <p className="text-sm text-muted-foreground">
+              How hard was that? Rate it to schedule the next review.
+            </p>
+          }
+        >
           <div className="space-y-3">
             <PromptEyebrow>
               <span className="text-accent-foreground">Correct</span>
@@ -295,18 +325,47 @@ export const FlashcardStudyCard = ({
               Open vocabulary entry
             </Link>
           </div>
-          <p className="text-sm text-muted-foreground">
-            How hard was that? Rate it to schedule the next review.
-          </p>
         </CardFace>
       </StaticStudyShell>
     );
   }
 
   return (
-    <StaticStudyShell>
-      <CardFace>
-        <div className="space-y-4">
+    <StaticStudyShell className={className}>
+      <CardFace
+        footer={
+          card.promptType === "gender" ? (
+            <div className="grid grid-cols-3 gap-2">
+              {GENDER_OPTIONS.map((article) => (
+                <Button
+                  key={article}
+                  type="button"
+                  variant="outline"
+                  className={cn(
+                    "min-h-14 touch-manipulation text-base font-semibold",
+                    articleGenderTextClass(article),
+                  )}
+                  disabled={busy}
+                  onClick={() => onGender(article)}
+                  aria-label={`Choose article ${article}`}
+                >
+                  {article}
+                </Button>
+              ))}
+            </div>
+          ) : (
+            <Button
+              type="button"
+              className="min-h-12 w-full touch-manipulation"
+              disabled={busy || !typedAnswer.trim()}
+              onClick={onCheck}
+            >
+              Check answer
+            </Button>
+          )
+        }
+      >
+        <div className="space-y-3 sm:space-y-4">
           <PromptEyebrow>{card.prompt}</PromptEyebrow>
 
           {card.promptType === "produce" ? (
@@ -344,24 +403,6 @@ export const FlashcardStudyCard = ({
               {card.hint ? (
                 <p className="text-sm text-muted-foreground">{card.hint}</p>
               ) : null}
-              <div className="grid grid-cols-3 gap-2">
-                {GENDER_OPTIONS.map((article) => (
-                  <Button
-                    key={article}
-                    type="button"
-                    variant="outline"
-                    className={cn(
-                      "min-h-14 touch-manipulation text-base font-semibold",
-                      articleGenderTextClass(article),
-                    )}
-                    disabled={busy}
-                    onClick={() => onGender(article)}
-                    aria-label={`Choose article ${article}`}
-                  >
-                    {article}
-                  </Button>
-                ))}
-              </div>
             </>
           ) : null}
 
@@ -369,7 +410,7 @@ export const FlashcardStudyCard = ({
             <>
               <GermanExample
                 text={card.clozeSentence ?? ""}
-                className="font-display text-2xl text-brand-ink sm:text-3xl"
+                className="font-display text-xl text-brand-ink sm:text-3xl"
               />
               {card.hint ? (
                 <p className="text-sm text-muted-foreground">Hint: {card.hint}</p>
@@ -426,17 +467,6 @@ export const FlashcardStudyCard = ({
             </>
           ) : null}
         </div>
-
-        {card.promptType !== "gender" ? (
-          <Button
-            type="button"
-            className="min-h-12 w-full touch-manipulation"
-            disabled={busy || !typedAnswer.trim()}
-            onClick={onCheck}
-          >
-            Check answer
-          </Button>
-        ) : null}
       </CardFace>
     </StaticStudyShell>
   );

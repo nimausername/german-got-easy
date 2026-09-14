@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { useShellUser } from "@/hooks/use-me";
 import { apiFetch, ApiRequestError } from "@/lib/api";
 import { fetchPlacementItems } from "@/lib/api-queries";
+import { APP_SHELL_CLASS } from "@/lib/layout";
 import { queryKeys } from "@/lib/query-keys";
 import { cn } from "@/lib/utils";
 
@@ -77,7 +78,7 @@ export default function PlacementPage() {
     return (
       <AuthenticatedShell
         width="md"
-        className="pt-6 sm:pt-8"
+        className={APP_SHELL_CLASS}
         user={shellUser.user}
         loading={shellUser.loading}
       >
@@ -89,23 +90,19 @@ export default function PlacementPage() {
   return (
     <AuthenticatedShell
       width="md"
-      className="pt-6 sm:pt-8"
+      className={APP_SHELL_CLASS}
       user={shellUser.user}
       loading={shellUser.loading}
     >
       <PageFrame
         header={
-          <>
-            <h1 className="font-display text-2xl text-brand-ink sm:text-3xl">Placement</h1>
-            <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+          <div className="space-y-1.5 sm:space-y-2">
+            <h1 className="font-display text-xl text-brand-ink sm:text-3xl">Placement</h1>
+            <p className="text-xs text-muted-foreground sm:text-base">
               A short check to suggest your starting level.
             </p>
-            {error ? (
-              <div className="mt-4">
-                <ErrorAlert message={error} />
-              </div>
-            ) : null}
-          </>
+            {error ? <ErrorAlert message={error} /> : null}
+          </div>
         }
         contentClassName="pb-2"
       >

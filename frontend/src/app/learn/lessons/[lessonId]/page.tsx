@@ -33,7 +33,7 @@ import { useShellUser } from "@/hooks/use-me";
 import { apiFetch, ApiRequestError } from "@/lib/api";
 import { fetchLesson, fetchPathNext } from "@/lib/api-queries";
 import { fireLessonConfetti } from "@/lib/confetti";
-import { APP_CONTENT_WIDTH, STUDY_CONTENT_CLASS } from "@/lib/layout";
+import { APP_CONTENT_WIDTH, LESSON_SHELL_CLASS, STUDY_CONTENT_CLASS } from "@/lib/layout";
 import { skillLabel } from "@/lib/learn";
 import { queryKeys } from "@/lib/query-keys";
 import { cn } from "@/lib/utils";
@@ -45,8 +45,6 @@ type Phase = "teach" | "practice" | "result";
  * Mobile chrome stays compact so the teach/practice card keeps usable height.
  * Bottom tab bar is hidden on this route; AppShell’s tab clearance is overridden.
  */
-const LESSON_SHELL_CLASS = "py-0 pt-2 pb-2 sm:pt-3 md:pb-6";
-
 export default function LessonPlayerPage() {
   const router = useRouter();
   const queryClient = useQueryClient();

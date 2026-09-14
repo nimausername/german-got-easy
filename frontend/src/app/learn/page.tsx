@@ -25,12 +25,13 @@ import { Progress } from "@/components/ui/progress";
 import { useShellUser } from "@/hooks/use-me";
 import { ApiRequestError } from "@/lib/api";
 import { fetchLevels, fetchLevelUnits, fetchPathNext } from "@/lib/api-queries";
-import { APP_CONTENT_WIDTH } from "@/lib/layout";
+import { APP_CONTENT_WIDTH, APP_SHELL_CLASS } from "@/lib/layout";
 import { queryKeys } from "@/lib/query-keys";
 import { cn } from "@/lib/utils";
 
 /**
  * Learn hub: continue CTA and A1 unit cards.
+ * Sticky chrome stays minimal so the unit list keeps most of the viewport.
  */
 export default function LearnHubPage() {
   const router = useRouter();
@@ -87,7 +88,7 @@ export default function LearnHubPage() {
     return (
       <AuthenticatedShell
         width={APP_CONTENT_WIDTH}
-        className="pt-6 sm:pt-8"
+        className={APP_SHELL_CLASS}
         user={shellUser.user}
         loading={shellUser.loading}
       >
@@ -113,27 +114,33 @@ export default function LearnHubPage() {
   return (
     <AuthenticatedShell
       width={APP_CONTENT_WIDTH}
-      className="pt-6 sm:pt-8"
+      className={APP_SHELL_CLASS}
       user={shellUser.user}
       loading={shellUser.loading}
     >
       <PageFrame
         header={
-          <>
-            <BackLink href="/dashboard" label="Dashboard" />
-            <div className="mt-4 flex flex-wrap items-center gap-2">
+          <div className="space-y-2.5 sm:space-y-4">
+            <BackLink
+              href="/dashboard"
+              label="Dashboard"
+              className="hidden sm:inline-flex"
+            />
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+              <h1 className="text-xl font-semibold tracking-tight sm:text-3xl">
+                Learn German
+              </h1>
               <Badge variant="secondary">A1</Badge>
-              <Badge variant="outline">{levelTitle}</Badge>
+              <Badge variant="outline" className="hidden sm:inline-flex">
+                {levelTitle}
+              </Badge>
             </div>
-            <h1 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
-              Learn German
-            </h1>
-            <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">
+            <p className="hidden max-w-2xl text-sm text-muted-foreground sm:block sm:text-base">
               Learn a little, then practice it. Short steps, clear goals — comfortable on phone,
               tablet, and desktop.
             </p>
-            <div className="mt-5 max-w-md">
-              <div className="mb-1.5 flex justify-between text-xs text-muted-foreground">
+            <div className="max-w-md">
+              <div className="mb-1 flex justify-between text-xs text-muted-foreground sm:mb-1.5">
                 <span>
                   {unitsCompleted}/{units.length} units · {lessonCount} lessons
                 </span>
@@ -141,71 +148,74 @@ export default function LearnHubPage() {
               </div>
               <Progress value={pathPct} className="gap-0 [&_[data-slot=progress-track]]:h-2" />
             </div>
-            <Card className="mt-5" size="sm">
-              <CardHeader>
-                <CardDescription>Continue</CardDescription>
-                <CardTitle>
-                  {nextLesson ? nextLesson.title : pathMessage ?? "A1 path complete"}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {nextLesson ? (
-                  <p className="text-sm text-muted-foreground">
-                    {nextLesson.levelCode ? `${nextLesson.levelCode} · ` : ""}
-                    {nextLesson.unitTitle ?? "Pick up where you left off"}
-                  </p>
-                ) : (
-                  <p className="text-sm text-muted-foreground">
-                    Review any unit below, or keep words warm with flashcards.
-                  </p>
-                )}
-              </CardContent>
-              {nextLesson ? (
-                <CardFooter>
-                  <Link
-                    href={`/learn/lessons/${nextLesson.id}`}
-                    className={cn(
-                      buttonVariants(),
-                      "min-h-11 w-full touch-manipulation sm:w-auto",
-                    )}
-                  >
-                    <BookOpen data-icon="inline-start" />
-                    Continue lesson
-                  </Link>
-                </CardFooter>
-              ) : null}
-            </Card>
-          </>
+          </div>
         }
         contentClassName="pb-2"
       >
-        <section>
-          <h2 className="text-lg font-semibold tracking-tight sm:text-xl">Your A1 path</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Open a unit anytime. Finish in order for the smoothest path.
-          </p>
+        <div className="space-y-4 sm:space-y-5">
+          <Card size="sm">
+            <CardHeader className="gap-0.5">
+              <CardDescription>Continue</CardDescription>
+              <CardTitle className="text-base leading-snug sm:text-base">
+                {nextLesson ? nextLesson.title : pathMessage ?? "A1 path complete"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              {nextLesson ? (
+                <p className="text-xs text-muted-foreground sm:text-sm">
+                  {nextLesson.levelCode ? `${nextLesson.levelCode} · ` : ""}
+                  {nextLesson.unitTitle ?? "Pick up where you left off"}
+                </p>
+              ) : (
+                <p className="text-xs text-muted-foreground sm:text-sm">
+                  Review any unit below, or keep words warm with flashcards.
+                </p>
+              )}
+            </CardContent>
+            {nextLesson ? (
+              <CardFooter>
+                <Link
+                  href={`/learn/lessons/${nextLesson.id}`}
+                  className={cn(
+                    buttonVariants(),
+                    "min-h-11 w-full touch-manipulation sm:w-auto",
+                  )}
+                >
+                  <BookOpen data-icon="inline-start" />
+                  Continue lesson
+                </Link>
+              </CardFooter>
+            ) : null}
+          </Card>
 
-          {units.length === 0 ? (
-            <p className="mt-4 text-sm text-muted-foreground">
-              No units yet. Seed lesson content on the API.
+          <section>
+            <h2 className="text-base font-semibold tracking-tight sm:text-xl">Your A1 path</h2>
+            <p className="mt-0.5 text-xs text-muted-foreground sm:mt-1 sm:text-sm">
+              Open a unit anytime. Finish in order for the smoothest path.
             </p>
-          ) : (
-            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {units.map((unit, index) => (
-                <UnitPathRow
-                  key={unit.id}
-                  href={`/learn/units/${unit.id}`}
-                  index={index + 1}
-                  title={unit.title}
-                  description={unit.description}
-                  lessonsCompleted={unit.lessonsCompleted}
-                  lessonCount={unit.lessonCount}
-                  status={unit.status}
-                />
-              ))}
-            </div>
-          )}
-        </section>
+
+            {units.length === 0 ? (
+              <p className="mt-3 text-sm text-muted-foreground sm:mt-4">
+                No units yet. Seed lesson content on the API.
+              </p>
+            ) : (
+              <div className="mt-3 grid gap-2.5 sm:mt-4 sm:gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {units.map((unit, index) => (
+                  <UnitPathRow
+                    key={unit.id}
+                    href={`/learn/units/${unit.id}`}
+                    index={index + 1}
+                    title={unit.title}
+                    description={unit.description}
+                    lessonsCompleted={unit.lessonsCompleted}
+                    lessonCount={unit.lessonCount}
+                    status={unit.status}
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
       </PageFrame>
     </AuthenticatedShell>
   );

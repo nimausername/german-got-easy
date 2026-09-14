@@ -37,7 +37,7 @@ import {
 import { useShellUser } from "@/hooks/use-me";
 import { apiFetch, ApiRequestError } from "@/lib/api";
 import { fetchFlashcardTopics } from "@/lib/api-queries";
-import { APP_CONTENT_WIDTH, STUDY_CONTENT_CLASS } from "@/lib/layout";
+import { APP_CONTENT_WIDTH, APP_SHELL_CLASS, STUDY_CONTENT_CLASS, STUDY_SHELL_CLASS } from "@/lib/layout";
 import { queryKeys } from "@/lib/query-keys";
 import { cn } from "@/lib/utils";
 
@@ -374,37 +374,39 @@ const FlashcardsPageContent = () => {
     return (
       <AuthenticatedShell
         width={APP_CONTENT_WIDTH}
-        className="pt-6 sm:pt-8"
+        className={APP_SHELL_CLASS}
         user={shellUser.user}
         loading={shellUser.loading}
       >
         <PageFrame
           header={
-            <>
-              <h1 className="font-display text-3xl text-brand-ink sm:text-4xl">Flashcards</h1>
-              <p className="mt-2 max-w-xl text-sm text-muted-foreground sm:mt-3 sm:text-base">
+            <div className="space-y-1.5 sm:space-y-3">
+              <h1 className="font-display text-xl text-brand-ink sm:text-4xl">Flashcards</h1>
+              <p className="hidden max-w-xl text-sm text-muted-foreground sm:block sm:text-base">
                 Pick a life topic to learn related words together. Use review-due to keep older
                 words from fading.
               </p>
-            </>
+            </div>
           }
           contentClassName="pb-2"
         >
           {loadingTopics ? <FlashcardsTopicsSkeleton /> : null}
 
           {!loadingTopics && deepLinkTopic ? (
-            <Card className="border-primary/30">
-              <CardHeader>
+            <Card className="border-primary/30" size="sm">
+              <CardHeader className="gap-0.5">
                 <CardDescription>From vocabulary</CardDescription>
-                <CardTitle>Practice {deepLinkTopic.title}</CardTitle>
+                <CardTitle className="leading-snug">Practice {deepLinkTopic.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">{deepLinkTopic.description}</p>
+                <p className="line-clamp-2 text-sm text-muted-foreground">
+                  {deepLinkTopic.description}
+                </p>
               </CardContent>
               <CardFooter>
                 <Button
                   type="button"
-                  className="min-h-11 w-full touch-manipulation sm:w-auto"
+                  className="min-h-11 w-full touch-manipulation"
                   disabled={
                     loadingSession ||
                     (deepLinkTopic.dueCount === 0 && deepLinkTopic.newCount === 0)
@@ -426,16 +428,19 @@ const FlashcardsPageContent = () => {
 
           {!loadingTopics && dueTotal > 0 ? (
             <Card
+              size="sm"
               className={cn(
                 "border-primary/30 bg-primary text-primary-foreground",
-                deepLinkTopic ? "mt-4" : null,
+                deepLinkTopic ? "mt-3 sm:mt-4" : null,
               )}
             >
-              <CardHeader>
+              <CardHeader className="gap-0.5">
                 <CardDescription className="text-primary-foreground/80">
                   Recommended
                 </CardDescription>
-                <CardTitle className="text-primary-foreground">Review due words</CardTitle>
+                <CardTitle className="leading-snug text-primary-foreground">
+                  Review due words
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-primary-foreground/80">
@@ -446,7 +451,7 @@ const FlashcardsPageContent = () => {
                 <Button
                   type="button"
                   variant="secondary"
-                  className="min-h-11 w-full touch-manipulation sm:w-auto"
+                  className="min-h-11 w-full touch-manipulation"
                   disabled={loadingSession}
                   onClick={() => void startSession({ mode: "due", title: "Review due words" })}
                   aria-label={`Review ${dueTotal} due words`}
@@ -459,18 +464,18 @@ const FlashcardsPageContent = () => {
 
           <div
             className={cn(
-              "grid gap-3 sm:grid-cols-2 lg:grid-cols-3",
-              !loadingTopics && (deepLinkTopic || dueTotal > 0) ? "mt-6" : null,
+              "grid gap-2.5 sm:gap-3 sm:grid-cols-2 lg:grid-cols-3",
+              !loadingTopics && (deepLinkTopic || dueTotal > 0) ? "mt-4 sm:mt-6" : null,
             )}
           >
             {topics.map((topic) => (
               <Card key={topic.id} size="sm" className="transition-colors hover:bg-accent/40">
-                <CardHeader>
-                  <CardTitle>{topic.title}</CardTitle>
-                  <CardDescription>{topic.description}</CardDescription>
+                <CardHeader className="gap-0.5">
+                  <CardTitle className="leading-snug">{topic.title}</CardTitle>
+                  <CardDescription className="line-clamp-2">{topic.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs text-muted-foreground sm:text-sm">
                     {topic.dueCount > 0 ? `${topic.dueCount} due · ` : ""}
                     {topic.newCount} new · {topic.learningCount + topic.knownCount} started
                   </p>
@@ -543,10 +548,7 @@ const FlashcardsPageContent = () => {
     return (
       <AuthenticatedShell
         width={APP_CONTENT_WIDTH}
-        className={cn(
-          "py-0 pt-2 sm:pt-3",
-          "pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-6",
-        )}
+        className={STUDY_SHELL_CLASS}
         user={shellUser.user}
         loading={shellUser.loading}
       >
@@ -560,37 +562,34 @@ const FlashcardsPageContent = () => {
   return (
     <AuthenticatedShell
       width={APP_CONTENT_WIDTH}
-      className={cn(
-        "py-0 pt-2 sm:pt-3",
-        "pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-6",
-      )}
+      className={STUDY_SHELL_CLASS}
       user={shellUser.user}
       loading={shellUser.loading}
     >
-      <div className={cn(STUDY_CONTENT_CLASS, "flex shrink-0 items-start justify-between gap-3")}>
+      <div className={cn(STUDY_CONTENT_CLASS, "flex shrink-0 items-center justify-between gap-3")}>
         <Button
           type="button"
           variant="ghost"
           size="sm"
-          className="-ml-2 min-h-10 w-fit touch-manipulation text-muted-foreground"
+          className="-ml-2 min-h-9 w-fit touch-manipulation text-muted-foreground sm:min-h-10"
           onClick={handleBackToTopics}
         >
           ← Topics
         </Button>
-        <p className="pt-2 text-right text-xs text-muted-foreground sm:text-sm">
+        <p className="text-right text-xs text-muted-foreground sm:text-sm">
           <span className="hidden sm:inline">Space to flip · </span>
           {index + 1} of {cards.length}
         </p>
       </div>
 
-      <div className={cn(STUDY_CONTENT_CLASS, "mt-2 shrink-0 space-y-2 sm:mt-3")}>
-        <Progress value={progressValue} className="w-full gap-2">
+      <div className={cn(STUDY_CONTENT_CLASS, "mt-1.5 shrink-0 space-y-1.5 sm:mt-3 sm:space-y-2")}>
+        <Progress value={progressValue} className="w-full gap-1.5 sm:gap-2">
           <ProgressLabel className="truncate text-xs sm:text-sm">{study.title}</ProgressLabel>
           <ProgressValue className="text-xs sm:text-sm">
             {() => `${index + 1}/${cards.length}`}
           </ProgressValue>
         </Progress>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           <Badge variant="secondary">{current.mode === "new" ? "New word" : "Review"}</Badge>
           <Badge variant="outline">{PROMPT_LABEL[current.promptType]}</Badge>
         </div>
@@ -603,15 +602,19 @@ const FlashcardsPageContent = () => {
       ) : null}
 
       {/*
-        Full-width stage with large horizontal padding so pulse-outside blur
-        can bloom left/right without hitting overflow-hidden on the shell.
+        Stage fills leftover viewport height. Horizontal padding leaves room for
+        pulse-outside bloom without clipping; card itself is height-bounded by flex.
       */}
-      <div className="flex min-h-0 w-full flex-1 items-center justify-center overflow-hidden px-10 sm:px-16 md:px-24">
+      <div className="flex min-h-0 w-full flex-1 justify-center overflow-hidden px-3 sm:px-12 md:px-24">
         <div
           key={`${current.wordId}-${current.promptType}-${index}`}
-          className={cn(STUDY_CONTENT_CLASS, "animate-in fade-in-0 duration-300")}
+          className={cn(
+            STUDY_CONTENT_CLASS,
+            "flex h-full min-h-0 animate-in fade-in-0 duration-300",
+          )}
         >
           <FlashcardStudyCard
+            className="w-full"
             card={current}
             flipped={flipped}
             onFlip={handleFlip}
@@ -630,8 +633,8 @@ const FlashcardsPageContent = () => {
       <div
         className={cn(
           STUDY_CONTENT_CLASS,
-          "shrink-0 px-1 md:px-0",
-          "min-h-14 sm:min-h-12",
+          "shrink-0 px-1 pt-1 md:px-0",
+          "min-h-12 sm:min-h-12",
         )}
       >
         <div
@@ -656,7 +659,12 @@ export default function FlashcardsPage() {
   return (
     <Suspense
       fallback={
-        <AuthenticatedShell width={APP_CONTENT_WIDTH} user={null} loading className="pt-6 sm:pt-8">
+        <AuthenticatedShell
+          width={APP_CONTENT_WIDTH}
+          user={null}
+          loading
+          className={APP_SHELL_CLASS}
+        >
           <FlashcardsPageSuspenseSkeleton />
         </AuthenticatedShell>
       }

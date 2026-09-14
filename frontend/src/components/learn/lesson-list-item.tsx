@@ -43,18 +43,20 @@ export const LessonListItem = ({
   const cta = done ? "Review lesson" : inProgress ? "Continue" : "Start lesson";
 
   return (
-    <Card>
-      <CardHeader>
+    <Card size="sm">
+      <CardHeader className="gap-0.5">
         <CardDescription>
           Lesson {index}
           {done && score != null ? ` · ${Math.round(score * 100)}%` : ""}
           {inProgress ? " · In progress" : ""}
         </CardDescription>
-        <CardTitle className="text-base sm:text-lg">{title}</CardTitle>
+        <CardTitle className="leading-snug text-base sm:text-lg">{title}</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-2 sm:space-y-3">
         <p className="text-sm text-foreground/90">{canDo}</p>
-        {summary ? <p className="text-sm text-muted-foreground">{summary}</p> : null}
+        {summary ? (
+          <p className="line-clamp-2 text-sm text-muted-foreground">{summary}</p>
+        ) : null}
         {skillTags.length > 0 ? (
           <div className="flex flex-wrap gap-1.5">
             {skillTags.map((tag) => (
@@ -70,7 +72,7 @@ export const LessonListItem = ({
           href={href}
           className={cn(
             buttonVariants({ variant: done ? "outline" : "default" }),
-            "min-h-11 w-full touch-manipulation sm:w-auto",
+            "min-h-11 w-full touch-manipulation",
           )}
         >
           {cta}

@@ -14,7 +14,7 @@ import { Progress } from "@/components/ui/progress";
 import { useShellUser } from "@/hooks/use-me";
 import { ApiRequestError } from "@/lib/api";
 import { fetchUnit } from "@/lib/api-queries";
-import { APP_CONTENT_WIDTH } from "@/lib/layout";
+import { APP_CONTENT_WIDTH, APP_SHELL_CLASS } from "@/lib/layout";
 import { queryKeys } from "@/lib/query-keys";
 
 /**
@@ -75,7 +75,7 @@ export default function LearnUnitPage() {
     return (
       <AuthenticatedShell
         width={APP_CONTENT_WIDTH}
-        className="pt-6 sm:pt-8"
+        className={APP_SHELL_CLASS}
         user={shellUser.user}
         loading={shellUser.loading}
       >
@@ -87,29 +87,33 @@ export default function LearnUnitPage() {
   return (
     <AuthenticatedShell
       width={APP_CONTENT_WIDTH}
-      className="pt-6 sm:pt-8"
+      className={APP_SHELL_CLASS}
       user={shellUser.user}
       loading={shellUser.loading}
     >
       <PageFrame
         header={
-          <>
+          <div className="space-y-2.5 sm:space-y-4">
             <BackLink href="/learn" label="Learn" />
-            <div className="mt-4 flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
               <Badge variant="secondary">{unit.levelCode}</Badge>
-              <Badge variant="outline">{unit.levelTitle}</Badge>
+              <Badge variant="outline" className="hidden sm:inline-flex">
+                {unit.levelTitle}
+              </Badge>
               {unit.status === "COMPLETED" ? <Badge>Completed</Badge> : null}
             </div>
-            <h1 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
-              {unit.title}
-            </h1>
-            {unit.description ? (
-              <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">
-                {unit.description}
-              </p>
-            ) : null}
-            <div className="mt-6 max-w-md">
-              <div className="mb-1.5 flex justify-between text-xs text-muted-foreground">
+            <div>
+              <h1 className="text-xl font-semibold tracking-tight sm:text-3xl">
+                {unit.title}
+              </h1>
+              {unit.description ? (
+                <p className="mt-1 line-clamp-2 max-w-2xl text-xs text-muted-foreground sm:mt-2 sm:line-clamp-none sm:text-base">
+                  {unit.description}
+                </p>
+              ) : null}
+            </div>
+            <div className="max-w-md">
+              <div className="mb-1 flex justify-between text-xs text-muted-foreground sm:mb-1.5">
                 <span>
                   {completedCount}/{unit.lessons.length} lessons
                 </span>
@@ -117,11 +121,11 @@ export default function LearnUnitPage() {
               </div>
               <Progress value={unitPct} className="gap-0 [&_[data-slot=progress-track]]:h-2" />
             </div>
-          </>
+          </div>
         }
         contentClassName="pb-2"
       >
-        <div className="space-y-3">
+        <div className="space-y-2.5 sm:space-y-3">
           {unit.lessons.map((lesson, index) => (
             <LessonListItem
               key={lesson.id}

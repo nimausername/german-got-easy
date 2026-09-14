@@ -31,9 +31,11 @@ type FlashcardFlipProps = {
 /** Matches the card rotate transition so the pulse starts when the meaning face lands. */
 const FLIP_MS = 500;
 
-/** Fixed face height — sized to leave room for ratings inside the viewport. */
-export const FLASHCARD_FACE_HEIGHT =
-  "h-[min(34svh,16rem)] sm:h-[min(40svh,20rem)] md:h-[min(42svh,22rem)]";
+/**
+ * Study card fills the stage height from the session layout.
+ * Prefer parent `h-full`; keep a modest floor so empty states do not collapse.
+ */
+export const FLASHCARD_FACE_HEIGHT = "h-full min-h-[16rem]";
 
 const faceShellClass = cn(
   "col-start-1 row-start-1 flex h-full flex-col overflow-hidden",
@@ -91,12 +93,16 @@ export const FlashcardFlip = ({
 
   return (
     <div
-      className={cn("relative w-full overflow-visible py-10 sm:py-12", className)}
+      className={cn(
+        "relative flex h-full min-h-0 w-full flex-col overflow-visible",
+        "py-3 sm:py-8 md:py-10",
+        className,
+      )}
       data-slot="flashcard-flip"
     >
       {beamVisible ? (
         <div
-          className="pointer-events-none absolute inset-y-10 left-0 right-0 z-0 sm:inset-y-12"
+          className="pointer-events-none absolute inset-y-3 left-0 right-0 z-0 sm:inset-y-8 md:inset-y-10"
           aria-hidden
         >
           <BorderBeam
@@ -118,7 +124,7 @@ export const FlashcardFlip = ({
 
       <div
         className={cn(
-          "relative z-10 w-full rounded-2xl [perspective:1400px]",
+          "relative z-10 min-h-0 w-full flex-1 rounded-2xl [perspective:1400px]",
           FLASHCARD_FACE_HEIGHT,
         )}
       >

@@ -15,7 +15,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { useShellUser } from "@/hooks/use-me";
 import { ApiRequestError } from "@/lib/api";
 import { fetchWordsPage } from "@/lib/api-queries";
-import { APP_CONTENT_WIDTH } from "@/lib/layout";
+import { APP_CONTENT_WIDTH, APP_SHELL_CLASS } from "@/lib/layout";
 import { queryKeys } from "@/lib/query-keys";
 import { cn } from "@/lib/utils";
 import {
@@ -154,16 +154,16 @@ export default function VocabularyPage() {
   return (
     <AuthenticatedShell
       width={APP_CONTENT_WIDTH}
-      className="pt-6 sm:pt-8"
+      className={APP_SHELL_CLASS}
       user={shellUser.user}
       loading={shellUser.loading}
     >
       <PageFrame
         contentRef={listParentRef}
         header={
-          <>
-            <h1 className="font-display text-2xl text-brand-ink sm:text-4xl">Vocabulary</h1>
-            <p className="mt-1 hidden max-w-xl text-sm text-muted-foreground sm:mt-3 sm:block sm:text-base">
+          <div className="space-y-2.5 sm:space-y-3">
+            <h1 className="font-display text-xl text-brand-ink sm:text-4xl">Vocabulary</h1>
+            <p className="hidden max-w-xl text-sm text-muted-foreground sm:block sm:text-base">
               Browse the everyday word bank by frequency, look up meanings and examples, then
               practice with flashcards.
             </p>
@@ -184,12 +184,8 @@ export default function VocabularyPage() {
               onClearAll={handleClearFilters}
               onWordSelect={(wordId) => router.push(`/vocabulary/${wordId}`)}
             />
-            {error ? (
-              <div className="mt-4">
-                <ErrorAlert message={error} />
-              </div>
-            ) : null}
-          </>
+            {error ? <ErrorAlert message={error} /> : null}
+          </div>
         }
         contentClassName="pb-2"
       >
@@ -232,7 +228,7 @@ export default function VocabularyPage() {
         </section>
 
         {nextCursor ? (
-          <div className="mt-6">
+          <div className="mt-4 sm:mt-6">
             <Button
               type="button"
               variant="outline"
@@ -246,7 +242,7 @@ export default function VocabularyPage() {
           </div>
         ) : null}
 
-        <p className="mt-8 text-sm text-muted-foreground">
+        <p className="mt-5 text-sm text-muted-foreground sm:mt-8">
           Prefer drills?{" "}
           <Link
             href="/flashcards"

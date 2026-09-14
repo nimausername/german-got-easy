@@ -115,7 +115,7 @@ export const VocabularyFilters = ({
       : `${loadedCount} shown · ${totalInBank} in bank`;
 
   return (
-    <Card className="mt-4" size="sm">
+    <Card className="mt-2.5 sm:mt-4" size="sm">
       <CardContent className="space-y-3 pt-(--card-spacing)">
         <div className="flex items-center justify-between gap-3">
           <p className="text-sm font-medium text-foreground">Find a word</p>
