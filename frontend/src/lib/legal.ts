@@ -9,11 +9,8 @@ export const LEGAL = {
   controllerName: "Nima Khabbazi",
   /** Public GitHub repository for this open-source project. */
   githubUrl: "https://github.com/nimausername/german-got-easy",
-  /** Town only until a full street address is added for Impressum completeness. */
   locality: "Rielasingen-Worblingen",
   country: "Germany",
-  /** Replace with street and house number before relying on this as a complete Impressum. */
-  streetLine: "Singener Straße",
   postalCode: "78239",
   contactEmail: "iam@nimakhabbazi.de",
   hostingProvider: "Hetzner Online GmbH (Germany)",

@@ -26,8 +26,6 @@ export default function PrivacyPage() {
         <p>
           <strong>{LEGAL.controllerName}</strong>
           <br />
-          {LEGAL.streetLine}
-          <br />
           {LEGAL.postalCode} {LEGAL.locality}
           <br />
           {LEGAL.country}

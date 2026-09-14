@@ -29,10 +29,9 @@ Public surfaces (home, login, register) show a non-blocking footer line: necessa
 
 ## Operator checklist
 
-1. Replace `LEGAL.streetLine` with a complete postal address before treating the Impressum as complete.
-2. Keep `AUTH_COOKIES` aligned with `backend/src/lib/cookies.ts`.
-3. Update `LEGAL.audioCdnHost` / `LEGAL.identityHost` if those public hostnames change.
-4. These pages are informational templates, not legal advice.
+1. Keep `AUTH_COOKIES` aligned with `backend/src/lib/cookies.ts`.
+2. Update `LEGAL.audioCdnHost` / `LEGAL.identityHost` if those public hostnames change.
+3. These pages are informational templates, not legal advice. German Impressum rules may require a fuller postal contact address than town + postcode; confirm with counsel if needed.
 
 ## Key code
 

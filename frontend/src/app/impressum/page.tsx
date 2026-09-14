@@ -21,8 +21,6 @@ export default function ImpressumPage() {
         <p>
           <strong>{LEGAL.controllerName}</strong>
           <br />
-          {LEGAL.streetLine}
-          <br />
           {LEGAL.postalCode} {LEGAL.locality}
           <br />
           {LEGAL.country}
@@ -40,14 +38,6 @@ export default function ImpressumPage() {
           This service is operated by a private individual, not a registered company.{" "}
           {LEGAL.productName} is the product name of the learning project and is not a registered
           trademark of a commercial entity.
-        </p>
-        <p>
-          <strong>Note:</strong> Replace{" "}
-          <code className="rounded bg-muted px-1.5 py-0.5 text-xs text-foreground">
-            {LEGAL.streetLine}
-          </code>{" "}
-          in the site configuration with your full street address before treating this Impressum as
-          complete under German disclosure rules.
         </p>
       </LegalSection>
 
