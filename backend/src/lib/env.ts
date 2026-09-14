@@ -24,6 +24,11 @@ const envSchema = z.object({
     .transform((v) => v === "true"),
   COOKIE_SAME_SITE: z.enum(["lax", "strict", "none"]).default("lax"),
   PRODUCT_NAME: z.string().default("German Got Easy"),
+  WORD_DAILY_RELEASE_LIMIT: z.coerce.number().int().min(0).max(500).default(20),
+  WORD_RELEASE_CRON_ENABLED: z
+    .string()
+    .optional()
+    .transform((v) => v !== "false"),
 });
 
 const parsed = envSchema.parse(process.env);

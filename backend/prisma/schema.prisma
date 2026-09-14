@@ -187,6 +187,8 @@ model Word {
   imageCredit    String?
   imageLicense   String?
   imageSourceUrl String?
+  /// When set and <= now, the word is visible to learners. Null = still in the drip queue.
+  releasedAt     DateTime?
   exercises      Exercise[]
   progress       UserWordProgress[]
 
@@ -194,6 +196,16 @@ model Word {
   @@index([frequencyRank])
   @@index([cefrBand])
   @@index([topic, frequencyRank])
+  @@index([releasedAt, frequencyRank])
+}
+
+/// One row per UTC calendar day that successfully released words (idempotency).
+model WordReleaseDay {
+  id            String   @id @default(cuid())
+  /// UTC calendar day as YYYY-MM-DD.
+  releaseDate   String   @unique
+  releasedCount Int
+  createdAt     DateTime @default(now())
 }
 
 model UserWordProgress {

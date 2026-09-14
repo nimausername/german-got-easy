@@ -100,10 +100,10 @@ Features that deepen the vocabulary book without replacing flashcards.
 
 | Field | Detail |
 | --- | --- |
-| Status | `next` |
+| Status | `next` (drip plumbing shipped; content ~600 seeded, expand toward 4000) |
 | Goal | Reach the product promise of ~4000 high-utility words across A1–B1 with examples and topics. |
 | Why | Flashcards + vocabulary book only teach what is seeded. |
-| Scope | Batched JSON under `backend/content/wordbank/`; consistent schema with seed upsert; frequency ranks stable and unique enough for pagination. |
+| Scope | Batched JSON under `backend/content/wordbank/`; consistent schema with seed upsert; frequency ranks stable and unique enough for pagination; daily drip via `Word.releasedAt` + `WORD_DAILY_RELEASE_LIMIT`. |
 | Suggested approach | Frequency lists + CEFR lists; editorial pass for article/plural/examples; seed in batches (`a1-batch-02`, `a2-…`). Keep `@@unique([lemma, article])`. |
 | Done when | Documented count in README matches seed reality within ~5%; each word has DE/EN example; topics balanced. |
 

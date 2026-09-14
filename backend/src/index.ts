@@ -15,6 +15,7 @@ import { learnRoutes } from "./routes/learn.js";
 import { flashcardRoutes } from "./routes/flashcards.js";
 import { placementRoutes } from "./routes/placement.js";
 import { vocabularyRoutes } from "./routes/vocabulary.js";
+import { startWordReleaseScheduler } from "./services/word-release-scheduler.js";
 
 const buildServer = async () => {
   const app = Fastify({
@@ -78,9 +79,11 @@ const buildServer = async () => {
 
 const start = async () => {
   const app = await buildServer();
+  const stopWordRelease = startWordReleaseScheduler(app.log);
 
   const shutdown = async (signal: string) => {
     app.log.info({ signal }, "shutting_down");
+    stopWordRelease();
     try {
       await app.close();
       await prisma.$disconnect();

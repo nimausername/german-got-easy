@@ -57,7 +57,8 @@ describe("buildVocabularyWhere", () => {
 
     assert.ok(where.AND);
     const clauses = where.AND as unknown[];
-    assert.equal(clauses.length, 3);
+    // releasedAt gate + topic + search + unseen
+    assert.equal(clauses.length, 4);
   });
 
   it("applies composite cursor after frequency rank", () => {

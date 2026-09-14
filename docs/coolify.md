@@ -57,6 +57,8 @@ After deploy, open the **web** domain and register a user. `GET /health` on the 
 | `COOKIE_SAME_SITE` | `lax` | Leave `lax` for the default same-origin web app. |
 | `PRODUCT_NAME` | `German Got Easy` | Product label in API health and the web build. |
 | `RUN_SEED` | `true` | Upserts lesson/word content after migrate. Safe to leave on. |
+| `WORD_DAILY_RELEASE_LIMIT` | `20` | Queued words unlocked per UTC day (API catch-up + `word:release`). |
+| `WORD_RELEASE_CRON_ENABLED` | `true` | Hourly drip catch-up inside the API process. Set `false` to rely on an external cron only. |
 
 You do **not** set `API_URL`. The web container always proxies to `http://backend:4000`. If Coolify still lists `API_URL` from an older revision, delete that variable.
 

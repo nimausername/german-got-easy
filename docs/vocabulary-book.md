@@ -2,6 +2,13 @@
 
 Reference companion to flashcards. Learners look up and browse words; flashcards train recall.
 
+## Shipped (daily drip)
+
+- Warehouse: ≥500 curated words under `backend/content/wordbank/*.json` (batch-01 live; later batches queued).
+- `Word.releasedAt` gates learner visibility; flashcards and vocabulary only see released words.
+- Each UTC day unlocks `WORD_DAILY_RELEASE_LIMIT` words (default **20**) via API catch-up (`WORD_RELEASE_CRON_ENABLED`) or `pnpm --dir backend word:release`.
+- Images remain optional and concrete-noun-only; see [image-attribution.md](./image-attribution.md).
+
 ## Shipped (v1)
 
 - Curated system wordbank only (same `Word` rows as flashcards).

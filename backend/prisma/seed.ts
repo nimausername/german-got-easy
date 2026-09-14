@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 import { resolve } from "node:path";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { Prisma, PrismaClient } from "@prisma/client";
 
 config({ path: resolve(process.cwd(), "../.env") });
@@ -26,6 +26,62 @@ type UnitSeed = {
   title: string;
   description?: string;
   lessons: LessonSeed[];
+};
+
+type WordSeed = {
+  lemma: string;
+  article: string | null;
+  plural: string | null;
+  topic:
+    | "ESSENTIALS"
+    | "PEOPLE"
+    | "TIME"
+    | "FOOD_DRINK"
+    | "HOME"
+    | "SCHOOL_WORK"
+    | "TRAVEL"
+    | "SHOPPING"
+    | "DESCRIPTIONS";
+  translation: string;
+  partOfSpeech:
+    | "NOUN"
+    | "VERB"
+    | "ADJECTIVE"
+    | "ADVERB"
+    | "PRONOUN"
+    | "PREPOSITION"
+    | "CONJUNCTION"
+    | "PARTICLE"
+    | "OTHER";
+  cefrBand: "A1" | "A2" | "B1";
+  exampleDe: string;
+  exampleEn: string;
+  examplePluralDe?: string | null;
+  examplePluralEn?: string | null;
+  usageNote: string | null;
+  frequencyRank: number;
+  image?: {
+    url: string;
+    credit: string;
+    license: string;
+    sourceUrl: string;
+  } | null;
+};
+
+/** Initial curated batch is live immediately; later batches wait for the daily drip. */
+const isImmediatelyReleasedBatch = (fileName: string): boolean =>
+  fileName === "a1-batch-01.json";
+
+const loadWordbankFiles = (): Array<{ fileName: string; words: WordSeed[] }> => {
+  const dir = resolve(process.cwd(), "content/wordbank");
+  const files = readdirSync(dir)
+    .filter((name) => name.endsWith(".json"))
+    .sort();
+
+  return files.map((fileName) => ({
+    fileName,
+    words: JSON.parse(readFileSync(resolve(dir, fileName), "utf8")) as WordSeed[],
+  }));
 };
 
 const seed = async () => {
@@ -100,94 +156,76 @@ const seed = async () => {
 
   console.log("Seeded A1 Unit 1 content.");
 
-  const wordbankPath = resolve(process.cwd(), "content/wordbank/a1-batch-01.json");
-  const words = JSON.parse(readFileSync(wordbankPath, "utf8")) as Array<{
-    lemma: string;
-    article: string | null;
-    plural: string | null;
-    topic:
-      | "ESSENTIALS"
-      | "PEOPLE"
-      | "TIME"
-      | "FOOD_DRINK"
-      | "HOME"
-      | "SCHOOL_WORK"
-      | "TRAVEL"
-      | "SHOPPING"
-      | "DESCRIPTIONS";
-    translation: string;
-    partOfSpeech: "NOUN" | "VERB" | "ADJECTIVE" | "ADVERB" | "PRONOUN" | "PREPOSITION" | "CONJUNCTION" | "PARTICLE" | "OTHER";
-    cefrBand: "A1" | "A2" | "B1";
-    exampleDe: string;
-    exampleEn: string;
-    examplePluralDe?: string | null;
-    examplePluralEn?: string | null;
-    usageNote: string | null;
-    frequencyRank: number;
-    image?: {
-      url: string;
-      credit: string;
-      license: string;
-      sourceUrl: string;
-    } | null;
-  }>;
+  const batches = loadWordbankFiles();
+  let seededCount = 0;
+  const initialReleasedAt = new Date(0);
 
-  // Upsert word bank so topic/plural corrections apply without wiping learner progress.
-  for (const word of words) {
-    const imageUrl = word.image?.url ?? null;
-    const imageCredit = word.image?.credit ?? null;
-    const imageLicense = word.image?.license ?? null;
-    const imageSourceUrl = word.image?.sourceUrl ?? null;
-    const examplePluralDe = word.examplePluralDe ?? null;
-    const examplePluralEn = word.examplePluralEn ?? null;
+  for (const { fileName, words } of batches) {
+    const releaseImmediately = isImmediatelyReleasedBatch(fileName);
 
-    await prisma.word.upsert({
-      where: {
-        lemma_article: {
+    for (const word of words) {
+      const imageUrl = word.image?.url ?? null;
+      const imageCredit = word.image?.credit ?? null;
+      const imageLicense = word.image?.license ?? null;
+      const imageSourceUrl = word.image?.sourceUrl ?? null;
+      const examplePluralDe = word.examplePluralDe ?? null;
+      const examplePluralEn = word.examplePluralEn ?? null;
+
+      await prisma.word.upsert({
+        where: {
+          lemma_article: {
+            lemma: word.lemma,
+            article: word.article ?? "",
+          },
+        },
+        create: {
           lemma: word.lemma,
           article: word.article ?? "",
+          plural: word.plural,
+          topic: word.topic,
+          translation: word.translation,
+          partOfSpeech: word.partOfSpeech,
+          cefrBand: word.cefrBand,
+          exampleDe: word.exampleDe,
+          exampleEn: word.exampleEn,
+          examplePluralDe,
+          examplePluralEn,
+          usageNote: word.usageNote,
+          frequencyRank: word.frequencyRank,
+          imageUrl,
+          imageCredit,
+          imageLicense,
+          imageSourceUrl,
+          releasedAt: releaseImmediately ? initialReleasedAt : null,
         },
-      },
-      create: {
-        lemma: word.lemma,
-        article: word.article ?? "",
-        plural: word.plural,
-        topic: word.topic,
-        translation: word.translation,
-        partOfSpeech: word.partOfSpeech,
-        cefrBand: word.cefrBand,
-        exampleDe: word.exampleDe,
-        exampleEn: word.exampleEn,
-        examplePluralDe,
-        examplePluralEn,
-        usageNote: word.usageNote,
-        frequencyRank: word.frequencyRank,
-        imageUrl,
-        imageCredit,
-        imageLicense,
-        imageSourceUrl,
-      },
-      update: {
-        plural: word.plural,
-        topic: word.topic,
-        translation: word.translation,
-        partOfSpeech: word.partOfSpeech,
-        cefrBand: word.cefrBand,
-        exampleDe: word.exampleDe,
-        exampleEn: word.exampleEn,
-        examplePluralDe,
-        examplePluralEn,
-        usageNote: word.usageNote,
-        frequencyRank: word.frequencyRank,
-        imageUrl,
-        imageCredit,
-        imageLicense,
-        imageSourceUrl,
-      },
-    });
+        update: {
+          plural: word.plural,
+          topic: word.topic,
+          translation: word.translation,
+          partOfSpeech: word.partOfSpeech,
+          cefrBand: word.cefrBand,
+          exampleDe: word.exampleDe,
+          exampleEn: word.exampleEn,
+          examplePluralDe,
+          examplePluralEn,
+          usageNote: word.usageNote,
+          frequencyRank: word.frequencyRank,
+          imageUrl,
+          imageCredit,
+          imageLicense,
+          imageSourceUrl,
+          ...(releaseImmediately ? { releasedAt: initialReleasedAt } : {}),
+        },
+      });
+      seededCount += 1;
+    }
+
+    console.log(
+      `Seeded ${words.length} words from ${fileName} (${releaseImmediately ? "released" : "queued"}).`,
+    );
   }
 
-  console.log(`Seeded ${words.length} words.`);
+  console.log(`Seeded ${seededCount} words total.`);
 
   const { SAMPLE_EXAM_PACK } = await import("../src/content/exam-packs.js");
   await prisma.examPack.upsert({

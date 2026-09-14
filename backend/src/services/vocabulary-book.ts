@@ -1,6 +1,7 @@
 import type { CefrBand, Prisma, WordProgressStatus, WordTopic } from "@prisma/client";
 import { prisma } from "../lib/prisma.js";
 import { isWordTopic, WORD_TOPICS } from "./flashcard-topics.js";
+import { releasedWordWhere } from "./word-release.js";
 
 export const VOCAB_STATUS_FILTERS = ["unseen", "new", "learning", "known"] as const;
 export type VocabStatusFilter = (typeof VOCAB_STATUS_FILTERS)[number];
@@ -113,7 +114,7 @@ export const buildVocabularyWhere = (input: {
   status?: VocabStatusFilter;
   cursor?: WordCursor | null;
 }): Prisma.WordWhereInput => {
-  const and: Prisma.WordWhereInput[] = [];
+  const and: Prisma.WordWhereInput[] = [releasedWordWhere()];
 
   if (input.topic) {
     and.push({ topic: input.topic });
@@ -167,7 +168,7 @@ export const buildVocabularyWhere = (input: {
     });
   }
 
-  return and.length > 0 ? { AND: and } : {};
+  return { AND: and };
 };
 
 const toArticle = (article: string): string | null => (article ? article : null);
@@ -218,7 +219,7 @@ const getTotalInBank = async (): Promise<number> => {
   if (totalInBankCache && Date.now() - totalInBankCache.at < TOTAL_IN_BANK_TTL_MS) {
     return totalInBankCache.count;
   }
-  const count = await prisma.word.count();
+  const count = await prisma.word.count({ where: releasedWordWhere() });
   totalInBankCache = { at: Date.now(), count };
   return count;
 };
@@ -308,8 +309,11 @@ export const getVocabularyWord = async (input: {
   userId: string;
   wordId: string;
 }): Promise<VocabularyWordDetail | null> => {
-  const word = await prisma.word.findUnique({
-    where: { id: input.wordId },
+  const word = await prisma.word.findFirst({
+    where: {
+      id: input.wordId,
+      ...releasedWordWhere(),
+    },
     include: {
       progress: {
         where: { userId: input.userId },

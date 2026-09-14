@@ -6,6 +6,7 @@ import {
   type PromptWord,
 } from "./flashcard-prompts.js";
 import { TOPIC_CATALOG, type WordTopicId } from "./flashcard-topics.js";
+import { releasedWordWhere } from "./word-release.js";
 
 const SESSION_SIZE = 20;
 const DUE_CAP = 15;
@@ -59,6 +60,7 @@ const getTopicTotals = async (): Promise<Map<WordTopic, number>> => {
 
   const grouped = await prisma.word.groupBy({
     by: ["topic"],
+    where: releasedWordWhere(),
     _count: { _all: true },
   });
 
@@ -85,7 +87,10 @@ export const buildFlashcardSession = async (input: {
       userId: input.userId,
       dueAt: { lte: new Date() },
       status: { in: ["LEARNING", "REVIEW", "KNOWN"] },
-      ...(topicFilter ? { word: topicFilter } : {}),
+      word: {
+        ...releasedWordWhere(),
+        ...(topicFilter ?? {}),
+      },
     },
     select: {
       repetitions: true,
@@ -112,6 +117,7 @@ export const buildFlashcardSession = async (input: {
 
   const newWords = await prisma.word.findMany({
     where: {
+      ...releasedWordWhere(),
       ...(topicFilter ?? {}),
       progress: { none: { userId: input.userId } },
     },
