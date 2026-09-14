@@ -133,10 +133,90 @@ export const clientCredentialsGrant = async (): Promise<KeycloakTokenSet> => {
   return parseTokenResponse(response);
 };
 
+type KeycloakAdminUser = {
+  id?: string;
+  username?: string;
+  email?: string;
+  enabled?: boolean;
+  emailVerified?: boolean;
+  requiredActions?: string[];
+  [key: string]: unknown;
+};
+
+const adminHeaders = (accessToken: string) => ({
+  Authorization: `Bearer ${accessToken}`,
+  "Content-Type": "application/json",
+  "User-Agent": KC_UA,
+});
+
 /**
- * Creates a realm user via the Admin API.
- * Marks email as verified because this app has no email-verification flow;
- * leaving it unverified can attach VERIFY_EMAIL and block password grants.
+ * Sets a permanent password and clears required actions so Direct Access Grants work.
+ * Keycloak often attaches VERIFY_EMAIL / UPDATE_PASSWORD after create; that yields
+ * "Account is not fully set up" on password grant until cleared.
+ */
+const finalizeKeycloakUserForLogin = async (
+  accessToken: string,
+  userId: string,
+  password: string,
+): Promise<void> => {
+  const userUrl = `${adminUsersUrl}/${encodeURIComponent(userId)}`;
+
+  const passwordResponse = await fetch(`${userUrl}/reset-password`, {
+    method: "PUT",
+    headers: adminHeaders(accessToken),
+    body: JSON.stringify({
+      type: "password",
+      value: password,
+      temporary: false,
+    }),
+  });
+  if (!passwordResponse.ok) {
+    const text = await passwordResponse.text();
+    const error = new Error(text || "Failed to set Keycloak password") as Error & {
+      statusCode?: number;
+    };
+    error.statusCode = passwordResponse.status === 400 ? 400 : 500;
+    throw error;
+  }
+
+  const getResponse = await fetch(userUrl, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "User-Agent": KC_UA,
+    },
+  });
+  if (!getResponse.ok) {
+    const text = await getResponse.text();
+    const error = new Error(text || "Failed to load Keycloak user") as Error & {
+      statusCode?: number;
+    };
+    error.statusCode = 500;
+    throw error;
+  }
+
+  const existing = (await getResponse.json()) as KeycloakAdminUser;
+  const updateResponse = await fetch(userUrl, {
+    method: "PUT",
+    headers: adminHeaders(accessToken),
+    body: JSON.stringify({
+      ...existing,
+      enabled: true,
+      emailVerified: true,
+      requiredActions: [],
+    }),
+  });
+  if (!updateResponse.ok) {
+    const text = await updateResponse.text();
+    const error = new Error(text || "Failed to clear Keycloak required actions") as Error & {
+      statusCode?: number;
+    };
+    error.statusCode = 500;
+    throw error;
+  }
+};
+
+/**
+ * Creates a realm user via the Admin API and prepares them for password grant login.
  */
 export const createKeycloakUser = async (input: {
   username: string;
@@ -146,38 +226,15 @@ export const createKeycloakUser = async (input: {
   const admin = await clientCredentialsGrant();
   const createResponse = await fetch(adminUsersUrl, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${admin.accessToken}`,
-      "Content-Type": "application/json",
-      "User-Agent": KC_UA,
-    },
+    headers: adminHeaders(admin.accessToken),
     body: JSON.stringify({
       username: input.username,
       email: input.email,
       enabled: true,
       emailVerified: true,
       requiredActions: [],
-      credentials: [
-        {
-          type: "password",
-          value: input.password,
-          temporary: false,
-        },
-      ],
     }),
   });
-
-  if (createResponse.status === 201) {
-    const location = createResponse.headers.get("location");
-    if (location) {
-      return location.split("/").pop() as string;
-    }
-    const error = new Error("Keycloak created user but returned no Location header") as Error & {
-      statusCode?: number;
-    };
-    error.statusCode = 500;
-    throw error;
-  }
 
   if (createResponse.status === 409) {
     const error = new Error("User already exists") as Error & { statusCode?: number };
@@ -185,10 +242,25 @@ export const createKeycloakUser = async (input: {
     throw error;
   }
 
-  const text = await createResponse.text();
-  const error = new Error(text || "Failed to create user") as Error & { statusCode?: number };
-  error.statusCode = 400;
-  throw error;
+  if (createResponse.status !== 201) {
+    const text = await createResponse.text();
+    const error = new Error(text || "Failed to create user") as Error & { statusCode?: number };
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const location = createResponse.headers.get("location");
+  const userId = location?.split("/").pop();
+  if (!userId) {
+    const error = new Error("Keycloak created user but returned no Location header") as Error & {
+      statusCode?: number;
+    };
+    error.statusCode = 500;
+    throw error;
+  }
+
+  await finalizeKeycloakUserForLogin(admin.accessToken, userId, input.password);
+  return userId;
 };
 
 /**

@@ -117,10 +117,30 @@ const ensureRealm = async (
     "Content-Type": "application/json",
     "User-Agent": KC_UA,
   };
+  const realmSettings = {
+    enabled: true,
+    registrationAllowed: false,
+    loginWithEmailAllowed: true,
+    duplicateEmailsAllowed: false,
+    resetPasswordAllowed: true,
+    editUsernameAllowed: false,
+    // App registers via Admin API + password grant; no email-verify UI.
+    verifyEmail: false,
+  };
+
   const existing = await fetch(`${baseUrl}/admin/realms/${encodeURIComponent(realm)}`, {
     headers,
   });
   if (existing.ok) {
+    const current = (await existing.json()) as Record<string, unknown>;
+    const updated = await fetch(`${baseUrl}/admin/realms/${encodeURIComponent(realm)}`, {
+      method: "PUT",
+      headers,
+      body: JSON.stringify({ ...current, ...realmSettings, realm }),
+    });
+    if (!updated.ok) {
+      throw new Error(`Failed to update realm ${realm}: ${await readError(updated)}`);
+    }
     return;
   }
   if (existing.status !== 404) {
@@ -132,16 +152,69 @@ const ensureRealm = async (
     headers,
     body: JSON.stringify({
       realm,
-      enabled: true,
-      registrationAllowed: false,
-      loginWithEmailAllowed: true,
-      duplicateEmailsAllowed: false,
-      resetPasswordAllowed: true,
-      editUsernameAllowed: false,
+      ...realmSettings,
     }),
   });
   if (!created.ok && created.status !== 409) {
     throw new Error(`Failed to create realm ${realm}: ${await readError(created)}`);
+  }
+};
+
+type RequiredActionProvider = {
+  alias: string;
+  name?: string;
+  enabled?: boolean;
+  defaultAction?: boolean;
+  priority?: number;
+  [key: string]: unknown;
+};
+
+/**
+ * Turns off default required actions that block Direct Access Grants
+ * ("Account is not fully set up") for newly created users.
+ */
+const ensureRequiredActions = async (
+  baseUrl: string,
+  token: string,
+  realm: string,
+): Promise<void> => {
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+    "User-Agent": KC_UA,
+  };
+  const listUrl = `${baseUrl}/admin/realms/${encodeURIComponent(realm)}/authentication/required-actions`;
+  const { response, data } = await jsonFetch<RequiredActionProvider[]>(listUrl, { headers });
+  if (!response.ok || !data) {
+    throw new Error(`Failed to list required actions: ${await readError(response)}`);
+  }
+
+  const blockLoginDefaults = new Set([
+    "VERIFY_EMAIL",
+    "UPDATE_PASSWORD",
+    "UPDATE_PROFILE",
+    "CONFIGURE_TOTP",
+    "TERMS_AND_CONDITIONS",
+    "delete_account",
+  ]);
+
+  for (const action of data) {
+    if (!blockLoginDefaults.has(action.alias) || action.defaultAction !== true) {
+      continue;
+    }
+    const updated = await fetch(
+      `${listUrl}/${encodeURIComponent(action.alias)}`,
+      {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({ ...action, defaultAction: false }),
+      },
+    );
+    if (!updated.ok) {
+      throw new Error(
+        `Failed to clear default required action ${action.alias}: ${await readError(updated)}`,
+      );
+    }
   }
 };
 
@@ -300,6 +373,7 @@ const run = async () => {
 
   const token = await adminToken(baseUrl, adminUser, adminPassword);
   await ensureRealm(baseUrl, token, realm);
+  await ensureRequiredActions(baseUrl, token, realm);
   const clientUuid = await ensureConfidentialClient(
     baseUrl,
     token,

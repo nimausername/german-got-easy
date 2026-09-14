@@ -21,6 +21,9 @@ Never put the client secret in the frontend.
 | User registration | Off (the app registers users through the API) |
 | Login with email | On |
 | Duplicate emails | Off |
+| Verify email | Off (no email-verify UI; leaving this on causes `Account is not fully set up` on register) |
+
+Also turn **off** “set as default action” for Verify Email, Update Password, Update Profile, Configure OTP, and Terms and Conditions under **Authentication → Required actions**. Default required actions block Direct Access Grants for new users.
 
 ## Client `german-backend`
 
