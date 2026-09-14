@@ -34,14 +34,20 @@ import { cn } from "@/lib/utils";
 
 type FieldErrors = {
   email?: string;
+  firstName?: string;
+  lastName?: string;
   username?: string;
   password?: string;
   acceptTerms?: string;
 };
 
+const NAME_PATTERN = /^[\p{L}\p{M}'’\- ]+$/u;
+
 export default function RegisterPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
@@ -55,6 +61,16 @@ export default function RegisterPage() {
       next.email = "Enter your email address.";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       next.email = "Enter a valid email address.";
+    }
+    if (!firstName.trim()) {
+      next.firstName = "Enter your first name.";
+    } else if (!NAME_PATTERN.test(firstName.trim())) {
+      next.firstName = "Use letters, spaces, hyphens, or apostrophes only.";
+    }
+    if (!lastName.trim()) {
+      next.lastName = "Enter your last name.";
+    } else if (!NAME_PATTERN.test(lastName.trim())) {
+      next.lastName = "Use letters, spaces, hyphens, or apostrophes only.";
     }
     if (!password) {
       next.password = "Choose a password.";
@@ -81,6 +97,8 @@ export default function RegisterPage() {
         method: "POST",
         body: JSON.stringify({
           email: email.trim(),
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
           username: username.trim() || undefined,
           password,
         }),
@@ -98,6 +116,8 @@ export default function RegisterPage() {
   };
 
   const emailInvalid = Boolean(fieldErrors.email);
+  const firstNameInvalid = Boolean(fieldErrors.firstName);
+  const lastNameInvalid = Boolean(fieldErrors.lastName);
   const passwordInvalid = Boolean(fieldErrors.password);
 
   return (
@@ -136,6 +156,54 @@ export default function RegisterPage() {
                 </InputGroup>
                 {fieldErrors.email ? <FieldError>{fieldErrors.email}</FieldError> : null}
               </Field>
+
+              <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
+                <Field data-invalid={firstNameInvalid || undefined}>
+                  <FieldLabel htmlFor="firstName">First name</FieldLabel>
+                  <InputGroup className="h-11 min-h-11">
+                    <InputGroupInput
+                      id="firstName"
+                      name="firstName"
+                      autoComplete="given-name"
+                      placeholder="Ada"
+                      className="h-full text-base"
+                      required
+                      aria-invalid={firstNameInvalid || undefined}
+                      value={firstName}
+                      onChange={(e) => {
+                        setFirstName(e.target.value);
+                        if (fieldErrors.firstName) {
+                          setFieldErrors((prev) => ({ ...prev, firstName: undefined }));
+                        }
+                      }}
+                    />
+                  </InputGroup>
+                  {fieldErrors.firstName ? <FieldError>{fieldErrors.firstName}</FieldError> : null}
+                </Field>
+
+                <Field data-invalid={lastNameInvalid || undefined}>
+                  <FieldLabel htmlFor="lastName">Last name</FieldLabel>
+                  <InputGroup className="h-11 min-h-11">
+                    <InputGroupInput
+                      id="lastName"
+                      name="lastName"
+                      autoComplete="family-name"
+                      placeholder="Lovelace"
+                      className="h-full text-base"
+                      required
+                      aria-invalid={lastNameInvalid || undefined}
+                      value={lastName}
+                      onChange={(e) => {
+                        setLastName(e.target.value);
+                        if (fieldErrors.lastName) {
+                          setFieldErrors((prev) => ({ ...prev, lastName: undefined }));
+                        }
+                      }}
+                    />
+                  </InputGroup>
+                  {fieldErrors.lastName ? <FieldError>{fieldErrors.lastName}</FieldError> : null}
+                </Field>
+              </div>
 
               <Field>
                 <FieldLabel htmlFor="username">Username</FieldLabel>

@@ -137,6 +137,8 @@ type KeycloakAdminUser = {
   id?: string;
   username?: string;
   email?: string;
+  firstName?: string;
+  lastName?: string;
   enabled?: boolean;
   emailVerified?: boolean;
   requiredActions?: string[];
@@ -151,13 +153,19 @@ const adminHeaders = (accessToken: string) => ({
 
 /**
  * Sets a permanent password and clears required actions so Direct Access Grants work.
- * Keycloak often attaches VERIFY_EMAIL / UPDATE_PASSWORD after create; that yields
- * "Account is not fully set up" on password grant until cleared.
+ * Keycloak 24+ also requires profile attributes (first/last name) or VERIFY_PROFILE
+ * blocks password grant with "Account is not fully set up".
  */
 const finalizeKeycloakUserForLogin = async (
   accessToken: string,
   userId: string,
-  password: string,
+  input: {
+    username: string;
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+  },
 ): Promise<void> => {
   const userUrl = `${adminUsersUrl}/${encodeURIComponent(userId)}`;
 
@@ -166,7 +174,7 @@ const finalizeKeycloakUserForLogin = async (
     headers: adminHeaders(accessToken),
     body: JSON.stringify({
       type: "password",
-      value: password,
+      value: input.password,
       temporary: false,
     }),
   });
@@ -200,6 +208,10 @@ const finalizeKeycloakUserForLogin = async (
     headers: adminHeaders(accessToken),
     body: JSON.stringify({
       ...existing,
+      username: input.username,
+      email: input.email,
+      firstName: input.firstName,
+      lastName: input.lastName,
       enabled: true,
       emailVerified: true,
       requiredActions: [],
@@ -222,6 +234,8 @@ export const createKeycloakUser = async (input: {
   username: string;
   email: string;
   password: string;
+  firstName: string;
+  lastName: string;
 }): Promise<string> => {
   const admin = await clientCredentialsGrant();
   const createResponse = await fetch(adminUsersUrl, {
@@ -230,6 +244,8 @@ export const createKeycloakUser = async (input: {
     body: JSON.stringify({
       username: input.username,
       email: input.email,
+      firstName: input.firstName,
+      lastName: input.lastName,
       enabled: true,
       emailVerified: true,
       requiredActions: [],
@@ -259,7 +275,7 @@ export const createKeycloakUser = async (input: {
     throw error;
   }
 
-  await finalizeKeycloakUserForLogin(admin.accessToken, userId, input.password);
+  await finalizeKeycloakUserForLogin(admin.accessToken, userId, input);
   return userId;
 };
 

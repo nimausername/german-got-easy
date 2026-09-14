@@ -25,6 +25,8 @@ Never put the client secret in the frontend.
 
 Also turn **off** “set as default action” for Verify Email, Update Password, Update Profile, Configure OTP, and Terms and Conditions under **Authentication → Required actions**. Default required actions block Direct Access Grants for new users.
 
+Keycloak 24+ User Profile marks **First name** / **Last name** required by default. Missing names also yield `Account is not fully set up`. The register form collects both and the API stores them on the Keycloak user.
+
 ## Client `german-backend`
 
 Create a **confidential** OpenID client:

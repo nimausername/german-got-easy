@@ -13,8 +13,17 @@ import {
 import { extractAccessToken, resolveUserFromToken } from "../plugins/auth.js";
 import { prisma } from "../lib/prisma.js";
 
+const nameSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(64)
+  .regex(/^[\p{L}\p{M}'’\- ]+$/u, "Names may only contain letters, spaces, hyphens, and apostrophes");
+
 const registerSchema = z.object({
   email: z.string().email(),
+  firstName: nameSchema,
+  lastName: nameSchema,
   username: z
     .string()
     .min(3)
@@ -59,12 +68,19 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
       ]);
     }
 
-    const { email, password } = parsed.data;
+    const { email, password, firstName, lastName } = parsed.data;
     const username = parsed.data.username ?? email.split("@")[0]!;
+    const displayName = `${firstName} ${lastName}`.trim();
 
     let keycloakUserId: string | undefined;
     try {
-      keycloakUserId = await createKeycloakUser({ username, email, password });
+      keycloakUserId = await createKeycloakUser({
+        username,
+        email,
+        password,
+        firstName,
+        lastName,
+      });
       const tokens = await passwordGrant(username, password);
       const payload = await verifyAccessToken(tokens.accessToken);
       const user = await prisma.user.upsert({
@@ -73,9 +89,9 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
           keycloakSub: payload.sub,
           email,
           username,
-          displayName: username,
+          displayName,
         },
-        update: { email, username },
+        update: { email, username, displayName },
       });
       setAuthCookies(reply, tokens);
       return reply.status(201).send({
