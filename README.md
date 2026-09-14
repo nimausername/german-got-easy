@@ -8,7 +8,7 @@ Flashcards use spaced repetition plus German-specific prompts: recognition (DEâ†
 
 - **Frontend:** Next.js + TypeScript + Tailwind + shadcn/ReUI
 - **Backend:** Fastify + Prisma + Zod
-- **Database:** PostgreSQL
+- **Database:** PostgreSQL you host yourself
 - **Auth:** Keycloak you host yourself (in-app register/login forms via the API)
 
 ## Quick start

@@ -1,24 +1,9 @@
-# This stack runs the learning app only: Postgres, API, and web.
-# Keycloak is not included. Host it yourself and pass KEYCLOAK_URL + client secret.
-# See docs/keycloak.md.
+# Learning app only: API + web.
+# Postgres and Keycloak are not included. Pass DATABASE_URL, KEYCLOAK_URL, and the client secret.
+# Optional bundled Postgres: docker compose -f docker-compose.yml -f docker-compose.postgres.yml up
+# See docs/keycloak.md and docs/coolify.md.
 
 services:
-  postgres:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${SERVICE_USER_POSTGRES}
-      POSTGRES_PASSWORD: ${SERVICE_PASSWORD_64_POSTGRES}
-      POSTGRES_DB: german
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d german"]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-      start_period: 10s
-
   backend:
     build:
       context: ./backend
@@ -31,7 +16,7 @@ services:
       HOST: 0.0.0.0
       PORT: "4000"
       PRODUCT_NAME: ${PRODUCT_NAME:-German Got Easy}
-      DATABASE_URL: ${DATABASE_URL:-postgres://${SERVICE_USER_POSTGRES}:${SERVICE_PASSWORD_64_POSTGRES}@postgres:5432/german}
+      DATABASE_URL: ${DATABASE_URL:?}
       KEYCLOAK_URL: ${KEYCLOAK_URL:?}
       KEYCLOAK_INTERNAL_URL: ${KEYCLOAK_INTERNAL_URL:-}
       KEYCLOAK_REALM: ${KEYCLOAK_REALM:-german}
@@ -40,13 +25,10 @@ services:
       KEYCLOAK_BOOTSTRAP: ${KEYCLOAK_BOOTSTRAP:-false}
       KEYCLOAK_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USERNAME:-}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-}
-      CORS_ORIGIN: ${CORS_ORIGIN:-${SERVICE_URL_FRONTEND_3000}}
+      CORS_ORIGIN: ${CORS_ORIGIN:?}
       COOKIE_SECURE: ${COOKIE_SECURE:-true}
       COOKIE_SAME_SITE: ${COOKIE_SAME_SITE:-lax}
       RUN_SEED: ${RUN_SEED:-true}
-    depends_on:
-      postgres:
-        condition: service_healthy
     healthcheck:
       test:
         [
@@ -57,8 +39,8 @@ services:
         ]
       interval: 30s
       timeout: 5s
-      retries: 8
-      start_period: 120s
+      retries: 10
+      start_period: 300s
     expose:
       - "4000"
 
@@ -74,12 +56,9 @@ services:
       NODE_ENV: production
       HOSTNAME: 0.0.0.0
       PORT: "3000"
-      API_URL: ${SERVICE_URL_BACKEND_4000}
-      NEXT_PUBLIC_API_URL: ${SERVICE_URL_BACKEND_4000}
+      API_URL: ${API_URL:?}
+      NEXT_PUBLIC_API_URL: ${API_URL:?}
       NEXT_PUBLIC_PRODUCT_NAME: ${PRODUCT_NAME:-German Got Easy}
-    depends_on:
-      backend:
-        condition: service_healthy
     healthcheck:
       test:
         [
@@ -94,6 +73,3 @@ services:
       start_period: 20s
     expose:
       - "3000"
-
-volumes:
-  postgres-data:
